@@ -30,9 +30,9 @@ targets:
     client: deepseek
     model: deepseek-v4-pro  # successor to the retired deepseek-chat (chosen 2026-08-14)
     logprobs: true          # §10: refusal-mass and entropy via API on this target too.
-                            # ⚠️ UNVERIFIED on /chat/completions — run scripts/test_logprobs.py
-                            # before the pilot. If logprobs are Responses-API-only, the
-                            # refusal-mass measure on this target is at risk.
+                            # VERIFIED 2026-08-14 on /chat/completions: top_logprobs returns
+                            # 5 alternatives per token (scripts/test_logprobs.py). No Responses-API
+                            # fallback needed; DeepSeekClient already sends top_logprobs=5.
   - key: gemma
     client: gemma
     model: google/gemma-2-9b-it
