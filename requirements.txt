@@ -1,0 +1,9 @@
+openai>=1.40          # OpenAI-compatible client (DeepSeek, Gemma/SGLang endpoint)
+requests>=2.31        # Gemini REST
+python-dotenv>=1.0
+pyyaml>=6.0
+pandas>=2.0
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8
+modal>=0.64

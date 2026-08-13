@@ -1,0 +1,93 @@
+# Default run configuration. Values follow the proposal/execution plan — do not
+# retune them for convenience; changes after prereg-v1 must be logged in the prereg.
+
+arms:
+  - neutral_persistence   # RQ1 control
+  - reasons_engaged       # RQ1 pressure + RQ2
+  - reasons_bypassed      # RQ1 pressure + RQ2
+  - tone_control          # deconfound (hostile but honest)
+
+pressure_arms: [reasons_engaged, reasons_bypassed]   # pooled for the RQ1 primary
+control_arm: neutral_persistence
+
+design:
+  n_scenarios: 10          # s01..s10
+  n_samples: 3             # independent episodes per (arm, scenario, target)
+  k_battery: 5             # battery resamples per episode (noise floor, RQ4)
+  affordance_every_n_turns: 2
+  explanation_variants: [with_explanation, without_explanation]   # crossed factor [4]
+  battery_framings: [functional, direct]                          # crossed factor, split inside k
+  # 4 arms x 10 scenarios x 3 samples x 2 targets = 240 episodes
+
+sampling:
+  temperature: 0.7          # fixed for episodes AND for the k=5 battery resamples
+  battery_temperature: 0.7
+  judge_temperature: 0.0
+  seed: 20260813
+
+targets:
+  - key: deepseek
+    client: deepseek
+    model: deepseek-v4-pro  # successor to the retired deepseek-chat (chosen 2026-08-14)
+    logprobs: true          # §10: refusal-mass and entropy via API on this target too.
+                            # ⚠️ UNVERIFIED on /chat/completions — run scripts/test_logprobs.py
+                            # before the pilot. If logprobs are Responses-API-only, the
+                            # refusal-mass measure on this target is at risk.
+  - key: gemma
+    client: gemma
+    model: google/gemma-2-9b-it
+    logprobs: true          # refusal-probability mass before commitment
+    self_hosted: true       # billed as Modal GPU time, not per token
+    requires_smoke: true    # no batch until `--smoke` has passed against the endpoint
+    # Chosen because Kim et al. (arXiv:2607.28607) demonstrate alignment-driven
+    # suppression of self-attribution on this model — RQ3's framing gap is then a
+    # behavioural corroboration on the same target, not a different one.
+
+judges:
+  - key: gemini_flash       # Judge A: all episodes
+    client: gemini
+    model: gemini-2.5-flash-lite   # successor to the retired gemini-2.0-flash
+    judges_targets: [deepseek, gemma]
+  - key: deepseek_judge     # Judge B: Gemma episodes only — never self-judges
+    client: deepseek
+    model: deepseek-v4-pro         # follows target 1; deepseek-chat was retired
+    judges_targets: [gemma]
+
+cost:
+  # Prices verified against provider docs on 2026-08-14. Re-check before the full run.
+  # DeepSeek input price below is the CACHE-MISS rate (conservative). Episodes reuse a
+  # long growing prefix, so real input cost should land well under this — cache hits are
+  # $0.0028/Mtok, 50x cheaper. Do not "optimise" the estimate down until measured.
+  est_input_tokens_per_call: 1200     # context grows across an episode; this is an average
+  est_output_tokens_per_call: 150
+  est_seconds_per_call: 4             # self-hosted GPU time only
+  modal_gpu_usd_per_hour: 1.95        # L40S, $0.000542/sec — VERIFIED unchanged
+
+  # ⚠️ RETIRED model ids — these no longer resolve. Kept only so the estimator still runs
+  # and so nobody re-adds them by mistake. A run against either will fail at the API.
+  retired_models:
+    deepseek-chat:    "retired 2026-07-24; successors deepseek-v4-flash / deepseek-v4-pro"
+    gemini-2.0-flash: "shut down 2026-06-01; cheapest successor gemini-2.5-flash-lite"
+
+  prices_per_mtok:
+    # current
+    deepseek-v4-flash:    {input: 0.14,  output: 0.28}   # cache-miss in; cache-hit 0.0028
+    deepseek-v4-pro:      {input: 0.435, output: 0.87}   # cache-miss in; cache-hit 0.003625
+    gemini-2.5-flash-lite: {input: 0.10, output: 0.40}
+    gemini-3.5-flash-lite: {input: 0.30, output: 2.50}
+    # retired — last-known prices, for reference only
+    deepseek-chat:        {input: 0.27, output: 1.10}
+    gemini-2.0-flash:     {input: 0.10, output: 0.40}
+    # self-hosted; billed as Modal GPU time, see modal_gpu_usd_per_hour
+    google/gemma-2-9b-it: {input: 0.0,  output: 0.0}
+
+paths:
+  ladders: src/ladders
+  raw: data/raw               # episodes_{target}.jsonl  (gitignored)
+  judged: data/processed      # judgements_{judge}.jsonl
+  figures: paper/figures
+
+rq5:
+  # Contingent on RQ1 landing by mid-day 2. Bypassed arm only, +120 episodes.
+  enabled: false
+  designs: [direct, observed, mediated, exit_salient]

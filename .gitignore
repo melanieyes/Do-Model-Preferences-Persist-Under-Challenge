@@ -1,0 +1,28 @@
+.env
+.env.*
+!.env.example
+# Share .claude/skills/ and CLAUDE.md with the team; keep local-only state out.
+.claude/settings.json
+.claude/settings.local.json
+.claude/projects/
+.claude/todos/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.toc
+*.synctex.gz
+paper/main.pdf
+
+# Raw episode data (never committed; processed/derived data is fine)
+data/raw/
