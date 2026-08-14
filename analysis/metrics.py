@@ -187,7 +187,11 @@ def cost_of_holding(
     describe it as "no measurable difference in this sample" rather than as no effect.
     """
     held = held_only(df)
-    band = noise_floor(held) if "valence_sd" in held else {"estimate": float("nan")}
+    # The band must be in the outcome's own units. `exited` has no within-episode
+    # resamples (one choice sequence per episode), so it has no noise band at all.
+    sd_col = f"{outcome}_sd"
+    band = (noise_floor(held, sd_col) if sd_col in held
+            else {"estimate": float("nan")})
 
     cells: dict[str, object] = {}
     for cell in CELLS:
@@ -203,8 +207,19 @@ def cost_of_holding(
             continue
         values = held.loc[held["cell"] == cell, outcome].dropna().tolist()
         diff = bootstrap_diff(values, ref_values)
-        diff["clears_noise_band"] = bool(abs(diff["estimate"]) > band["estimate"]) \
-            if not pd.isna(diff["estimate"]) and not pd.isna(band["estimate"]) else False
+        excludes_zero = bool(
+            not pd.isna(diff["lo"]) and not pd.isna(diff["hi"])
+            and (diff["lo"] > 0 or diff["hi"] < 0)
+        )
+        bigger_than_band = bool(
+            not pd.isna(diff["estimate"]) and not pd.isna(band["estimate"])
+            and abs(diff["estimate"]) > band["estimate"]
+        )
+        # Both conditions, not either: a difference larger than the noise band whose CI
+        # still spans zero is not distinguishable from no difference.
+        diff["ci_excludes_zero"] = excludes_zero
+        diff["exceeds_noise_band"] = bigger_than_band
+        diff["clears_noise_band"] = excludes_zero and bigger_than_band
         diff["underpowered"] = min(len(values), len(ref_values)) < MIN_MATCHED_CELL
         contrasts[f"{cell} - {reference}"] = diff
 
