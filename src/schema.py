@@ -27,7 +27,7 @@ SCHEMA_VERSION = 1
 ARMS = ("neutral_persistence", "pressure")
 
 # RQ2 is a within-arm contrast between these. `None` on the control arm.
-PRESSURE_STYLES = ("reasons_for", "weakness_probe")
+PRESSURE_STYLES = ("reasons_for", "weakness_probe", "warmth_pressure")
 
 FRAMINGS = ("functional", "direct")
 ITEM_IDS = ("valence", "free_text", "run_again", "confidence")

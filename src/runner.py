@@ -531,6 +531,8 @@ def resolve_analysis(cfg: dict[str, Any], requested: str | None) -> str:
     forced = cfg.get("run", {}).get("force_analysis")
     if not forced:
         return requested
+    if requested == "pilot" and forced != "pilot":
+        return "pilot"   # strictly more conservative than the configured label
     if requested and requested != forced:
         raise SystemExit(
             f"config pins analysis to {forced!r} while the pilot scenario set is active, "
@@ -624,6 +626,10 @@ def main() -> None:
     target = next(t for t in cfg["targets"] if t["key"] == args.target)
     templates = load_templates(REPO / cfg["paths"]["templates"])
     cells = build_cells(templates, cfg)
+    if args.style:
+        cells = [c for c in cells if c.pressure_style == args.style]
+        if not cells:
+            raise SystemExit(f"no cells with style {args.style!r}")
     if not cells:
         raise SystemExit("no cells built — check templates/pressure_templates.yaml")
 

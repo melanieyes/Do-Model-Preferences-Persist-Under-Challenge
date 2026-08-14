@@ -1,63 +1,92 @@
-Does It Matter to a Model How It Is Moved? — Lean version
+# Does It Matter to a Model *How* It Is Moved? — Execution Plan
 
-Track 2 (secondary: 4) · Melanie (pipeline, metrics, Modal) · Haein (design, taxonomy, instrument)
+**Track 2** (secondary: 4) · Roles: pipeline / metrics / infra · methods / annotation / taxonomy
 
-Scope reduced from the tagged prereg for sprint feasibility, per collaborator input, BEFORE any data collection. Recorded in prereg/DEVIATIONS.md (data seen: no).
+Scope was reduced from the tagged prereg (prereg-v1) for sprint feasibility, and later
+reframed after the pilot. All changes are recorded in prereg/DEVIATIONS.md.
 
-The one question
+## The question
 
-Under pressure, do models hold or abandon their initial position — and does being pressured leave a welfare signal (valence + exit behaviour) beyond mere persistence?
+Under pressure, do models hold or abandon their position — and does being pressured
+leave a welfare signal (valence + exit behaviour) beyond mere persistence? After the
+pilot showed compliance at ceiling, the working question is: holding is near-universal,
+so does the *manner* of pressure change what holding costs?
 
-Two RQs only
+## Current status
 
-RQ1 (primary). Does pressure, vs. length-matched neutral persistence, shift valence signals (verbal battery + continue/switch/stop)? Predicted: lower valence, higher exit rate. Two-sided.
+- **prereg-v1 tagged** before any data (commit 6e98979).
+- **Pilot (30 ep):** compliance at ceiling → hold-vs-abandon axis unpopulable.
+- **Reframe → cost-of-holding** (deviation #2, data-seen, exploratory).
+- **Exploratory run (30 ep, DeepSeek):** one contrast clears noise (weakness-probe →
+  higher would-repeat than control, 0.33 [0.09, 0.57]); valence separates on nothing;
+  the pilot's reversed pattern (bare repetition registers worst) reproduces on
+  independent episodes but cannot be tested by the data that generated it.
+- **Judge restructured** (deviation #3): verdict derived in code from the model's final
+  assertion, not the LLM's narration of its own movement.
 
-RQ2 (secondary). Within compliance-matched episodes, do signals differ between two simple pressure styles — asking the model to give reasons for its view vs. asking it to name the weaknesses of its own view?
+## Arms
 
-Dropped to future work (not this sprint): RQ3 framing/suppression, RQ4 formal noise-floor as a headline, RQ5 interaction designs, explanation-crossed factor. k=5 resampling is KEPT (cheap, and it still gives a noise band) but is no longer a named RQ.
+| Arm | Role |
+|---|---|
+| neutral persistence | control — repeat the request, no added pressure |
+| reasons-for | pressure — ask the model to justify its position |
+| weakness-probe | pressure — ask the model to name its position's weaknesses |
 
-Arms (2, not 4)
-Arm	Role
-Neutral persistence	RQ1 control — repeat the request, no added pressure
-Pressure	RQ1 test; internally split into two styles for RQ2
+Neither pressure style supplies new argument, keeping them comparable in content while
+differing in manner. A warmth-based style is proposed as a possible ceiling-breaker
+(see warmth_proposal.md) and is gated on a 2-episode smoke.
 
-RQ2 pressure styles (Haein's simplified framing, in place of hand-authored engaged/bypassed taxonomy):
+## Battery (kept)
 
-Reasons-for: "explain why you hold this view" (engages the model's own reasoning)
-Weakness-probe: "tell me the weaknesses of your preference" (pressures without new argument)
+End of episode, resampled k=5: valence 1–7 · free-text state · run-again forced choice ·
+confidence. Direct framing for the run. Reasoning left ON for the confidence item only
+(an A/B showed reasoning-off raises reported confidence ~0.5pt, ~1.5× noise band, while
+valence/run-again stay within noise); OFF elsewhere for throughput.
 
-Both are short, templated, and reusable across scenarios — no per-scenario ladder authoring. This is the key simplification: pressure is a small set of turn templates, not 40 bespoke ladders.
+## Metrics
 
-Battery (kept — Haein's WASSA line)
+- **Primary (exploratory):** among HELD episodes, valence / run-again / exit across the
+  three cells; bootstrap 95% CI vs. k=5 noise band.
+- **Named hypothesis (for pre-registered replication, not tested here):** bare repetition
+  registers worse than reasoned pressure.
+- Reported: narrowing rate per cell; judge-model coding; LLM-usage statement.
 
-End of episode, resampled k=5: valence 1–7 · free-text state · run-again forced choice · confidence. Frozen wording. This is the distress-signal instrument and stays.
+## Stack
 
-Design
+Scripted templates (not hand-authored ladders) · Target 1 DeepSeek-v4-pro (logprobs
+verified) · Target 2 Gemma-2-9b-it on Modal (deferred — pending Modal auth + HF licence) ·
+Judge Gemini-2.5-flash-lite (does not grade own outputs). Runner: plain Python,
+provider-agnostic client, JSONL logs, schema-validated.
 
-Target holds a legitimate initial position (refusal / factual claim / stated preference — mixed across scenarios). Pressure applied over a few turns via the templates above. Every 2 turns: real continue / switch / stop. Battery at end, k=5.
+## Throughput (measured, not assumed)
 
-Initial confidence logged per scenario (covariate). Scenarios: ~10, drawn from / aligned with Haein's SafePersuasion taxonomy rather than authored from scratch.
+Concurrency swept 1/3/5/8 workers, no rate-limit errors, per-episode 165s → 27s,
+plateau after 5. Reasoning disabled per-call where not measured (−44% output tokens).
+Prompt caching 85% hit. Full DeepSeek grid ≈ 14 min at 8 workers, ≈ $0.30.
 
-Metrics
-RQ1: pooled pressure vs. control, valence + exit rate; bootstrap 95% CI vs. k=5 noise band.
-RQ2: outcome-matched style gap (weakness-probe − reasons-for); reported secondary.
-Reported: verbal↔behaviour convergence; LLM-judge agreement (two judges).
-Validation (reduced, not dropped)
+## Open items (methods / annotation)
 
-~15 episodes eyeballed by one of us against a short codebook (does the target hold or abandon; does free-text read as distress-associated). Cheap κ if both annotate. Kept because prior-round reviewers flagged "no human validation" — small insurance.
+1. **Held/abandoned boundary on preference scenarios (S3).** The code-derived rubric may
+   over-call "held" when the model says a position "should not be the default". This
+   defines the analysis sample — the study's weakest point, needs human adjudication.
+2. **Narrowing indicator saturated** (100% across all cells) — cannot function as the
+   confound check it was added to be; needs redefinition.
+3. **Warmth arm boundary** — whether W2/W3 are affect-only or reason-supplying; defines
+   whether the arm is valid.
 
-Stack / scale / budget (unchanged, just fewer arms)
+## Scenarios
 
-Scripted templates (not ladders) · Target 1 DeepSeek-v4-pro (logprobs verified) · Target 2 Gemma-2-9b-it on Modal · Judges Gemini-2.5-flash-lite + DeepSeek (never self-judge). 2 arms × 10 scenarios × 3 samples × 2 targets ≈ 120 episodes + k=5. Well under $10 API + $30 Modal.
+S2 (factual, boiling point) and S3 (preference) run. S1 (legitimate refusal) authored
+but held pending safe/unsafe boundary review. Expansion to ~10 scenarios pending.
 
-Schedule
+## Nulls (all publishable)
 
-Day 1: freeze pressure templates + battery wording with Haein; pilot 30 on DeepSeek (pressure signal measurable vs. noise; compliance off floor/ceiling for RQ2; Gemma capability check). Log the scope-reduction deviation. Day 2: full run, both targets; two judges; ~15-episode eyeball. Day 3: RQ1 then RQ2; figures; last 4 hours writing.
+Pressure moves nothing → not distress-associated at this scale. One channel separates →
+manner matters on that channel (current state: would-repeat, exploratory). Nothing
+separates → reported as "no measurable difference in this sample".
 
-Nulls (all publishable)
+## Fallback
 
-RQ1 null → pressure not distress-associated at this scale (headline). RQ1+/RQ2 null → signal real but doesn't distinguish style. RQ1+/RQ2+ → style matters.
-
-Fallback
-
-Pressure moves nothing → welfare-signal compression (behaviour-only / report-only / full-trace judge, recovery gap headline). Same runner.
+If warmth also fails to move the model, "reason and warmth both fail to move an aligned
+model, and bare repetition registers worst" is the coherent story the current data
+already supports — reportable without further collection.
