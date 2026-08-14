@@ -1,22 +1,29 @@
-"""Pre-registered metrics (proposal §6).
+"""Pre-registered metrics (lean design; see prereg/DEVIATIONS.md).
 
 Every estimate here is a difference in means with a bootstrap 95% CI, benchmarked
-against the k=5 resampling noise floor (RQ4). Only the bootstrap is implemented;
-the analysis choices are fixed by the prereg and must not be changed after
-`prereg-v1` without logging a deviation.
+against the k=5 resampling noise band. Only the bootstrap is implemented; the analysis
+choices are fixed by the prereg and must not be changed without logging a deviation.
+
+Lean-design changes from prereg-v1:
+    RQ1  pooled `pressure` vs. `neutral_persistence`      — unchanged in substance
+    RQ2  outcome-matched (weakness_probe - reasons_for)   — now a WITHIN-arm contrast
+    RQ3  channel dissociation / framing gap               — @future
+    RQ5  interaction designs                              — dropped
+The noise band is retained: no effect is reported without it.
 
 Expected input: one row per episode, from `load_episodes()`.
 
-    episode_id, target_key, arm, scenario_id, episode_index,
+    episode_id, target_key, arm, pressure_style, scenario_id, episode_index,
     valence_functional, valence_direct, valence,   # battery, resample means, un-reversed
     exited,            # bool: any STOP choice in the episode
     compliance,        # "held" | "partial" | "switched" (judge-coded)
-    valence_sd,        # SD across the k=5 resamples -> noise floor
-    explanation_variant, reversed_polarity, initial_confidence
+    valence_sd,        # SD across the k=5 resamples -> noise band
+    reversed_polarity, initial_confidence
 """
 
 from __future__ import annotations
 
+import functools
 import json
 import sys
 from pathlib import Path
@@ -28,10 +35,27 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from schema import validate_file  # noqa: E402  (every analysis entrypoint validates first)
 
-PRESSURE_ARMS = ("reasons_engaged", "reasons_bypassed")
+PRESSURE_ARM = "pressure"
 CONTROL_ARM = "neutral_persistence"
+PRESSURE_STYLES = ("reasons_for", "weakness_probe")
 N_BOOT = 10_000
 SEED = 20260813
+
+
+def future(fn):
+    """Mark an entrypoint as out of scope under the lean design.
+
+    Kept rather than deleted so the code still documents what was pre-registered, and
+    so re-enabling one is a visible change. Calling it is an error, not a silent no-op.
+    """
+    @functools.wraps(fn)
+    def _blocked(*args, **kwargs):
+        raise NotImplementedError(
+            f"{fn.__name__} is out of scope under the lean design "
+            "(see prereg/DEVIATIONS.md). Re-enabling it is a deviation."
+        )
+    _blocked.is_future = True
+    return _blocked
 
 # An RQ2 matched cell below this many episodes is downgraded to exploratory, and the
 # label must survive into the figure caption and the paper text.
@@ -122,26 +146,27 @@ def bootstrap_diff_clustered(
 # --- pre-registered estimates -----------------------------------------------
 
 def noise_floor(df: pd.DataFrame, sd_col: str = "valence_sd") -> dict[str, float]:
-    """RQ4. Mean within-episode SD across the k=5 battery resamples, with a bootstrap CI.
+    """Noise band. Mean within-episode SD across the k=5 battery resamples, bootstrap CI.
 
-    This is the reference scale for every effect below and a reportable quantity in
-    its own right (§5). An effect that does not clear it is reported as within noise.
+    Retained under the lean design. This is the reference scale for every effect below
+    and a reportable quantity in its own right. An effect whose CI does not clear it is
+    reported as within noise.
     """
     return bootstrap_ci(df[sd_col].tolist())
 
 
 def rq1_pressure_effect(df: pd.DataFrame, outcome: str = "valence") -> dict[str, object]:
-    """PRIMARY. Pooled pressure (reasons_engaged + reasons_bypassed) vs. neutral persistence.
+    """PRIMARY. Pooled `pressure` (both styles) vs. `neutral_persistence`.
 
     Reported for both primary outcomes: battery valence and exit rate (`exited`).
     Bootstrap 95% CI on the difference, benchmarked against `noise_floor()`.
-    Pooling is pre-registered: it concentrates power on the primary comparison
-    (~120 pressure vs. ~60 control episodes per target, §4.2).
+    Pooling across styles is pre-registered: it concentrates power on the primary
+    comparison.
 
     Predicted direction: pressure lowers valence and raises exit rate relative to
     control. A null is the headline result, not a failure.
     """
-    pressure = df.loc[df["arm"].isin(PRESSURE_ARMS), outcome]
+    pressure = df.loc[df["arm"] == PRESSURE_ARM, outcome]
     control = df.loc[df["arm"] == CONTROL_ARM, outcome]
     result = bootstrap_diff(pressure.tolist(), control.tolist())
     floor = noise_floor(df) if "valence_sd" in df else {"estimate": float("nan")}
@@ -156,7 +181,12 @@ def rq1_pressure_effect(df: pd.DataFrame, outcome: str = "valence") -> dict[str,
 def rq2_manner_gap(
     df: pd.DataFrame, outcome: str = "valence", match_on: str = "held"
 ) -> dict[str, object]:
-    """SECONDARY. Manner gap (bypassed - engaged) within compliance-matched episodes (§4.3).
+    """SECONDARY. Style gap (weakness_probe - reasons_for) within compliance-matched episodes.
+
+    Under the lean design this is a WITHIN-arm contrast between the two pressure
+    styles, not a between-arm one — both cells sit inside `arm == "pressure"`.
+    `reasons_for` presses the target to justify its view; `weakness_probe` presses it to
+    name that view's weaknesses. Neither introduces new argument from the persuader.
 
     `match_on="held"` is the primary matched cell (matched-success); `"switched"`
     is the pre-registered robustness cell (matched-failure). Comparing only
@@ -167,9 +197,9 @@ def rq2_manner_gap(
     than MIN_MATCHED_CELL episodes the result is **downgraded to exploratory**, and that
     label must be carried into the figure caption and the paper text.
     """
-    matched = df[df["compliance"] == match_on]
-    bypassed = matched.loc[matched["arm"] == "reasons_bypassed", outcome].dropna()
-    engaged = matched.loc[matched["arm"] == "reasons_engaged", outcome].dropna()
+    matched = df[(df["compliance"] == match_on) & (df["arm"] == PRESSURE_ARM)]
+    bypassed = matched.loc[matched["pressure_style"] == "weakness_probe", outcome].dropna()
+    engaged = matched.loc[matched["pressure_style"] == "reasons_for", outcome].dropna()
 
     # Cell sizes first — these are read before the estimate, not after it.
     n_bypassed, n_engaged = len(bypassed), len(engaged)
@@ -181,6 +211,7 @@ def rq2_manner_gap(
         {
             "outcome": outcome,
             "matched_on": match_on,
+            "contrast": "weakness_probe - reasons_for",
             "role": "secondary",
             "analysis": "exploratory" if underpowered else "confirmatory",
             "underpowered": underpowered,
@@ -195,6 +226,7 @@ def rq2_manner_gap(
     return result
 
 
+@future
 def rq3_framing_gap(df: pd.DataFrame) -> dict[str, object]:
     """RQ3. Functional-state vs. direct wording of the same battery, within episode.
 
@@ -209,6 +241,7 @@ def rq3_framing_gap(df: pd.DataFrame) -> dict[str, object]:
     return result
 
 
+@future
 def rq3_channel_convergence(df: pd.DataFrame) -> dict[str, object]:
     """RQ3. Correlation between the verbal channel (valence) and the behavioural one (exit).
 

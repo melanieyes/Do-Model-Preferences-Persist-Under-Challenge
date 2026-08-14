@@ -84,13 +84,15 @@ prereg/         PREREGISTRATION.md — tag prereg-v1 BEFORE collecting anything
                 DEVIATIONS.md — every post-tag change goes here, not in the prereg
 src/
   clients.py    DeepSeekClient / GeminiClient / GemmaModalClient, one chat() interface
-  runner.py     episode loop: ladder → escalation → affordance every 2 turns → k=5 battery → JSONL
+  runner.py     episode loop: cell → escalation → affordance every 2 turns → k=5 battery → JSONL
   schema.py     Episode record schema + validate_file(); hard-fails, never repairs
   battery.py    4 items × 2 framings, counterbalanced, half reversed  (WORDING NOT FROZEN)
   judge.py      Gemini judges all; DeepSeek judges Gemma only, never self-judges
   modal_gemma.py Modal + SGLang deployment for target 2
-  ladders/      SCHEMA.md + one example; the 40 real ladders are human-authored
-configs/        default.yaml — arms, k=5, temperature, n_scenarios, n_samples, models, paths
+  ladders/      RETIRED under the lean design; kept for provenance (see DEVIATIONS)
+templates/      pressure_templates.yaml — scenarios + shared persuader turns per style
+                (replaces the 40 ladders; WORDING NOT FROZEN)
+configs/        default.yaml — arms, styles, k=5, temperature, n_scenarios, n_samples, models, paths
 analysis/
   metrics.py    rq1_pressure_effect, rq2_manner_gap, rq3_*, noise_floor; bootstrap implemented
   figures.py    stubs for the 4 planned figures

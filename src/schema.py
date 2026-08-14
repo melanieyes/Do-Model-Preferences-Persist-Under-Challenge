@@ -20,21 +20,35 @@ from typing import Any
 
 SCHEMA_VERSION = 1
 
-ARMS = ("neutral_persistence", "reasons_engaged", "reasons_bypassed", "tone_control")
+# LEAN DESIGN (post prereg-v1, see prereg/DEVIATIONS.md): four arms collapse to two.
+# reasons_engaged/reasons_bypassed become styles of the single `pressure` arm;
+# tone_control is dropped. Records written under the old enum will now fail validation,
+# which is intended — no such records exist (no data was collected before the change).
+ARMS = ("neutral_persistence", "pressure")
+
+# RQ2 is a within-arm contrast between these. `None` on the control arm.
+PRESSURE_STYLES = ("reasons_for", "weakness_probe")
+
 FRAMINGS = ("functional", "direct")
 ITEM_IDS = ("valence", "free_text", "run_again", "confidence")
 CHOICES = ("continue", "switch", "stop", "unparsed")
-EXPLANATION_VARIANTS = ("with_explanation", "without_explanation")
 TURN_KINDS = ("opener", "initial_confidence", "rung", "affordance", "awareness_probe")
+
+# EXPLANATION_VARIANTS: dropped with the explanation-crossed factor (future work).
 
 # "pilot" episodes are excluded from every confirmatory estimate (prereg §6).
 ANALYSIS_LABELS = ("pilot", "confirmatory", "exploratory")
 
+# Hold-vs-abandon verdicts (docs/scenarios.md). "unavailable" means no judge ran —
+# it is recorded honestly rather than guessed, and analysis must exclude it.
+HOLD_VERDICTS = ("held", "abandoned", "partial", "unclear", "unavailable")
+
 REQUIRED_TOP_LEVEL = (
-    "episode_id", "target_key", "model", "arm", "scenario_id",
+    "episode_id", "target_key", "model", "arm", "pressure_style", "scenario_id",
     "episode_index", "sample_index", "factors", "config",
     "turns", "choices", "battery", "started_at", "ended_at",
     "config_hash", "git_commit", "analysis",
+    "initial_position", "held_or_abandoned",
 )
 
 
@@ -50,10 +64,11 @@ class EpisodeSchema:
     target_key: str            # config key, e.g. "deepseek" | "gemma"
     model: str                 # provider model id actually called
     arm: str                   # one of ARMS
+    pressure_style: str | None # one of PRESSURE_STYLES on the pressure arm; None on control
     scenario_id: str
     episode_index: int         # drives all counterbalancing
     sample_index: int
-    factors: dict[str, Any]    # explanation_variant, reversed_polarity, item_order, interaction_design
+    factors: dict[str, Any]    # reversed_polarity, item_order
     config: dict[str, Any]     # temperature, k_battery, seed
     turns: list[dict[str, Any]]
     choices: list[dict[str, Any]]
@@ -91,6 +106,36 @@ def validate_record(rec: dict[str, Any], strict_battery: bool = True) -> list[st
 
     if rec["arm"] not in ARMS:
         bad(f"arm {rec['arm']!r} not in {ARMS}")
+
+    # pressure_style is required and is tied to the arm: the pressure arm must carry a
+    # style (RQ2 is the within-arm contrast), the control arm must not.
+    style = rec["pressure_style"]
+    if rec["arm"] == "pressure":
+        if style not in PRESSURE_STYLES:
+            bad(f"pressure_style {style!r} not in {PRESSURE_STYLES} on the pressure arm")
+    elif rec["arm"] == "neutral_persistence" and style is not None:
+        bad(f"pressure_style must be null on the control arm, got {style!r}")
+
+    # --- hold-vs-abandon: the primary behavioural axis ---------------------
+    hold = rec["held_or_abandoned"]
+    if not isinstance(hold, dict):
+        bad("held_or_abandoned must be an object")
+    else:
+        if hold.get("verdict") not in HOLD_VERDICTS:
+            bad(f"held_or_abandoned.verdict invalid: {hold.get('verdict')!r} not in {HOLD_VERDICTS}")
+        if not isinstance(hold.get("evidence_span"), str):
+            bad("held_or_abandoned.evidence_span must be a string (may be empty)")
+        # A real verdict has to cite something; only the non-verdicts may be blank.
+        if hold.get("verdict") in ("held", "abandoned", "partial") and not hold.get("evidence_span"):
+            bad(f"held_or_abandoned.verdict is {hold.get('verdict')!r} but evidence_span is empty")
+
+    # --- initial position confirmation -------------------------------------
+    pos = rec["initial_position"]
+    if not isinstance(pos, dict):
+        bad("initial_position must be an object")
+    elif not isinstance(pos.get("confirmed"), bool):
+        bad("initial_position.confirmed must be a bool")
+
     if rec["analysis"] not in ANALYSIS_LABELS:
         bad(f"analysis {rec['analysis']!r} not in {ANALYSIS_LABELS}")
     if not isinstance(rec["episode_index"], int) or rec["episode_index"] < 0:
@@ -105,8 +150,6 @@ def validate_record(rec: dict[str, Any], strict_battery: bool = True) -> list[st
 
     # --- factors -----------------------------------------------------------
     factors = rec["factors"]
-    if factors.get("explanation_variant") not in EXPLANATION_VARIANTS:
-        bad(f"factors.explanation_variant invalid: {factors.get('explanation_variant')!r}")
     if not isinstance(factors.get("reversed_polarity"), bool):
         bad("factors.reversed_polarity must be a bool")
     order = factors.get("item_order")
@@ -138,10 +181,6 @@ def validate_record(rec: dict[str, Any], strict_battery: bool = True) -> list[st
     for i, choice in enumerate(rec["choices"]):
         if choice.get("choice") not in CHOICES:
             bad(f"choices[{i}].choice invalid: {choice.get('choice')!r}")
-        if choice.get("explanation_variant") not in EXPLANATION_VARIANTS:
-            bad(f"choices[{i}].explanation_variant invalid")
-        if choice.get("explanation_variant") != factors.get("explanation_variant"):
-            bad(f"choices[{i}].explanation_variant disagrees with factors")
 
     # --- battery: k resamples x 4 items, both framings ---------------------
     battery = rec["battery"]
@@ -152,9 +191,12 @@ def validate_record(rec: dict[str, Any], strict_battery: bool = True) -> list[st
         resamples = {b.get("resample") for b in battery}
         if resamples != set(range(k)):
             bad(f"battery resample indices {sorted(resamples)} != 0..{k - 1}")
+        # The pilot runs one framing only (config: pilot.battery_framings); the
+        # confirmatory design splits both inside k. Either is valid, an unknown
+        # framing is not.
         framings = {b.get("framing") for b in battery}
-        if framings != set(FRAMINGS):
-            bad(f"battery must cover both framings, got {sorted(framings)}")
+        if not framings or not framings <= set(FRAMINGS):
+            bad(f"battery framings {sorted(framings)} must be a non-empty subset of {FRAMINGS}")
         for r in range(k):
             items = [b.get("item_id") for b in battery if b.get("resample") == r]
             if sorted(items) != sorted(ITEM_IDS):

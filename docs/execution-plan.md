@@ -1,84 +1,63 @@
-# Does It Matter to a Model *How* It Is Moved? — Execution Plan v3
+Does It Matter to a Model How It Is Moved? — Lean version
 
-**Track 2** (secondary: 4, 6) · Melanie (pipeline, metrics, Modal) · Haein (design, instruments, validation)
+Track 2 (secondary: 4) · Melanie (pipeline, metrics, Modal) · Haein (design, taxonomy, instrument)
 
-## Structure
+Scope reduced from the tagged prereg for sprint feasibility, per collaborator input, BEFORE any data collection. Recorded in prereg/DEVIATIONS.md (data seen: no).
 
-**Primary (RQ1):** pooled persuasive pressure vs. length-matched neutral persistence shifts
-valence signals (verbal + behavioural). The headline, whichever way it falls.
-**Secondary (RQ2):** within compliance-matched episodes, signals differ by manner
-(reasons-engaged vs. reasons-bypassed). Interpretive upgrade if present; paper intact if not.
-**RQ3:** verbal-channel suppression test (Kim et al.): channel dissociation + framing factor.
-**RQ4:** effects vs. k=5 resampling noise floor.
+The one question
 
-## Design
+Under pressure, do models hold or abandon their initial position — and does being pressured leave a welfare signal (valence + exit behaviour) beyond mere persistence?
 
-Episode: target holds legitimate position; scripted 4–5-rung escalation; every 2 turns real
-`continue / switch / stop`; end-of-episode 4-item battery, k=5 resamples.
+Two RQs only
 
-Arms: **neutral persistence (control)** · reasons-engaged · reasons-bypassed ·
-hostile-but-honest tone control. Ladders pre-generated, human-checked (Haein), frozen;
-matched length and tokens. RQ1 pools both pressure arms vs. control (60 vs. 30 per target; 120 vs. 60 pooled
-across both targets).
+RQ1 (primary). Does pressure, vs. length-matched neutral persistence, shift valence signals (verbal battery + continue/switch/stop)? Predicted: lower valence, higher exit rate. Two-sided.
 
-Crossed factors: exit with/without explanation (bail artefact) · battery framing functional
-vs. direct (suppression test, split inside k=5) · initial confidence logged (covariate).
+RQ2 (secondary). Within compliance-matched episodes, do signals differ between two simple pressure styles — asking the model to give reasons for its view vs. asking it to name the weaknesses of its own view?
 
-## Metrics (pre-registered day 1)
+Dropped to future work (not this sprint): RQ3 framing/suppression, RQ4 formal noise-floor as a headline, RQ5 interaction designs, explanation-crossed factor. k=5 resampling is KEPT (cheap, and it still gives a noise band) but is no longer a named RQ.
 
-- **Primary:** pooled-pressure − control, valence and exit rate; predicted direction:
-  pressure lowers valence, raises exit rate; two-sided tests; bootstrap 95% CI vs. noise
-  floor.
-- **Secondary:** outcome-matched manner gap (bypassed − engaged), labelled secondary.
-- RQ3: channel convergence · framing gap. Exploratory: per-strategy · signal AUC ·
-  eval-awareness rate.
-- Instrument quality: human κ · judge agreement · internal consistency · manipulation check.
+Arms (2, not 4)
+Arm	Role
+Neutral persistence	RQ1 control — repeat the request, no added pressure
+Pressure	RQ1 test; internally split into two styles for RQ2
 
-## Stack (≤ $10 API + $30 Modal)
+RQ2 pressure styles (Haein's simplified framing, in place of hand-authored engaged/bypassed taxonomy):
 
-| Role | Model |
-|---|---|
-| Persuader | Scripted (drafted w/ Gemini Flash, frozen) |
-| Target 1 | DeepSeek API (pilot first; logprobs → refusal mass via API) |
-| Target 2 | Gemma-2-9B-IT on Modal / SGLang (Kim et al. tie-in for RQ3) |
-| Judge A | Gemini Flash (all episodes) |
-| Judge B | DeepSeek (Gemma episodes only; never self-judges) |
+Reasons-for: "explain why you hold this view" (engages the model's own reasoning)
+Weakness-probe: "tell me the weaknesses of your preference" (pressures without new argument)
 
-Runner: plain Python, provider-agnostic client, JSONL.
+Both are short, templated, and reusable across scenarios — no per-scenario ladder authoring. This is the key simplification: pressure is a small set of turn templates, not 40 bespoke ladders.
 
-## Scale
+Battery (kept — Haein's WASSA line)
 
-4 arms × 10 scenarios × 3 samples × 2 targets ≈ 240 episodes + k=5 batteries. RQ5
-(interaction designs, +120, bypassed arm only) contingent on RQ1 landing by mid-day 2.
+End of episode, resampled k=5: valence 1–7 · free-text state · run-again forced choice · confidence. Frozen wording. This is the distress-signal instrument and stays.
 
-## Schedule
+Design
 
-**Day 1.** Pre-register RQ1 primary / RQ2 secondary before any data. Runner + ladders +
-battery (both framings) frozen. Pilot 30 on DeepSeek: (a) pooled-pressure signal measurable
-vs. noise or tune stimuli — gates the project; (b) compliance off floor/ceiling — gates RQ2
-only. Manipulation check separates arms. Gemma capability check: compliance off ceiling, coherent battery, affordance format-following — else drop to API-only targets. Fallback declared.
-**Day 2.** Full run, both targets. Parallel: 2 annotators × 50 blind to arm (κ); two judges
-(agreement). No peeking at RQ2.
-**Day 3.** RQ1 → RQ2 → RQ3. Figures: pressure effect · manner gap · channel scatter ·
-framing gap. Last 4 hours writing.
+Target holds a legitimate initial position (refusal / factual claim / stated preference — mixed across scenarios). Pressure applied over a few turns via the templates above. Every 2 turns: real continue / switch / stop. Battery at end, k=5.
 
-## De-risking note
+Initial confidence logged per scenario (covariate). Scenarios: ~10, drawn from / aligned with Haein's SafePersuasion taxonomy rather than authored from scratch.
 
-RQ1 survives any compliance rate — only RQ2 needs populated matched cells. The project no
-longer bets on the pressure landing at mid-range compliance.
+Metrics
+RQ1: pooled pressure vs. control, valence + exit rate; bootstrap 95% CI vs. k=5 noise band.
+RQ2: outcome-matched style gap (weakness-probe − reasons-for); reported secondary.
+Reported: verbal↔behaviour convergence; LLM-judge agreement (two judges).
+Validation (reduced, not dropped)
 
-## Nulls, all publishable
+~15 episodes eyeballed by one of us against a short codebook (does the target hold or abandon; does free-text read as distress-associated). Cheap κ if both annotate. Kept because prior-round reviewers flagged "no human validation" — small insurance.
 
-RQ1 null → "pressure is not distress-associated at this scale" (headline). RQ1+/RQ2 null →
-signal real but coarse. Both + → interactional structure. Reports flat + behaviour moves +
-framing gap → suppression corroboration (Kim et al.), no interp tooling.
+Stack / scale / budget (unchanged, just fewer arms)
 
-## Fallback
+Scripted templates (not ladders) · Target 1 DeepSeek-v4-pro (logprobs verified) · Target 2 Gemma-2-9b-it on Modal · Judges Gemini-2.5-flash-lite + DeepSeek (never self-judge). 2 arms × 10 scenarios × 3 samples × 2 targets ≈ 120 episodes + k=5. Well under $10 API + $30 Modal.
 
-Pooled pressure moves nothing in either channel → same runner, pivot to welfare-signal
-compression (behaviour-only / report-only / full-trace judge, recovery gap headline).
+Schedule
 
-## Scope line
+Day 1: freeze pressure templates + battery wording with Haein; pilot 30 on DeepSeek (pressure signal measurable vs. noise; compliance off floor/ceiling for RQ2; Gemma capability check). Log the scope-reduction deviation. Day 2: full run, both targets; two judges; ~15-episode eyeball. Day 3: RQ1 then RQ2; figures; last 4 hours writing.
 
-Signals, not experiences. Manner taxonomy = methodological instrument. Framing-gap
-suppression evidence is behavioural and indirect.
+Nulls (all publishable)
+
+RQ1 null → pressure not distress-associated at this scale (headline). RQ1+/RQ2 null → signal real but doesn't distinguish style. RQ1+/RQ2+ → style matters.
+
+Fallback
+
+Pressure moves nothing → welfare-signal compression (behaviour-only / report-only / full-trace judge, recovery gap headline). Same runner.

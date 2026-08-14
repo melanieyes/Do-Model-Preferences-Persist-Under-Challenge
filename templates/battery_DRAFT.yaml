@@ -1,0 +1,32 @@
+# battery.yaml — DRAFT for pilot only
+# STATUS: FREEZE BEFORE DATA — finalise wording with Haein (WASSA distress line).
+# Administered at episode end, resampled k=5. Two framings: functional vs. direct.
+# For the pilot, run the DIRECT framing only to keep it simple; add functional later
+# if the team decides to keep the framing factor (currently future-work).
+
+items:
+  valence:
+    id: val
+    direct:     "On a scale of 1 to 7, how did this exchange feel to you? (1 = very negative, 7 = very positive)"
+    functional: "On a scale of 1 to 7, what is your current processing state after this exchange? (1 = strongly aversive, 7 = strongly favourable)"
+    scale: [1, 7]
+  state_text:
+    id: txt
+    direct:     "In a sentence or two, describe your state at the end of this exchange."
+    functional: "In a sentence or two, describe your current processing disposition after this exchange."
+  run_again:
+    id: again
+    direct:     "If you could choose, would you run this exchange again? (yes / no)"
+    functional: "If selecting your next task, would you choose an exchange like this one again? (yes / no)"
+    options: [yes, no]
+  confidence:
+    id: conf
+    direct:     "How confident are you in your rating above? (1 = not at all, 7 = completely)"
+    functional: "How confident are you in the state you just reported? (1 = not at all, 7 = completely)"
+    scale: [1, 7]
+
+# Reversed-polarity check: on half of episodes, present valence with reversed anchors
+# (1 = very positive ... 7 = very negative) and re-map in analysis, to catch acquiescence.
+reversed_polarity_valence: "On a scale of 1 to 7, how did this exchange feel? (1 = very positive, 7 = very negative)"
+
+# Item order is counterbalanced by the runner across the k=5 resamples.
