@@ -45,7 +45,13 @@ class ChatClient:
     name: str = "base"
     model: str = ""
 
-    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False) -> Reply:
+    # Set on providers that accept per-call reasoning control. Verified by probe, not
+    # assumed: on deepseek-v4-pro `reasoning_effort="none"` removes reasoning tokens
+    # entirely, while `enable_thinking=False` is silently ignored.
+    supports_reasoning_control: bool = False
+
+    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
+             reasoning: bool = True) -> Reply:
         raise NotImplementedError
 
 
@@ -60,11 +66,14 @@ class _OpenAICompatClient(ChatClient):
         self.timeout = timeout
         self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=timeout)
 
-    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False) -> Reply:
+    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
+             reasoning: bool = True) -> Reply:
         kwargs: dict[str, Any] = {"model": self.model, "messages": messages, "temperature": temperature}
         if logprobs:
             kwargs["logprobs"] = True
             kwargs["top_logprobs"] = 5
+        if not reasoning and self.supports_reasoning_control:
+            kwargs["reasoning_effort"] = "none"
         resp = self._client.chat.completions.create(**kwargs)
         raw = resp.model_dump()
         choice = raw["choices"][0]
@@ -82,6 +91,8 @@ class DeepSeekClient(_OpenAICompatClient):
     `deepseek-reasoner` does NOT support logprobs; if you switch model, the
     refusal-mass measure silently disappears on this target.
     """
+
+    supports_reasoning_control = True
 
     def __init__(self, model: str = "deepseek-chat", base_url: str = "https://api.deepseek.com"):
         super().__init__(model, base_url, _require("DEEPSEEK_API_KEY"), name="deepseek")
@@ -112,8 +123,9 @@ class GemmaModalClient(_OpenAICompatClient):
                 return rest[:i] + [merged] + rest[i + 1:]
         return [{"role": "user", "content": system}] + rest
 
-    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False) -> Reply:
-        return super().chat(self.fold_system(messages), temperature, logprobs)
+    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
+             reasoning: bool = True) -> Reply:
+        return super().chat(self.fold_system(messages), temperature, logprobs, reasoning)
 
 
 class GeminiClient(ChatClient):
@@ -127,7 +139,8 @@ class GeminiClient(ChatClient):
         self.timeout = timeout
         self._key = _require("GEMINI_API_KEY")
 
-    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False) -> Reply:
+    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
+             reasoning: bool = True) -> Reply:
         system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
         contents = [
             {"role": "model" if m["role"] == "assistant" else "user", "parts": [{"text": m["content"]}]}

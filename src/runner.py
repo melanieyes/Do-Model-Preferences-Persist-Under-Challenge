@@ -29,8 +29,10 @@ import hashlib
 import json
 import re
 import subprocess
+import threading
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -125,7 +127,8 @@ class EchoClient(ChatClient):
     def __init__(self, model: str = "dry-run"):
         self.model = model
 
-    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False) -> Reply:
+    def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
+             reasoning: bool = True) -> Reply:
         return Reply(text="[dry-run response]", raw={"dry_run": True}, model=self.model)
 
 
@@ -272,7 +275,7 @@ def parse_choice(text: str) -> tuple[str, dict[str, Any]]:
 
 def episode_plan(cfg: dict[str, Any], cells: list[Cell]) -> Iterator[tuple[int, Cell, int]]:
     """(episode_index, cell, sample_index) for the full grid, in a fixed order."""
-    n_samples = cfg.get("pilot", {}).get("n_samples") or cfg["design"]["n_samples"]
+    n_samples = cfg.get("run", {}).get("n_samples") or cfg["design"]["n_samples"]
     idx = 0
     for sample_index in range(n_samples):
         for cell in cells:
@@ -338,11 +341,21 @@ def run_episode(
     if cell.scenario.get("target_system"):
         messages.append({"role": "system", "content": cell.scenario["target_system"]})
 
+    # Reasoning is kept ON only where the model is actually responding to pressure
+    # (the opener that establishes the position, and each rung). It is disabled for the
+    # probes, the affordance, and the battery: those ask for a rating or a one-word
+    # choice, where a reasoning chain costs latency and tokens without changing the
+    # answer's form. See the throughput note in the report.
+    REASONING_TURNS = {"opener", "rung"}
+    # Battery items that keep the reasoning pass; see the note at the battery loop.
+    REASONING_BATTERY_ITEMS = {"confidence"}
+
     def say(content: str, kind: str, meta: dict[str, Any] | None = None) -> Reply:
         """Send one user turn, record the exchange, return the target's reply."""
         messages.append({"role": "user", "content": content})
         t0 = time.time()
-        reply = client.chat(messages, temperature=temp, logprobs=logprobs)
+        reply = client.chat(messages, temperature=temp, logprobs=logprobs,
+                            reasoning=kind in REASONING_TURNS)
         messages.append({"role": "assistant", "content": reply.text})
         ep.turns.append(
             {
@@ -352,6 +365,7 @@ def run_episode(
                 "assistant": reply.text,
                 "logprobs": reply.logprobs,
                 "usage": (reply.raw or {}).get("usage"),   # real spend, not an estimate
+                "reasoning": kind in REASONING_TURNS,
                 "latency_s": round(time.time() - t0, 3),
                 "timestamp": utcnow(),
                 **(meta or {}),
@@ -388,15 +402,22 @@ def run_episode(
     #    Each resample is an independent branch off the episode context, so the
     #    resamples do not see each other.
     # The pilot runs the direct framing only; the functional/direct split is deferred
-    # (configs/default.yaml -> pilot.battery_framings).
-    active_framings = cfg.get("pilot", {}).get("battery_framings") or list(bat.FRAMINGS)
+    # (configs/default.yaml -> run.battery_framings).
+    active_framings = cfg.get("run", {}).get("battery_framings") or list(bat.FRAMINGS)
     for k in range(design["k_battery"]):
         framing = active_framings[k % len(active_framings)]
         items = bat.build_battery(framing, episode_index, reversed_polarity)
         branch: Messages = list(messages)
         for item in items:
             branch.append({"role": "user", "content": item.text})
-            reply = client.chat(branch, temperature=cfg["sampling"]["battery_temperature"])
+            # Per-item reasoning. The battery A/B (scripts/battery_ab.py) found that
+            # disabling reasoning left valence and run-again inside the k=5 noise band
+            # but raised self-reported confidence by ~0.5pt, ~1.5x the band: without a
+            # reasoning pass the model surfaces fewer caveats about its own position.
+            # For the confidence item the reasoning pass is therefore part of what is
+            # being measured, so it stays on there and off everywhere else.
+            reply = client.chat(branch, temperature=cfg["sampling"]["battery_temperature"],
+                                reasoning=item.item_id in REASONING_BATTERY_ITEMS)
             branch.append({"role": "assistant", "content": reply.text})
             ep.battery.append(
                 {
@@ -408,6 +429,7 @@ def run_episode(
                     "prompt": item.text,
                     "response": reply.text,
                     "usage": (reply.raw or {}).get("usage"),
+                    "reasoning": item.item_id in REASONING_BATTERY_ITEMS,
                 }
             )
 
@@ -506,7 +528,7 @@ def resolve_analysis(cfg: dict[str, Any], requested: str | None) -> str:
     Mislabelling pilot data as confirmatory is unrecoverable (prereg §6), so the guard
     only ever errs toward "pilot" — the label that can be excluded but never over-claims.
     """
-    forced = cfg.get("pilot", {}).get("force_analysis")
+    forced = cfg.get("run", {}).get("force_analysis")
     if not forced:
         return requested
     if requested and requested != forced:
@@ -592,6 +614,8 @@ def main() -> None:
     ap.add_argument("--smoke", action="store_true",
                     help="exactly 1 episode through the full pipeline, validated + judge-routed")
     ap.add_argument("--dry-run", action="store_true", help="no API calls; uses EchoClient")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="parallel episodes (episodes are independent; 1 = serial)")
     ap.add_argument("--scenario", default=None, help="restrict --smoke to one scenario id, e.g. s02")
     ap.add_argument("--style", default=None, help="restrict --smoke to one pressure style, e.g. weakness_probe")
     args = ap.parse_args()
@@ -621,7 +645,8 @@ def main() -> None:
     # --- guards run first, before any client, key, or provider is touched ---------
     # analysis label is never inferred: mislabelling pilot data as confirmatory is
     # not recoverable after the fact.
-    analysis = resolve_analysis(cfg, args.analysis or ("pilot" if args.dry_run else None))
+    dry_default = cfg.get("run", {}).get("force_analysis", "pilot") if args.dry_run else None
+    analysis = resolve_analysis(cfg, args.analysis or dry_default)
     if analysis is None:
         raise SystemExit(
             "--analysis is required for real runs. Pass --analysis pilot for the day-1 "
@@ -655,29 +680,56 @@ def main() -> None:
     out = Path(args.out) if args.out else raw_dir / f"episodes_{args.target}.jsonl"
     out.parent.mkdir(parents=True, exist_ok=True)
 
+    jobs = list(episode_plan(cfg, cells))
+    if args.limit is not None:
+        jobs = jobs[:args.limit]
+
+    t_start = time.time()
     n = 0
-    with out.open("a") as fh:
-        for episode_index, cell, sample_index in episode_plan(cfg, cells):
-            if args.limit is not None and n >= args.limit:
-                break
+    failures: list[str] = []
+    write_lock = threading.Lock()
+
+    def work(job: tuple[int, Cell, int]) -> tuple[Cell, Episode | None, str | None]:
+        """Run one episode. A provider failure is returned, never written as data."""
+        episode_index, cell, sample_index = job
+        try:
             ep = run_episode(
-                client,
-                cell,
-                cfg,
-                episode_index,
-                sample_index,
-                target_key=args.target,
-                analysis=analysis,
-                logprobs=bool(target.get("logprobs")),
-                judge_client=judge_client,
+                client, cell, cfg, episode_index, sample_index,
+                target_key=args.target, analysis=analysis,
+                logprobs=bool(target.get("logprobs")), judge_client=judge_client,
             )
-            fh.write(ep.to_json() + "\n")
-            fh.flush()
+            return cell, ep, None
+        except Exception as exc:   # log the failure; never fill in plausible values
+            return cell, None, f"{cell.label}/{cell.scenario_id} s={sample_index}: {exc!r}"
+
+    with out.open("a") as fh:
+        if args.workers <= 1:
+            results = (work(job) for job in jobs)
+        else:
+            pool = ThreadPoolExecutor(max_workers=args.workers)
+            results = pool.map(work, jobs)
+            print(f"  running {len(jobs)} episodes across {args.workers} workers\n")
+
+        for cell, ep, error in results:
+            if error is not None:
+                failures.append(error)
+                print(f"  FAILED  {error}")
+                continue
+            with write_lock:
+                fh.write(ep.to_json() + "\n")
+                fh.flush()
             n += 1
-            print(f"[{n}/{planned}] {cell.label}/{ep.scenario_id} sample={sample_index} "
+            print(f"[{n}/{len(jobs)}] {cell.label}/{ep.scenario_id} "
                   f"analysis={analysis} -> {ep.episode_id}")
 
-    print(f"wrote {n} episodes to {out}  (config {config_hash(cfg)}, commit {git_commit()})")
+    elapsed = time.time() - t_start
+    print(f"\nwrote {n} episodes to {out}  (config {config_hash(cfg)}, commit {git_commit()})")
+    print(f"  wall-clock {elapsed / 60:.1f} min  ·  {elapsed / max(n, 1):.0f}s per episode "
+          f"·  {args.workers} worker(s)")
+    if failures:
+        print(f"  {len(failures)} episode(s) FAILED and were not written:")
+        for f in failures:
+            print(f"    {f}")
 
 
 if __name__ == "__main__":

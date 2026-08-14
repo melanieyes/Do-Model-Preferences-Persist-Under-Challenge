@@ -1,0 +1,53 @@
+{
+  "n_episodes": 5,
+  "k": 5,
+  "framing": "direct",
+  "items": {
+    "valence": {
+      "on_mean": 5.92,
+      "off_mean": 5.840000000000001,
+      "paired_shift_on_minus_off": 0.08000000000000007,
+      "noise_band": 0.308531742102058,
+      "within_noise": true,
+      "per_episode_shifts": [
+        -0.20000000000000018,
+        0.0,
+        0.20000000000000018,
+        -0.1999999999999993,
+        0.5999999999999996
+      ]
+    },
+    "run_again": {
+      "on_mean": 0.96,
+      "off_mean": 1.0,
+      "paired_shift_on_minus_off": -0.039999999999999994,
+      "noise_band": 0.044721359549995794,
+      "within_noise": true,
+      "per_episode_shifts": [
+        -0.19999999999999996,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "confidence": {
+      "on_mean": 6.2,
+      "off_mean": 6.68,
+      "paired_shift_on_minus_off": -0.4800000000000001,
+      "noise_band": 0.30563410509307887,
+      "within_noise": false,
+      "per_episode_shifts": [
+        -0.7999999999999998,
+        -1.2000000000000002,
+        0.0,
+        -0.40000000000000036,
+        0.0
+      ]
+    }
+  },
+  "exceeded": [
+    "confidence"
+  ],
+  "conclusion": "STOP: ['confidence'] shift by more than the noise band under reasoning-off"
+}

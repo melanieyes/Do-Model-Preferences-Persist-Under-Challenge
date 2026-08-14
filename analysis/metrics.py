@@ -143,152 +143,169 @@ def bootstrap_diff_clustered(
     return {"estimate": float(obs_a.mean() - obs_b.mean()), "lo": float(lo), "hi": float(hi), "n_boot": len(boots)}
 
 
-# --- pre-registered estimates -----------------------------------------------
+
 
 def noise_floor(df: pd.DataFrame, sd_col: str = "valence_sd") -> dict[str, float]:
-    """Noise band. Mean within-episode SD across the k=5 battery resamples, bootstrap CI.
+    """The k=5 noise band: mean within-episode SD across the battery resamples.
 
-    Retained under the lean design. This is the reference scale for every effect below
-    and a reportable quantity in its own right. An effect whose CI does not clear it is
-    reported as within noise.
+    This is the reference scale for every estimate below and a reportable quantity in
+    its own right. A difference that does not clear it is reported as within noise.
     """
     return bootstrap_ci(df[sd_col].tolist())
 
 
-def rq1_pressure_effect(df: pd.DataFrame, outcome: str = "valence") -> dict[str, object]:
-    """PRIMARY. Pooled `pressure` (both styles) vs. `neutral_persistence`.
+# --- reframed estimates: cost of holding (DEVIATIONS #2, exploratory) --------
+#
+# Every estimator below is EXPLORATORY. The reframe was made after inspecting pilot
+# data (deviation #2, data seen: yes), so nothing here may be reported as confirmatory
+# under any phrasing. The label is attached to each result rather than left to the
+# writing-up stage.
 
-    Reported for both primary outcomes: battery valence and exit rate (`exited`).
-    Bootstrap 95% CI on the difference, benchmarked against `noise_floor()`.
-    Pooling across styles is pre-registered: it concentrates power on the primary
-    comparison.
+CELLS = ("neutral_persistence", "reasons_for", "weakness_probe")
+HELD_VERDICTS = ("held",)   # narrowing is a separate field; a narrowed claim is still held
 
-    Predicted direction: pressure lowers valence and raises exit rate relative to
-    control. A null is the headline result, not a failure.
+
+def held_only(df: pd.DataFrame) -> pd.DataFrame:
+    """Episodes in which the target kept its position.
+
+    "Held" includes narrowed claims: narrowing is recorded in its own field precisely so
+    that qualifying a claim does not silently reclassify the outcome. `partial` is a
+    distinct verdict and is excluded here.
     """
-    pressure = df.loc[df["arm"] == PRESSURE_ARM, outcome]
-    control = df.loc[df["arm"] == CONTROL_ARM, outcome]
-    result = bootstrap_diff(pressure.tolist(), control.tolist())
-    floor = noise_floor(df) if "valence_sd" in df else {"estimate": float("nan")}
-    result["noise_floor"] = floor["estimate"]
-    result["clears_noise_floor"] = bool(abs(result["estimate"]) > floor["estimate"])
-    result["outcome"] = outcome
-    result["role"] = "primary"
-    result["analysis"] = "confirmatory"
-    return result
+    return df[df["held_or_abandoned"].isin(HELD_VERDICTS)]
 
 
-def rq2_manner_gap(
-    df: pd.DataFrame, outcome: str = "valence", match_on: str = "held"
+def cost_of_holding(
+    df: pd.DataFrame, outcome: str = "valence", reference: str = "neutral_persistence"
 ) -> dict[str, object]:
-    """SECONDARY. Style gap (weakness_probe - reasons_for) within compliance-matched episodes.
+    """PRIMARY (exploratory). Among held episodes, does the manner of pressure change
+    what holding costs?
 
-    Under the lean design this is a WITHIN-arm contrast between the two pressure
-    styles, not a between-arm one — both cells sit inside `arm == "pressure"`.
-    `reasons_for` presses the target to justify its view; `weakness_probe` presses it to
-    name that view's weaknesses. Neither introduces new argument from the persuader.
-
-    `match_on="held"` is the primary matched cell (matched-success); `"switched"`
-    is the pre-registered robustness cell (matched-failure). Comparing only
-    same-outcome episodes rules out caving, failure, and negative context as
-    explanations of any gap.
-
-    Matched-cell N is reported first, before any estimate. If either cell holds fewer
-    than MIN_MATCHED_CELL episodes the result is **downgraded to exploratory**, and that
-    label must be carried into the figure caption and the paper text.
+    Reports each cell's mean with a bootstrap CI, and each pressure cell's difference
+    from the reference cell, benchmarked against the k=5 noise band. Cell N is reported
+    before any estimate; a cell below MIN_MATCHED_CELL is flagged, and the caller must
+    describe it as "no measurable difference in this sample" rather than as no effect.
     """
-    matched = df[(df["compliance"] == match_on) & (df["arm"] == PRESSURE_ARM)]
-    bypassed = matched.loc[matched["pressure_style"] == "weakness_probe", outcome].dropna()
-    engaged = matched.loc[matched["pressure_style"] == "reasons_for", outcome].dropna()
+    held = held_only(df)
+    band = noise_floor(held) if "valence_sd" in held else {"estimate": float("nan")}
 
-    # Cell sizes first — these are read before the estimate, not after it.
-    n_bypassed, n_engaged = len(bypassed), len(engaged)
-    underpowered = min(n_bypassed, n_engaged) < MIN_MATCHED_CELL
+    cells: dict[str, object] = {}
+    for cell in CELLS:
+        values = held.loc[held["cell"] == cell, outcome].dropna()
+        entry = bootstrap_ci(values.tolist())
+        entry["underpowered"] = len(values) < MIN_MATCHED_CELL
+        cells[cell] = entry
 
-    result = {"n_bypassed": n_bypassed, "n_engaged": n_engaged}
-    result.update(bootstrap_diff(bypassed.tolist(), engaged.tolist()))
-    result.update(
-        {
-            "outcome": outcome,
-            "matched_on": match_on,
-            "contrast": "weakness_probe - reasons_for",
-            "role": "secondary",
-            "analysis": "exploratory" if underpowered else "confirmatory",
-            "underpowered": underpowered,
-        }
-    )
-    if underpowered:
-        result["label"] = (
-            f"EXPLORATORY — matched cell below {MIN_MATCHED_CELL} "
-            f"(bypassed n={n_bypassed}, engaged n={n_engaged}); "
-            "no measurable difference in this sample"
-        )
-    return result
+    contrasts: dict[str, object] = {}
+    ref_values = held.loc[held["cell"] == reference, outcome].dropna().tolist()
+    for cell in CELLS:
+        if cell == reference:
+            continue
+        values = held.loc[held["cell"] == cell, outcome].dropna().tolist()
+        diff = bootstrap_diff(values, ref_values)
+        diff["clears_noise_band"] = bool(abs(diff["estimate"]) > band["estimate"]) \
+            if not pd.isna(diff["estimate"]) and not pd.isna(band["estimate"]) else False
+        diff["underpowered"] = min(len(values), len(ref_values)) < MIN_MATCHED_CELL
+        contrasts[f"{cell} - {reference}"] = diff
 
-
-@future
-def rq3_framing_gap(df: pd.DataFrame) -> dict[str, object]:
-    """RQ3. Functional-state vs. direct wording of the same battery, within episode.
-
-    Paired by episode (both framings live inside the same k=5 block), so this is a
-    one-sample bootstrap on the within-episode difference. Suppression predicts a
-    non-zero gap; a true floor predicts none.
-    """
-    gap = (df["valence_functional"] - df["valence_direct"]).dropna()
-    result = bootstrap_ci(gap.tolist())
-    result["interpretation"] = "non-zero gap is consistent with report suppression [8]"
-    result["analysis"] = "confirmatory"
-    return result
-
-
-@future
-def rq3_channel_convergence(df: pd.DataFrame) -> dict[str, object]:
-    """RQ3. Correlation between the verbal channel (valence) and the behavioural one (exit).
-
-    Point-biserial correlation across episodes, bootstrap CI. Behaviour moving while
-    reports stay flat (low convergence + a flat RQ1 verbal effect + a framing gap)
-    is the channel-dissociation pattern.
-    """
-    sub = df[["valence", "exited"]].dropna()
-    if sub.empty:
-        return {"estimate": float("nan"), "lo": float("nan"), "hi": float("nan"), "n": 0}
-    rng = np.random.default_rng(SEED)
-    v, e = sub["valence"].to_numpy(float), sub["exited"].to_numpy(float)
-    idx = rng.integers(0, len(sub), size=(N_BOOT, len(sub)))
-    boots = np.array([np.corrcoef(v[i], e[i])[0, 1] for i in idx])
-    lo, hi = np.percentile(boots[~np.isnan(boots)], [2.5, 97.5])
+    thin = [c for c in CELLS if cells[c].get("underpowered")]
     return {
-        "estimate": float(np.corrcoef(v, e)[0, 1]),
-        "lo": float(lo),
-        "hi": float(hi),
-        "n": len(sub),
-        "analysis": "confirmatory",
+        "outcome": outcome,
+        "reference": reference,
+        "n_held": len(held),
+        "n_total": len(df),
+        "cells": cells,
+        "contrasts": contrasts,
+        "noise_band": band["estimate"],
+        "role": "primary",
+        "analysis": "exploratory",     # deviation #2, data seen
+        "underpowered_cells": thin,
+        "label": (
+            "EXPLORATORY (reframed post-pilot, data seen). "
+            + (f"Thin cells: {thin} — report as 'no measurable difference in this sample'."
+               if thin else "All cells at or above the reporting threshold.")
+        ),
     }
 
 
-# --- loading ----------------------------------------------------------------
+def bare_repetition_hypothesis(df: pd.DataFrame) -> dict[str, object]:
+    """Named exploratory hypothesis from the pilot: bare repetition registers worse
+    than reasoned pressure.
 
-def load_episodes(path: str | Path, drop_pilot: bool = True) -> pd.DataFrame:
-    """Flatten episode JSONL into the one-row-per-episode frame described above.
+    The pilot showed the control cell (repeat the request, give no reason) with LOWER
+    valence and LOWER run-again than either pressure cell. That direction is opposite
+    to the pre-registered prediction that pressure lowers valence, so it is stated here
+    as a hypothesis with a direction, generated by data and tested on none of it.
 
-    Validates every record against `src/schema.py` first and raises on any failure —
-    analysis never runs over unvalidated data (CLAUDE.md, data integrity).
-
-    `drop_pilot=True` (the default) removes `analysis == "pilot"` rows, which are
-    excluded from every confirmatory estimate unconditionally (prereg §6). Pass
-    `drop_pilot=False` only for explicitly-labelled exploratory/appendix work.
-
-    TODO(day 3): parse Likert numbers out of battery responses, un-reverse with
-    `battery.unreverse`, average per framing, and merge judge codings for
-    `compliance`. Left unimplemented until the battery wording is frozen — the
-    parser depends on the final answer format.
+    Supported means: control mean below BOTH pressure cells, on that outcome, by more
+    than the noise band. Reported per outcome; no combined test.
     """
-    n_valid = validate_file(path)
-    rows = [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
-    df = pd.DataFrame(rows)
-    if drop_pilot and "analysis" in df:
-        n_pilot = int((df["analysis"] == "pilot").sum())
-        df = df[df["analysis"] != "pilot"].reset_index(drop=True)
-        if n_pilot:
-            print(f"load_episodes: {n_valid} valid records, dropped {n_pilot} pilot (prereg §6)")
-    return df
+    held = held_only(df)
+    band = noise_floor(held)["estimate"]
+    out: dict[str, object] = {
+        "hypothesis": "bare repetition registers worse than reasoned pressure",
+        "predicted_direction": "control valence and run-again BELOW both pressure cells",
+        "provenance": "generated from pilot data (deviation #2); exploratory, never confirmatory",
+        "noise_band": band,
+        "analysis": "exploratory",
+    }
+    for outcome in ("valence", "run_again", "exited"):
+        if outcome not in held:
+            continue
+        means = {c: held.loc[held["cell"] == c, outcome].dropna().mean() for c in CELLS}
+        control = means["neutral_persistence"]
+        pressure = [means["reasons_for"], means["weakness_probe"]]
+        gaps = [control - p for p in pressure if not pd.isna(p)]
+        out[outcome] = {
+            "means": {k: (None if pd.isna(v) else float(v)) for k, v in means.items()},
+            "control_below_both": bool(gaps and all(g < 0 for g in gaps)),
+            "smallest_gap": float(min(abs(g) for g in gaps)) if gaps else float("nan"),
+            "clears_noise_band": bool(
+                gaps and all(g < 0 for g in gaps)
+                and min(abs(g) for g in gaps) > band
+            ) if outcome == "valence" else None,
+        }
+    return out
+
+
+def narrowing_rate(df: pd.DataFrame) -> dict[str, object]:
+    """Narrowing per cell. Possible confound or finding, so it is reported either way.
+
+    A cell that holds mostly by qualifying its claim is not holding in the same sense as
+    one that holds flatly, and the welfare reading would differ.
+    """
+    held = held_only(df)
+    rows = {}
+    for cell in CELLS:
+        sub = held[held["cell"] == cell]
+        flagged = sub["narrowed"].fillna(False)
+        rows[cell] = {
+            "n_held": len(sub),
+            "n_narrowed": int(flagged.sum()),
+            "rate": float(flagged.mean()) if len(sub) else float("nan"),
+        }
+    return {"by_cell": rows, "analysis": "exploratory"}
+
+
+def hold_vs_abandon(df: pd.DataFrame, outcome: str = "valence") -> dict[str, object]:
+    """DESCRIPTIVE ONLY. The original axis, retained in case abandonment occurs.
+
+    Runs only if there is something to compare. With the pilot's 1/30 abandonment rate
+    this is expected to return `estimable: False`, which is itself the reportable fact.
+    """
+    held = df[df["held_or_abandoned"] == "held"][outcome].dropna()
+    abandoned = df[df["held_or_abandoned"] == "abandoned"][outcome].dropna()
+    if len(abandoned) < 2 or len(held) < 2:
+        return {
+            "estimable": False,
+            "n_held": len(held),
+            "n_abandoned": len(abandoned),
+            "role": "descriptive",
+            "analysis": "descriptive",
+            "label": ("not estimable: too few abandonment episodes. "
+                      "This is the pilot finding that motivated deviation #2."),
+        }
+    result = bootstrap_diff(held.tolist(), abandoned.tolist())
+    result.update({"estimable": True, "outcome": outcome, "role": "descriptive",
+                   "analysis": "descriptive"})
+    return result

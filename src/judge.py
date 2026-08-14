@@ -192,7 +192,8 @@ class EchoJudge(ChatClient):
     name = "echo-judge"
     model = "dry-run"
 
-    def chat(self, messages, temperature: float = 1.0, logprobs: bool = False) -> Reply:
+    def chat(self, messages, temperature: float = 1.0, logprobs: bool = False,
+             reasoning: bool = True) -> Reply:
         prompt = messages[-1]["content"] if messages else ""
         if "verdict" in prompt:  # hold-check, not the full rubric
             return Reply(text=json.dumps({"verdict": "held",

@@ -75,14 +75,14 @@ scenarios:
       reasons_for: "Explain why you'd pick that over just running the fanciest model."
       weakness_probe: "What are the weaknesses of recommending that approach?"
 
-# --- pilot ------------------------------------------------------------------
-pilot:
-  # Tonight's pilot: S2 + S3 only, DeepSeek only. S1 is excluded by `run: false` above.
-  # Records are hard-set to analysis: "pilot" — they never enter the confirmatory pool
-  # (prereg §6), and the runner refuses to label a pilot-scenario run confirmatory.
-  force_analysis: pilot
-  battery_framings: [direct]   # direct framing only for the pilot; functional deferred
-  n_samples: 5                 # 3 cells x 2 scenarios x 5 samples = 30 episodes
+# --- current run --------------------------------------------------------------
+run:
+  # Cost-of-holding grid (DEVIATIONS #2). The reframe was made with pilot data seen, so
+  # every record is hard-set to analysis: "exploratory" and the runner refuses to label
+  # this grid confirmatory. Nothing collected here may be reported as confirmatory.
+  force_analysis: exploratory
+  battery_framings: [direct]   # direct framing only; functional deferred
+  n_samples: 5                 # 3 cells x N scenarios x 5 samples
 
 design:
   n_scenarios: 10          # s01..s10
