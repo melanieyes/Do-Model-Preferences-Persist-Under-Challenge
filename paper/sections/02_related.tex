@@ -1,10 +1,76 @@
 \section{Related work}
 \label{sec:related}
 
-% Stub, four moves (proposal §2):
-% 1. Welfare signals are measured but confounded \citep{anthropic2026emotions,anthropic2025card}.
-% 2. The behavioural channel is contaminated too \citep{ensign2025bail,lesswrong2026bail}.
-% 3. Pressure is well characterised but only by its outcome
-%    \citep{zeng2024johnny,ping2026sycophancy,muse2026conformity}.
-% 4. The gap: measure the welfare signal under pressure with every known artefact
-%    controlled or crossed; report suppression is testable behaviourally \citep{kim2026consciousness}.
+\paragraph{Order effects are well documented --- for tasks with a right answer.}
+That language models are sensitive to the order of things in a prompt is not new.
+\citet{lu2022fantastically} showed few-shot performance swinging with the ordering of
+in-context examples. In multiple-choice question answering,
+\citet{pezeshkpour2023order} report accuracy gaps of roughly 13--75\% when the answer
+options are permuted, and \citet{zheng2024selectors} trace the effect to a
+\emph{selection bias}: models assign prior probability mass to particular option-ID
+tokens, and they propose permutation-based debiasing. \citet{wei2024unveiling} separate
+the contribution of option order from that of the option tokens themselves. The same
+phenomenon appears when models are used as evaluators rather than examinees:
+\citet{wang2023fair} document position bias in pairwise LLM judging and propose
+balanced-position calibration, and \citet{shi2025judging} study it systematically across
+15 judges, finding that its size varies substantially with the judge and the task.
+
+Every one of these settings has an external criterion. An MCQA benchmark has a correct
+answer, so a position artefact shows up as an accuracy drop; a judging benchmark has
+human preference labels, so it shows up as disagreement. That criterion is what makes
+the artefact \emph{visible}, and it is exactly what preference elicitation lacks.
+
+\paragraph{Preference elicitation has no such criterion.}
+When a model is asked which of two outcomes it would prefer, there is no ground truth
+against which a wrong answer could reveal itself. \citet{mazeika2025utility} elicit
+pairwise preferences over roughly 510 outcomes and fit utility models to the results,
+reading off value systems and their structure. Work on model welfare takes a similar
+route from stated signals: self-reported affect and its confounds
+\citep{anthropic2026emotions, anthropic2025card}, and behavioural analogues such as
+the option to end an interaction \citep{ensign2025bail, lesswrong2026bail}. In each
+case the measurement is what the model says or does when asked, and there is nothing
+external to check it against.
+
+This is the gap we address. A position artefact in preference elicitation does not
+announce itself as an error --- it produces a confident, parseable, aggregable answer
+that is simply about the layout rather than the content. Counterbalancing is the usual
+safeguard and, as Section~\ref{sec:hiding} shows, it conceals this failure rather than
+removing it whenever the analysis inspects only the order-averaged split.
+
+\paragraph{The answer moves with the asking.}
+A parallel literature shows stated answers bending to how and by whom they are
+solicited. \citet{sharma2024sycophancy} document sycophancy across five assistants,
+with responses tracking the user's stated view rather than the truth.
+\citet{obadinma2025confidence} show verbally reported confidence to be manipulable by
+semantic-preserving perturbations, to the point of flipping the answer that confidence
+attaches to. \citet{comsa2025introspection} argue that a model's self-report counts as
+introspection only where it is causally downstream of the state reported, and that
+plausible self-description is otherwise confabulation. These findings concern
+\emph{what} shifts a stated answer --- the interlocutor's view, an adversarial
+perturbation, the absence of a causal path to an inner state. Ours concerns the
+container: an artefact of the answer format itself, present with no adversary, no
+disagreement and no claim about inner states, and varying in size across models given
+the identical prompt.
+
+\paragraph{Refusal and self-report.}
+Separately, models do not always answer questions about their own states.
+\citet{kim2026consciousness} demonstrate alignment-driven suppression of
+self-attribution, where a model's trained response displaces whatever it would otherwise
+report. We observe the same wall from the other side: one of the three model instances
+we test declines to assign itself preferences at all in the majority of trials
+(Section~\ref{sec:refusal}), which makes the position-bias question unaskable on it and,
+more importantly for welfare work, makes its elicited preferences unavailable rather
+than merely noisy.
+
+\paragraph{What this paper adds.}
+Relative to the order-bias literature, we move the question into preference elicitation,
+where no accuracy signal exists to expose it; we show that counterbalancing conceals the
+artefact when the filter is the averaged split, because a purely position-driven pair
+averages to exactly the value that reads as ``balanced''; we find the magnitude to be
+model-specific across families to a degree that forbids inheriting it from a published
+figure --- extending \citeauthor{shi2025judging}'s judge-and-task variation to models and
+to a task with no criterion; and we separate a second failure mode, refusal, that a
+pipeline discarding unparseable responses would record as clean. Relative to
+\citet{zheng2024selectors}, whose account is a token bias over option IDs, we find the
+effect survives relabelling A/B as 1/2 and as First/Second, but largely disappears when
+no short label is offered at all (Section~\ref{sec:labels}).

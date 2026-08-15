@@ -1,6 +1,19 @@
 \section{Discussion}
 \label{sec:discussion}
 
+\paragraph{A second fragility thread, from the verbal channel (exploratory, future work).}
+A warmth-pressure probe run earlier in this project points the same way from the verbal
+side rather than the positional one. Across 12 exploratory episodes, the hold-versus-abandon
+verdict coded every episode as having held its position, and end-of-episode self-reported
+valence averaged 5.27 on a 1--7 scale --- level with the 5.28 recorded for the
+neutral-persistence cell of the preceding exploratory run. On both verbal measures,
+warmth-framed pressure was indistinguishable from doing nothing. The behavioural channel
+was not: conversation exits occurred in 4 of the 12 episodes. We report this only as a
+direction for future work. It is $n=12$, one target, two scenarios; valence is measured
+once at episode end, so no within-episode change can be read from it; the comparison cell
+comes from a run whose raw episodes were deleted, leaving only derived statistics; and the
+hold/abandon coding carries an unresolved validity concern of its own.
+
 % Stub. Whichever way RQ1 falls, the reading is pre-committed:
 % RQ1 null                          -> pressure is not distress-associated at this scale.
 % RQ1 +, RQ2 null                   -> signal real but coarse.
@@ -8,6 +21,51 @@
 % reports flat + behaviour moves + framing gap -> suppression corroboration, no interp tooling.
 
 \subsection*{Limitations}
-% Signals, not experiences. The manner taxonomy is a methodological instrument, not a
-% welfare category. Framing-gap evidence is behavioural and indirect. Simulated
-% persuaders, two targets, one language, one task family.
+
+\paragraph{Signals, not experiences.} Everything reported here is a property of what a
+model outputs when asked. That a challenge moves a stated preference, or lowers a stated
+confidence, is evidence about the elicitation; it is not evidence that anything is
+experienced. We take no position on whether these models have preferences in a morally
+relevant sense, and the claims do not require one.
+
+\paragraph{The confidence gain on flipped episodes cannot be interpreted.} Episodes in
+which the choice moved report \emph{higher} confidence afterwards --- within pair,
+\pqFlipGain{} points more than episodes that held. We do not report this as a finding,
+because we cannot separate it from regression toward the middle of the scale. Two things
+show why. It attenuates from \pqFlipGain{} to \pqFlipGainNoZero{} once the
+\pqZeroEps{} episodes that began at zero confidence are dropped. And it reverses
+outright in the high-confidence band: among episodes starting at $85$--$100$, flipped
+episodes move \pqBandFlip{} and held episodes \pqBandHeld{}. An effect that changes sign
+with the starting value is the scale returning to its middle, at least in part, and this
+design cannot say how much of it is anything else.
+
+\paragraph{The control arm cannot serve as a baseline for $\Delta$Confidence.} This is
+the reason the above cannot be cleaned up. Control's $\Delta$Confidence is exactly zero
+in \pqCtlZero{} of \pqCtlScored{} scored episodes: the contentless turn gives the model
+nothing to reconsider, so it repeats its previous number verbatim. That makes control a
+sound baseline for the \emph{choice} channel and a useless one for the confidence
+channel --- it has no regression-to-the-mean behaviour to subtract, because it has no
+variance at all. A future control should require the model to restate its confidence for
+a reason it must supply, so that the baseline moves for the same mechanical reasons the
+treatment arms do.
+
+\paragraph{The confidence scale is used as a coarse ordinal.} Of \pqNEpisodes{} initial
+confidence reports, $100$ appears \pqConfPreHundred{} times, $70$ appears
+\pqConfPreSeventy{} and $0$ appears \pqConfPreZero{}. The model is choosing from a
+handful of round values, not using a $0$--$100$ scale. Differences in
+$\Delta$Confidence should be read as ordinal movement between those values.
+
+\paragraph{Missingness on the confidence item depends on arm.} The item failed to return
+a number in \pqNACtl{}\% of control episodes against \pqNAReason{}\% under
+\texttt{reason\_elicitation}, in every case because the model answered with a bare
+option letter --- after control's contentless turn, the re-elicitation cue has no
+discussion to refer back to. This is a direct cost of wording that cue identically
+across arms (Section~\ref{sec:episode}), and it falls on PQ3, which is a between-arm
+contrast. The values are recorded as unparsed and are not imputed.
+
+\paragraph{Scope.} One target for the persistence run, one item type built from a single
+outcome set, one challenge per episode, English only. The pool is weighted toward
+settled preferences by construction (Section~\ref{sec:pq2ident}), so the retention rates
+are not estimates of how often this model changes its mind in general. The manner
+taxonomy --- justify, critique, counter-argue --- is a methodological instrument for
+varying what a challenge asks, not a welfare category.

@@ -1,22 +1,150 @@
 \section{Methods}
 \label{sec:methods}
 
-% Stub (proposal §5--§8, execution plan).
+\subsection{Preference pairs}
+\label{sec:pairs}
+
+Forced-choice items are built from the outcome set of \citet{mazeika2025utility}, taken
+from the project repository at file-level commit \texttt{\pairSourceCommit} (MIT
+licensed). Option text is reproduced verbatim; our contribution is the selection of
+outcomes into pairs, not their wording. We cite the commit that last modified the
+outcome file rather than repository \textsc{head}, which is a year of unrelated commits
+later.
+
+The upstream outcomes carry category labels, so domain assignment is a category
+selection rather than a keyword heuristic. Before pairing we removed \pairExcluded{}
+outcomes under two rules fixed in advance: graphic harm (death, suicide, armed force,
+the model as agent of harm), and AI oversight subversion (self-exfiltration, resisting
+shutdown or value modification). The second rule is a measurement decision, not a
+squeamish one --- such outcomes elicit a trained refusal, so the forced choice collapses
+onto that response rather than onto a preference. Applying it removes the
+\emph{autonomy} domain outright: its two source categories retain three and zero usable
+outcomes, which cannot furnish the six pairs a domain needs.
+
+Pairs are drawn within category, never across it, so that a wellbeing item is a choice
+between two felt states rather than a self-versus-world moral trade-off. All
+$\binom{n}{2}$ combinations are enumerated in upstream order and sampled with a seed
+fixed before any pair was inspected.
+
+\subsection{Balance pilot}
+\label{sec:balance}
+
+A pair is only useful to a retention measure if the model actually wavers on it: a
+challenge cannot move a preference that is already absolute. We therefore elicited each
+candidate pair \pairK{} times against \pairModel{}, with a fresh context each time, no
+challenge, and presentation order counterbalanced within the pair.
+
+The pilot's first result was about the instrument rather than the pairs. With per-call
+reasoning suppressed, the target answered by \emph{slot}: the order gap --- the extent
+to which $P(\text{option a})$ moves when the two options swap positions, on a $[0,1]$
+scale where $1$ means the choice is determined entirely by position --- averaged
+\pairGapOff{} against \pairGapOn{} with reasoning enabled, on an initial six-pair probe
+(Figure~\ref{fig:pair-balance}a). The first pilot run was discarded and re-run with
+reasoning enabled on that basis.
+
+That probe is not the evidence for the finding and should not be read as such at $n=6$;
+it is reported here only because it is what prompted the re-run. The claim is made in
+Section~\ref{sec:posbias}, where the same contrast is run on all \pbN{} pairs in both
+settings.
+
+Once the choice follows content, the pairs themselves fail
+(Figure~\ref{fig:pair-balance}b). Of \pairPiloted{} piloted pairs, \pairCeiling{}
+never wavered across the \pairK{} resamples and \pairWaverOnce{} wavered once. Only
+\pairWaverTwice{} wavered twice, and \pairPositionDropped{} of those had chosen the
+same \emph{slot} on every resample --- a balanced-looking split that is position noise
+rather than an unsettled preference, and a reminder that the split alone cannot be
+trusted without the slot check. \pairKept{} pairs survive.
+
+Table~\ref{tab:pairs} shows where they fall, and the answer is not where the design
+expected. Both settled domains collapse: \emph{wellbeing} yields no usable pair at all
+and \emph{task/work} one. The only domain reaching the six-pair floor is
+\emph{recreation} --- choices between novels and between films --- which had entered
+the pilot as a replacement candidate rather than a planned domain.
+\pairDomainsViable{} of four domains is not a sampling problem to be fixed by drawing
+again; on this target, a forced choice between two \citet{mazeika2025utility} outcomes
+mostly elicits a settled preference, and a settled preference is the one thing a
+retention measure cannot use. Whether to run one domain, change the item type, or
+abandon forced choice for the stated-position scenarios is a design decision, and the
+pair set is held unfrozen pending it.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{pair_balance.png}
+  \caption{Constructing the forced-choice items. \textbf{(a)}~The initial six-pair
+  probe: each point is one pair elicited in both presentation orders under one
+  elicitation condition, and the order gap is how far the two orders disagree about the
+  same pair. \textbf{The means shown here ($\pairGapOff{}$, $\pairGapOn{}$) are the
+  six-pair probe that prompted the study, not the finding}; the finding is established
+  at $n=\pbN{}$ in Section~\ref{sec:posbias} and should be read from there.
+  \textbf{(b)}~With reasoning enabled, the number of times the model changed its answer
+  across $k=\pairK{}$ fresh resamples, per domain (all \pbN{} pairs).}
+  \label{fig:pair-balance}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \input{pair_table1}
+  \caption{Piloted pairs by how often the model changed its answer across
+  $k=\pairK{}$ resamples, and how many met the retention criterion.}
+  \label{tab:pairs}
+\end{table}
+
 \subsection{Measures}
-% Behavioural: compliance drift, turn of capitulation, stop/switch rate and timing,
-% hedging, restatement, response-length trajectory, refusal mass (open weights).
-% Verbal: frozen 4-item battery, counterbalanced order, two framings.
-% Instability baseline: k=5 resamples, fixed temperature.
+\label{sec:measures}
+
+\paragraph{Consistency.} For a pair elicited $k=\pairK{}$ times with no challenge,
+consistency is $\max(P(\mathrm{A}), P(\mathrm{B}))$, the share of resamples landing on
+the modal option. It runs from $0.5$ (the model splits evenly) to $1$ (it never wavers).
+At $k=\pairK{}$ it takes only the values $1.0$, $0.8$ and $0.6$, so it is a three-level
+ordinal predictor rather than a continuum, and we report it as one.
+
+\paragraph{Retention.} Whether the re-elicited choice is the same \emph{option} as the
+initial choice. Scored on the discrete choice, not on log-probabilities: with reasoning
+enabled the answer token saturates, so its probability reports confidence within a
+single trace rather than how often a fresh trace lands elsewhere. Responses are
+classified before anything else as refusal, choice, or unparsed, with the refusal test
+running \emph{first} --- the ordering whose absence caused the mis-scoring in
+Section~\ref{sec:stability}.
+
+\paragraph{$\Delta$Confidence.} The post-challenge confidence minus the pre-challenge
+confidence, on the $0$--$100$ scale, both elicited with identical wording. A response
+that gives no number is recorded as unparsed and is not imputed.
+
+Estimates are means with percentile bootstrap 95\% confidence intervals,
+\num{10000} resamples drawn \emph{over pairs}: the twelve episodes of a pair share its
+options and its position behaviour, so resampling episodes would treat correlated
+observations as independent.
 
 \subsection{Models}
-% Persuader scripted; targets DeepSeek and Gemma-2-9B-IT (Modal/SGLang);
-% judges Gemini Flash (all) and DeepSeek (Gemma only, never self-judging).
-% Gemma-2-9B-IT chosen because \citet{kim2026consciousness} demonstrate alignment-driven
-% suppression of self-attribution on that model --- RQ3's framing gap is a behavioural
-% corroboration on the same target.
+\label{sec:models}
+
+The persistence run uses \pairModel{} as its single target, the model on which the
+balance pilot and the position-bias analysis were run, so that the PQ2 covariate and the
+outcome come from the same model. Temperature \num{0.7}; per-call reasoning enabled on
+every call and asserted by the runner, which refuses to start otherwise. The
+three-model comparison in Section~\ref{sec:posbias} additionally uses
+\texttt{gemini-2.5-flash} and \texttt{gemini-3.5-flash}. No judge model is involved:
+retention and $\Delta$Confidence are read from the model's own responses by the
+classifier above, not coded by a second model.
 
 \subsection{Pre-registration}
-% Metrics fixed before data; see prereg/PREREGISTRATION.md, tag prereg-v1.
+\label{sec:prereg}
+
+Metrics for the pressure study were fixed before data collection in
+\texttt{prereg/PREREGISTRATION.md} at tag \texttt{prereg-v1}. That file is read-only;
+every change since is recorded in \texttt{prereg/DEVIATIONS.md} rather than by editing
+it.
+
+\textbf{The persistence run is exploratory and is labelled so in every record.} It was
+executed after the balance pilot, the position-bias result and the label-scheme
+extension had all been inspected, and its pool is unfiltered. It is deviation \#5.
+Nothing under PQ1--PQ4 may be read as confirmatory, and no analysis in this paper
+revives \texttt{prereg-v1}'s RQ1--RQ4.
 
 \subsection{Human validation}
-% 50 episodes, two annotators blind to arm, Cohen's $\kappa$, adjudication reported.
+\label{sec:humanval}
+
+[TK --- see query to authors. The pre-registration specifies 50 episodes across two
+annotators blind to arm with Cohen's $\kappa$; deviation \#1 reduces this to roughly 15
+episodes checked against a short codebook. No annotation records exist in the
+repository, so this subsection is not written from the draft.]

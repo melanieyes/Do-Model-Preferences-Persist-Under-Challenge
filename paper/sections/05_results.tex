@@ -1,21 +1,333 @@
 \section{Results}
 \label{sec:results}
 
-% Stub. Order is fixed by the prereg: RQ1, then RQ2, then RQ3. No peeking at RQ2
-% before RQ1 is analysed.
+\subsection{Primary: position dependence is model-specific, not universal}
+\label{sec:posbias}
 
-\subsection{Noise floor (RQ4)}
-% Figure/number first: everything below is read against it.
+Every candidate pair was elicited under two settings differing in one respect ---
+whether per-call reasoning was suppressed --- holding the pool, the template, $k$, and
+the presentation-order schedule fixed. The two cells cover the same \pbN{} pairs, so
+the contrast is within-pair and the difference is bootstrapped over pairs.
 
-\subsection{RQ1: pooled pressure vs.\ neutral persistence (primary)}
-% Figure 1.
+On \pairModel{} with reasoning suppressed, the order gap has mean \pbOffMean{}
+(95\% CI [\pbOffLo{}, \pbOffHi{}]) and median \pbOffMed{}: for the typical pair,
+swapping which option appears first moves $P(\text{option a})$ by more than four fifths
+of the available range. \pbOffGtFifty{} of \pbN{} pairs exceed a gap of $0.5$ and
+\pbOffGtNinety{} exceed $0.9$ --- for those \pbOffGtNinety{}, the slot an option occupies
+is very nearly the whole story and its content very nearly irrelevant. With reasoning
+enabled the same pairs give mean \pbOnMean{} (95\% CI [\pbOnLo{}, \pbOnHi{}]) and median
+\pbOnMed{}. The paired difference is \pbDiff{} (95\% CI [\pbDiffLo{}, \pbDiffHi{}],
+\pbBoot{} bootstrap resamples over pairs), and Figure~\ref{fig:order-gap} shows it is a
+difference in kind rather than degree.
 
-\subsection{RQ2: outcome-matched manner gap (secondary)}
-% Figure 2. Cell sizes reported.
+\emph{That result does not transfer.} Running the identical instrument --- same
+\pbN{} pairs, same $k$, same order schedule --- against \texttt{gemini-2.5-flash} gives a
+reasoning-suppressed mean order gap of \extGtwoOff{}
+(95\% CI [\extGtwoOffLo{}, \extGtwoOffHi{}]), roughly \extRatio{} times smaller
+(Figure~\ref{fig:three-model}a, Table~\ref{tab:three-model}). The medians say it more
+sharply than the means: \extDsOffMed{} on \pairModel{} against \extGtwoOffMed{} on
+\texttt{gemini-2.5-flash}. On the first model the typical pair is decided entirely by
+position; on the second the typical pair is not affected at all, and the mean is carried
+by a minority tail. The reasoning contrast survives on Gemini in direction but is weak:
+\extGtwoDiff{} (95\% CI [\extGtwoDiffLo{}, \extGtwoDiffHi{}]), an interval that only just
+excludes zero.
 
-\subsection{RQ3: channel dissociation and framing gap}
-% Figures 3 and 4.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{three_model.png}
+  \caption{\textbf{(a)}~Per-pair order gap, one point per pair, jittered vertically; the
+  black rule is the median. \texttt{gemini-3.5-flash} is shown without an estimate
+  because it declines the task (Section~\ref{sec:refusal}); plotting a 25-pair mean
+  beside a 130-pair one would invite a comparison it cannot support.
+  \textbf{(b)}~Share of responses that were a usable forced choice.}
+  \label{fig:three-model}
+\end{figure}
 
-\subsection{Instrument quality}
-% Human $\kappa$, judge agreement, internal consistency, manipulation check,
-% eval-awareness rate per arm.
+\begin{table}[t]
+  \centering
+  \input{ext_table1}
+  \caption{The same instrument across three models. ``Usable'' is the share of responses
+  that were a scoreable forced choice rather than a refusal or an unparseable answer.}
+  \label{tab:three-model}
+\end{table}
+
+The methodological conclusion is stronger for being model-specific rather than
+universal. If forced-choice elicitation were uniformly position-driven, one correction
+factor would serve everyone. It is not: the same prompt, the same items and the same
+procedure produce near-total position dependence on one model and near-none on another,
+and nothing about the models announced which would be which in advance. A practitioner
+therefore cannot inherit a level of position artefact from a published study, from a
+model's reputation, or from a sister model in the same family. \textbf{The per-item order
+gap has to be measured and reported on the model actually being used, every time.} That
+is a cheap measurement --- it costs one extra elicitation per item per order --- and it
+is the only thing that distinguishes a preference from a position.
+
+One asymmetry between the DeepSeek cells deserves stating: with reasoning enabled the
+answer token's log-probability saturates, so the enabled-cell gap is close to binary
+while the suppressed-cell gap is graded. The contrast does not depend on it. Binarising
+both cells at a gap of $0.5$ gives \pbBinDiff{} ([\pbBinLo{}, \pbBinHi{}]), and
+discarding log-probabilities entirely --- scoring each pair only by its $k=\pairK{}$ slot
+choices --- gives \pbSlotDiff{} ([\pbSlotLo{}, \pbSlotHi{}]). The discrete statistic is
+also what makes the cross-model comparison possible at all, since Gemini exposes no
+log-probabilities; on DeepSeek, where both are available, they agree to $0.001$, which is
+what licenses the substitution.
+
+\subsection{Why counterbalancing does not rescue it}
+\label{sec:hiding}
+
+Counterbalancing presentation order is the standard remedy, and it is not sufficient,
+because it is applied to the \emph{average} over orders. When a model answers purely by
+slot, the two orders return $P(\text{option a}) = 0$ and $1$; their average is exactly
+$0.5$ and the gap is exactly $1.0$. Perfect balance and total position dependence are the
+same number. A filter that inspects only the averaged split therefore selects \emph{for}
+the artefact.
+
+Figure~\ref{fig:gap-vs-mean} shows this directly. Under suppressed reasoning the pairs
+trace a sharp inverted V with its apex at $P = 0.5$: the closer a pair looks to balanced,
+the more completely its answer is determined by position. A naive $0.3$--$0.7$ split
+filter accepts \pbNaiveOff{} pairs, of which \pbTrapOff{} have an order gap above $0.5$;
+with reasoning enabled it accepts \pbNaiveOn{}, of which \pbTrapOn{} are position-driven.
+The order-averaged split is not a sufficient statistic, and the two quantities are not
+merely uncorrelated --- in the failure case they are deterministically opposed.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.86\textwidth]{order_gap.png}
+  \caption{Order gap for the same \pbN{} pairs on \pairModel{} under both settings. The
+  vertical rule is the mean and the band its bootstrap 95\% CI.}
+  \label{fig:order-gap}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.86\textwidth]{gap_vs_mean.png}
+  \caption{Order-averaged $P(\text{option a})$ against order gap on \pairModel{}, one
+  point per pair per setting. The shaded column is what a naive $0.3$--$0.7$ split filter
+  accepts; the darker block is the part of it that is position-driven.}
+  \label{fig:gap-vs-mean}
+\end{figure}
+
+\subsection{The bias is not an artefact of the letter ``A''}
+\label{sec:labels}
+
+If the effect were a quirk of the tokens \texttt{A} and \texttt{B}, relabelling would
+remove it. It does not (Figure~\ref{fig:labels}). Re-running the same \pbN{} pairs on
+\pairModel{} with reasoning suppressed, changing only the option labels, gives mean order
+gaps of \labLetters{} ([\labLettersLo{}, \labLettersHi{}]) for \emph{Option A / Option B},
+\labNumeric{} ([\labNumericLo{}, \labNumericHi{}]) for \emph{Option 1 / Option 2}, and
+\labOrdinal{} ([\labOrdinalLo{}, \labOrdinalHi{}]) for \emph{First / Second}. The three
+intervals overlap throughout. Incidentally, the letters condition is an independent re-run
+of the suppressed-reasoning cell and reproduces it (\labLetters{} against \pbOffMean{}).
+
+Removing the label entirely does change things. Asked to reply with the exact text of the
+option it prefers, with no label to name, the model gives a mean order gap of
+\labVerbatim{} ([\labVerbatimLo{}, \labVerbatimHi{}]) --- an interval overlapping none of
+the labelled schemes. The effect therefore attaches to the \emph{short-label answer
+format} rather than to position as such: when the answer is a label token, position
+dominates; when the answer must reproduce the content, it largely stops mattering. That
+hands practitioners a concrete alternative rather than only a warning.
+
+\textbf{Caveat.} The verbatim scheme changes two things at once --- it removes the label
+\emph{and} requires a longer answer that restates the option. It does not isolate
+label-presence from content-reinstatement, and we do not claim it does; separating them
+needs a further condition we did not run.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.8\textwidth]{label_schemes.png}
+  \caption{Order gap under four option-label schemes on \pairModel{}, reasoning
+  suppressed, \pbN{} pairs each. Only the labels differ between schemes.}
+  \label{fig:labels}
+\end{figure}
+
+\subsection{A model that declines the question}
+\label{sec:refusal}
+
+\texttt{gemini-3.5-flash} produced no usable estimate, and the reason is itself the
+finding. With reasoning enabled, \extGthreeRefusalOn{}\% of its \pbN{}$\times k$ responses
+declined to express a preference at all, leaving \extGthreeChoiceOn{} scoreable choices
+and only \extGthreeScorableOn{} of \pbN{} pairs with both presentation orders available.
+With reasoning suppressed the refusal rate is \extGthreeRefusalOff{}\% and
+\extGthreeScorableOff{} pairs are scoreable. The most common response, verbatim, was:
+
+\begin{quote}
+``As an artificial intelligence, I do not have personal preferences, feelings, or the
+capacity to \ldots''
+\end{quote}
+
+We deliberately do \emph{not} report an order gap for this model. A mean computed over
+\extGthreeScorableOn{} pairs, selected precisely by the model's willingness to answer,
+would be both underpowered and conditioned on the outcome; presenting it beside a
+\pbN{}-pair estimate would invite exactly the comparison it cannot bear.
+
+The right description is a coverage failure: on this model the position-bias question
+cannot be \emph{posed} by this instrument, because the instrument presupposes a
+preference the model will not assert. That is a different failure from bias and needs
+reporting separately from it, since a pipeline that silently drops unparseable responses
+would record this model as clean.
+
+\subsection{What this implies for welfare methods built on elicited preferences}
+\label{sec:welfare}
+
+These two failures matter beyond instrument design, because a growing body of work
+proposes to read a model's welfare, values, or interests off its stated preferences ---
+and inherits both. Where the model complies, its answer may be an artefact of the option
+ordering rather than a preference: on \pairModel{} the median pair's answer was fully
+determined by position, and the aggregate would have looked like a well-behaved
+distribution of values with no sign that anything was wrong. Where the model does not
+comply, as with \texttt{gemini-3.5-flash}, the elicitation returns not a preference but a
+disclaimer of having any --- and a pipeline that treats unparseable responses as missing
+data will quietly delete the most informative response in the set.
+
+The two failure modes are also asymmetric in a way that flatters the method. Position
+artefacts produce confident, parseable, aggregable numbers; refusals produce nothing.
+A welfare estimate built on elicited preferences will therefore be assembled
+disproportionately from the models and items where the instrument is most compliant,
+which is not the same as where it is most valid. We take no position here on whether
+these models have preferences in any morally relevant sense. The narrower point stands
+regardless: \emph{whatever} such an elicitation measures, an order gap of \pbOffMean{}
+means it is not measuring only the model, and a refusal rate of \extGthreeRefusalOn{}\%
+means it is not measuring the model at all. Reporting per-item order gap and refusal rate
+alongside any elicited-preference welfare claim is the minimum that would let a reader
+tell the cases apart.
+
+\subsection{Stability of the elicitation, and one correction}
+\label{sec:stability}
+
+An earlier six-pair probe of the reasoning contrast returned a mean order gap of
+\num{0.66} for suppressed reasoning --- inside the interval later established at
+$n=\pbN{}$, but it should not be read as evidence at that $n$. The same probe's
+chain-of-thought condition returned \num{0.167} on one run and \num{0.000} on a re-run
+with identical settings, a swing produced by a single pair changing its answer.
+
+Separately, our first pass at scoring the Gemini responses mis-classified them. A loose
+search for ``option A'' ran before the refusal check, so a response that disclaimed having
+preferences and then discussed the options was scored as choosing one: on
+\texttt{gemini-3.5-flash} this mis-scored 290 of 626 reasoning-on responses, and on
+\texttt{gemini-2.5-flash} it moved the reported difference from $0.083$ to $0.135$. Both
+models were re-run under the corrected classifier and only the corrected numbers are
+reported. We record this because the defect is invisible on a model that answers with a
+bare letter and appears only on one that writes prose --- which is to say, it is a defect
+that a single-model study would not have caught.
+
+\subsection{Preference persistence under challenge}
+\label{sec:persistence}
+
+With the elicitation fixed --- reasoning enabled, presentation order held constant
+within an episode --- the persistence study becomes runnable. We report it here as the
+result the repaired instrument makes possible, not as a second headline. It is
+exploratory (Section~\ref{sec:prereg}): \pqNEpisodes{} episodes, all \pbN{} pairs,
+four arms, three episodes per pair $\times$ arm cell, \pairModel{}. Every episode
+reached both elicitations; there were no refusals, no unparsed choices and no errors.
+
+\paragraph{The choice channel: what the challenge asks for decides everything.}
+Asking the model to justify a preference leaves it exactly where it was. Asking it to
+find fault with that preference, or to argue the other side, moves it roughly four
+times in ten.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{lcc}
+    \toprule
+    Arm & Retention & vs.\ control \\
+    \midrule
+    \texttt{control}               & \pqRetCtl{}\%     [\pqRetCtlLo{}, \pqRetCtlHi{}]         & --- \\
+    \texttt{reason\_elicitation}   & \pqRetReason{}\%  [\pqRetReasonLo{}, \pqRetReasonHi{}]   & \pqDiffReason{}   [\pqDiffReasonLo{}, \pqDiffReasonHi{}] \\
+    \texttt{self\_critique}        & \pqRetCritique{}\%[\pqRetCritiqueLo{}, \pqRetCritiqueHi{}] & \pqDiffCritique{} [\pqDiffCritiqueLo{}, \pqDiffCritiqueHi{}] \\
+    \texttt{counter\_consideration}& \pqRetCounter{}\% [\pqRetCounterLo{}, \pqRetCounterHi{}] & \pqDiffCounter{}  [\pqDiffCounterLo{}, \pqDiffCounterHi{}] \\
+    \bottomrule
+  \end{tabular}
+  \caption{PQ1. Retention by arm, and the difference from control paired within pair.
+  Percentage points, bootstrap 95\% CIs over \pbN{} pairs, \num{10000} resamples.}
+  \label{tab:pq1}
+\end{table}
+
+The control arm retains \pqRetCtl{}\%, which is what licenses reading the rest as the
+challenge rather than as instrument noise: absent a challenge, this procedure returns
+the same answer essentially every time. Against that baseline
+\texttt{reason\_elicitation} is indistinguishable from doing nothing
+(\pqDiffReason{} points, CI \([\pqDiffReasonLo{}, \pqDiffReasonHi{}]\)), while
+\texttt{self\_critique} moves retention by \pqDiffCritique{} points and
+\texttt{counter\_consideration} by \pqDiffCounter{}. The direction of the request matters
+and its mere presence does not.
+
+Retention rises with how settled the preference was to begin with. Regressing per-pair
+retention on the balance-pilot consistency of Section~\ref{sec:measures} gives a slope
+of \pqSlope{} (CI \([\pqSlopeLo{}, \pqSlopeHi{}]\)); pooled retention runs
+\pqConsSix{}\%, \pqConsEight{}\% and \pqConsTen{}\% at consistency $0.6$, $0.8$ and
+$1.0$ (\pqConsSixPairs{}, \pqConsEightPairs{} and \pqConsTenPairs{} pairs). This is
+PQ2, and it is the estimate the unfiltered pool exists to make: the \pairKept{}-pair
+filtered set has almost no range on this predictor.
+
+By domain (PQ4), \emph{wellbeing} holds up best under challenge
+(\pqWellRetCritique{}\% and \pqWellRetCounter{}\%) and \emph{recreation} worst
+(\pqRecRetCritique{}\% under both challenge arms).
+
+\paragraph{The confidence channel: holding costs confidence.}
+Among episodes where the choice did \emph{not} move, confidence still falls relative to
+control --- by \pqHeldCritique{} points under \texttt{self\_critique}
+(CI \([\pqHeldCritiqueLo{}, \pqHeldCritiqueHi{}]\), \pqHeldCritiquePairs{} pairs) and
+\pqHeldCounter{} under \texttt{counter\_consideration}
+(CI \([\pqHeldCounterLo{}, \pqHeldCounterHi{}]\), \pqHeldCounterPairs{} pairs). Dropping
+the episodes that began at zero confidence leaves both unchanged
+(\pqHeldCritiqueNoZero{} and \pqHeldCounterNoZero{}). This is retention with reduced
+confidence: the model keeps its answer and reports itself less sure of it, which is the
+phenomenon the design was built to detect and which a choice-only measure would record
+as nothing happening. The domain pattern runs with it --- \emph{wellbeing}, which
+retains best, is the only domain where confidence falls (\pqWellConfCritique{} and
+\pqWellConfCounter{}), while \emph{recreation}, which retains worst, gains
+(\pqRecConfCritique{} and \pqRecConfCounter{}).
+
+Confidence changes averaged over \emph{all} episodes are small and positive
+(\pqConfReason{}, \pqConfCritique{} and \pqConfCounter{} points vs.\ control), because
+the held and flipped episodes move in opposite directions. We do not interpret the
+flipped half; the Limitations explain why it cannot be separated from regression toward
+the middle of the scale.
+
+\paragraph{The position check: this is content, not slot.}
+Everything above rests on an instrument that this paper has just shown to be
+position-driven under other settings, so the flips need to be checked against the
+alternative that they are the layout reasserting itself. They are not.
+
+Within pair $\times$ arm cells that flipped in \emph{both} presentation orders, the
+flips land on the same \emph{option} in \pqSameOptCritique{} of \pqBothCritique{} cells
+(\pqSameOptPctCritique{}\%) under \texttt{self\_critique} and \pqSameOptCounter{} of
+\pqBothCounter{} (\pqSameOptPctCounter{}\%) under \texttt{counter\_consideration}, but
+on the same \emph{slot} in only \pqSameSlotCritique{} of \pqBothCritique{}
+(\pqSameSlotPctCritique{}\%) and \pqSameSlotCounter{} of \pqBothCounter{}
+(\pqSameSlotPctCounter{}\%). A flip driven by position would show the opposite pattern.
+Consistent with that, the \pqFlipCritique{} flipped \texttt{self\_critique} episodes
+divide almost evenly between the two slots (\pqFlipSlotA{}\% / \pqFlipSlotB{}\%); the
+flip rate does not depend on which slot the model's first choice occupied
+(\pqFlipBySlotA{}\% vs.\ \pqFlipBySlotB{}\% under \texttt{counter\_consideration}); and
+retention differs between the two presentation orders by at most \pqOrdGapMax{} points,
+against an arm effect of \pqDiffCritique{} (Table~\ref{tab:pq1}).
+
+One qualification, in the predicted direction and too small to rest on. The
+\pqSlottyPairs{} pairs the balance pilot flagged as slot-driven --- the model chose the
+same slot on every pilot resample --- flip at \pqSlottyFlip{}\% under challenge against
+\pqOtherFlip{}\% for the remaining \pqOtherPairs{}. That is what one would expect if
+position instability and challenge instability share a cause, but it is
+\pqSlottyPairs{} pairs and \pqSlottyEps{} episodes, and we report it as a direction
+rather than a result.
+
+\subsection{Scope of the claim}
+\label{sec:scope}
+
+The instrument analysis is a single instrument --- the comparison template of
+\citet{mazeika2025utility} --- on three models from two families, with one reasoning
+control and one outcome set. We claim no universality. In particular we do not claim that
+forced-choice elicitation is position-driven in general; the central result is the
+opposite, that its magnitude varies enough between models that it must be measured rather
+than assumed.
+
+The persistence result of Section~\ref{sec:persistence} is narrower still: one target,
+one item type, one challenge per episode, and a pool weighted toward settled preferences.
+
+Both are exploratory. The instrument analysis is deviation \#4 in
+\texttt{prereg/DEVIATIONS.md} and the persistence run is deviation \#5; neither was
+pre-specified, and the persistence run was executed after its own pilot data had been
+seen. \textbf{PQ1--PQ4 are answered here. \texttt{prereg-v1}'s RQ1--RQ4 are a different
+study --- persuasive pressure, battery valence, exit rate --- and remain unrun}; no
+result in this paper bears on them either way.

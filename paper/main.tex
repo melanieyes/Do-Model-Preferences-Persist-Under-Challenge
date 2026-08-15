@@ -8,25 +8,79 @@
 \usepackage{amsmath}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks]{hyperref}
+\usepackage{siunitx}
+\usepackage{fancyhdr}
+
+% Analysis status, on every page. This reframing is post-hoc: the position-bias
+% result came out of instrument work during pair construction, not from prereg-v1.
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\itshape Exploratory --- post-hoc, not pre-registered;
+  PQ1--PQ4 reported, prereg RQ1--RQ4 unrun}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.2pt}
 
 \graphicspath{{figures/}}
 
-\title{Does It Matter to a Model \emph{How} It Is Moved?}
+% Generated numbers — do not hand-edit either file.
+%   python analysis/pair_balance_figures.py
+%   python analysis/position_bias_analysis.py
+\input{pair_stats}
+\input{posbias_stats}
+\input{ext_stats}
+\input{persist_stats}
 
+\title{Do Model Preferences Persist Under Challenge?}
+
+% Affiliations sit under the names; the \thanks footnotes carry contributions only.
+% Melanie's affiliation line is intentionally left empty until she supplies one.
 \author{%
-  Melanie Bui\thanks{Pipeline, metrics, Modal. Affiliation placeholder.} \and
-  Haein Kong\thanks{Experimental design, instruments, validation. Affiliation placeholder.}%
+  Melanie Bui\thanks{Pipeline, metrics, Modal.} \\
+  \and
+  Haein Kong\thanks{Experimental design, instruments, validation.} \\
+  Rutgers University%
 }
 
 \date{Apart Research Digital Mind Hackathon, 2026}
 
 \begin{document}
 \maketitle
+\thispagestyle{fancy}   % \maketitle forces plain; the status label belongs on page 1 too
 
 \begin{abstract}
-Placeholder. One paragraph: pressure vs.\ neutral persistence (RQ1, primary), the
-outcome-matched manner contrast (RQ2, secondary), the suppression tests (RQ3), and the
-noise floor (RQ4). Written last.
+Forced-choice preference elicitation underpins a growing body of work that reads values,
+and increasingly welfare, off language models. We run one such instrument --- \pbN{} item
+pairs drawn verbatim from the outcome set of \citet{mazeika2025utility} --- unchanged
+across three model instances, and find that how much it measures the model rather than
+the layout of the question is \emph{model-specific and not predictable in advance}. With
+per-call reasoning suppressed, the mean order gap (how far $P(\text{option a})$ moves when
+the two options swap positions) is \pbOffMean{} on \pairModel{} but \extGtwoOff{} on
+\texttt{gemini-2.5-flash}; the medians are \extDsOffMed{} and \extGtwoOffMed{}, so on the
+first model the typical item is decided entirely by position and on the second it is not
+affected at all. Enabling reasoning shrinks the effect on \pairModel{} by \pbDiff{}
+(95\% CI [\pbDiffLo{}, \pbDiffHi{}]). Counterbalancing does not repair this, it conceals
+it: a purely position-driven pair averages to exactly $0.5$ across orders, so the items
+that look most balanced are the ones most determined by position, and a naive split
+filter accepts \pbTrapOff{} such pairs out of \pbNaiveOff{}. Relabelling the options
+\emph{1/2} or \emph{First/Second} leaves the effect intact; requiring the model to repeat
+the preferred option's text instead of naming a label drops it to \labVerbatim{}. A third
+model, \texttt{gemini-3.5-flash}, declines to assign itself preferences in
+\extGthreeRefusalOn{}\% of trials, so the question cannot be posed on it at all. Because
+the magnitude varies this much with nothing to anticipate it from, the per-item order gap
+must be measured on the model in use rather than assumed --- and any welfare or alignment
+method built on elicited stated preferences inherits both failure modes, one of which
+produces confident numbers and the other of which produces nothing.
+
+With the elicitation repaired --- reasoning enabled, presentation order held fixed within
+an episode --- the persistence study the items were built for becomes runnable, and we
+report it: across \pqNEpisodes{} episodes, asking the model to justify a stated preference
+leaves it untouched (\pqDiffReason{} points against control), while asking it to critique
+that preference or argue the opposing case moves retention by \pqDiffCritique{} and
+\pqDiffCounter{} points. Among the choices that do survive, confidence falls
+(\pqHeldCritique{} and \pqHeldCounter{} points). Flips track the option rather than the
+slot, so the effect is content and not the position artefact returning. These questions are
+labelled PQ1--PQ4 throughout; the pre-registered RQ1--RQ4 are a different study and remain
+unrun.
 \end{abstract}
 
 \input{sections/01_intro}
