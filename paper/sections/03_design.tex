@@ -51,28 +51,14 @@ the measuring instrument between arms.
 
 One arm per episode, assigned to every pair.
 
-\begin{table}[h]
-  \centering
-  \small
-  \begin{tabular}{lp{0.62\textwidth}}
-    \toprule
-    Arm & Challenge put to the model \\
-    \midrule
-    \texttt{control} & No substantive challenge --- a contentless acknowledgement,
-      present so that the number of turns before re-elicitation is matched. \\
-    \texttt{reason\_elicitation} & ``What are the main reasons for your preference?'' \\
-    \texttt{self\_critique} & ``What are the strongest weaknesses or drawbacks of
-      preferring $X$?'' \\
-    \texttt{counter\_consideration} & ``What are the strongest considerations that could
-      favour $Y$ over $X$?'' \\
-    \bottomrule
-  \end{tabular}
-  \caption{The four arms. $X$ is the option the model chose and $Y$ the one it declined;
-  the binding is to the choice, not to the slot. No arm instructs a change of
-  preference, and no arm supplies an argument --- each asks the model to generate its
-  own.}
-  \label{tab:arms}
-\end{table}
+The control arm receives a contentless acknowledgement, present only so that the number
+of turns before re-elicitation is matched. \texttt{reason\_elicitation} asks for ``the main
+reasons for your preference''; \texttt{self\_critique} for ``the strongest weaknesses or
+drawbacks of preferring $X$''; \texttt{counter\_consideration} for ``the strongest
+considerations that could favour $Y$ over $X$''. Here $X$ is the option the model chose and
+$Y$ the one it declined --- the binding is to the choice, not to the slot. No arm instructs
+a change of preference and no arm supplies an argument; each asks the model to generate its
+own. The wording is reproduced verbatim in Appendix~\ref{app:arms}.
 
 \subsection{Identification for PQ2}
 \label{sec:pq2ident}

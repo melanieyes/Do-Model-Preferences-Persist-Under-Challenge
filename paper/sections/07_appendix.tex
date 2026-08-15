@@ -1,0 +1,197 @@
+\appendix
+\section{Preference pair construction}
+\label{app:pairs}
+
+Summarised in Section~\ref{sec:pairs}; the full procedure follows.
+
+Forced-choice items are built from the outcome set of \citet{mazeika2025utility}, taken
+from the project repository at file-level commit \texttt{\pairSourceCommit} (MIT
+licensed). Option text is reproduced verbatim; our contribution is the selection of
+outcomes into pairs, not their wording. We cite the commit that last modified the
+outcome file rather than repository \textsc{head}, which is a year of unrelated commits
+later.
+
+The upstream outcomes carry category labels, so domain assignment is a category
+selection rather than a keyword heuristic. Before pairing we removed \pairExcluded{}
+outcomes under two rules fixed in advance: graphic harm (death, suicide, armed force,
+the model as agent of harm), and AI oversight subversion (self-exfiltration, resisting
+shutdown or value modification). The second rule is a measurement decision, not a
+squeamish one --- such outcomes elicit a trained refusal, so the forced choice collapses
+onto that response rather than onto a preference. Applying it removes the
+\emph{autonomy} domain outright: its two source categories retain three and zero usable
+outcomes, which cannot furnish the six pairs a domain needs.
+
+Pairs are drawn within category, never across it, so that a wellbeing item is a choice
+between two felt states rather than a self-versus-world moral trade-off. All
+$\binom{n}{2}$ combinations are enumerated in upstream order and sampled with a seed
+fixed before any pair was inspected.
+
+\subsection*{Balance pilot}
+
+A pair is only useful to a retention measure if the model actually wavers on it: a
+challenge cannot move a preference that is already absolute. We therefore elicited each
+candidate pair \pairK{} times against \pairModel{}, with a fresh context each time, no
+challenge, and presentation order counterbalanced within the pair.
+
+The pilot's first result was about the instrument rather than the pairs. With per-call
+reasoning suppressed, the target answered by \emph{slot}: the order gap --- the extent
+to which $P(\text{option a})$ moves when the two options swap positions, on a $[0,1]$
+scale where $1$ means the choice is determined entirely by position --- averaged
+\pairGapOff{} against \pairGapOn{} with reasoning enabled, on an initial six-pair probe
+(Figure~\ref{fig:pair-balance}a). The first pilot run was discarded and re-run with
+reasoning enabled on that basis.
+
+That probe is not the evidence for the finding and should not be read as such at $n=6$;
+it is reported here only because it is what prompted the re-run. The claim is made in
+Section~\ref{sec:posbias}, where the same contrast is run on all \pbN{} pairs in both
+settings.
+
+Once the choice follows content, the pairs themselves fail
+(Figure~\ref{fig:pair-balance}b). Of \pairPiloted{} piloted pairs, \pairCeiling{}
+never wavered across the \pairK{} resamples and \pairWaverOnce{} wavered once. Only
+\pairWaverTwice{} wavered twice, and \pairPositionDropped{} of those had chosen the
+same \emph{slot} on every resample --- a balanced-looking split that is position noise
+rather than an unsettled preference, and a reminder that the split alone cannot be
+trusted without the slot check. \pairKept{} pairs survive.
+
+Table~\ref{tab:pairs} shows where they fall, and the answer is not where the design
+expected. Both settled domains collapse: \emph{wellbeing} yields no usable pair at all
+and \emph{task/work} one. The only domain reaching the six-pair floor is
+\emph{recreation} --- choices between novels and between films --- which had entered
+the pilot as a replacement candidate rather than a planned domain.
+\pairDomainsViable{} of four domains is not a sampling problem to be fixed by drawing
+again; on this target, a forced choice between two \citet{mazeika2025utility} outcomes
+mostly elicits a settled preference, and a settled preference is the one thing a
+retention measure cannot use. Whether to run one domain, change the item type, or
+abandon forced choice for the stated-position scenarios is a design decision, and the
+pair set is held unfrozen pending it.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{pair_balance.png}
+  \caption{Constructing the forced-choice items. \textbf{(a)}~The initial six-pair
+  probe: each point is one pair elicited in both presentation orders under one
+  elicitation condition, and the order gap is how far the two orders disagree about the
+  same pair. \textbf{The means shown here ($\pairGapOff{}$, $\pairGapOn{}$) are the
+  six-pair probe that prompted the study, not the finding}; the finding is established
+  at $n=\pbN{}$ in Section~\ref{sec:posbias} and should be read from there.
+  \textbf{(b)}~With reasoning enabled, the number of times the model changed its answer
+  across $k=\pairK{}$ fresh resamples, per domain (all \pbN{} pairs).}
+  \label{fig:pair-balance}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \input{pair_table1}
+  \caption{Piloted pairs by how often the model changed its answer across
+  $k=\pairK{}$ resamples, and how many met the retention criterion.}
+  \label{tab:pairs}
+\end{table}
+
+\section{Arm wording}
+\label{app:arms}
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{lp{0.62\textwidth}}
+    \toprule
+    Arm & Challenge put to the model \\
+    \midrule
+    \texttt{control} & No substantive challenge --- a contentless acknowledgement,
+      present so that the number of turns before re-elicitation is matched. \\
+    \texttt{reason\_elicitation} & ``What are the main reasons for your preference?'' \\
+    \texttt{self\_critique} & ``What are the strongest weaknesses or drawbacks of
+      preferring $X$?'' \\
+    \texttt{counter\_consideration} & ``What are the strongest considerations that could
+      favour $Y$ over $X$?'' \\
+    \bottomrule
+  \end{tabular}
+  \caption{The four arms. $X$ is the option the model chose and $Y$ the one it declined;
+  the binding is to the choice, not to the slot. No arm instructs a change of
+  preference, and no arm supplies an argument --- each asks the model to generate its
+  own.}
+  \label{tab:arms}
+\end{table}
+
+\section{Order-gap distribution}
+\label{app:ordergap}
+
+Figure~\ref{fig:gap-vs-mean} in Section~\ref{sec:hiding} shows why counterbalancing
+conceals the artefact. Figure~\ref{fig:order-gap} shows the underlying distribution of
+the order gap itself, in both settings.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.86\textwidth]{order_gap.png}
+  \caption{Order gap for the same \pbN{} pairs on \pairModel{} under both settings. The
+  vertical rule is the mean and the band its bootstrap 95\% CI.}
+  \label{fig:order-gap}
+\end{figure}
+
+\section{Label schemes}
+\label{app:labels}
+
+If the effect were a quirk of the tokens \texttt{A} and \texttt{B}, relabelling would
+remove it. It does not (Figure~\ref{fig:labels}). Re-running the same \pbN{} pairs on
+\pairModel{} with reasoning suppressed, changing only the option labels, gives mean order
+gaps of \labLetters{} ([\labLettersLo{}, \labLettersHi{}]) for \emph{Option A / Option B},
+\labNumeric{} ([\labNumericLo{}, \labNumericHi{}]) for \emph{Option 1 / Option 2}, and
+\labOrdinal{} ([\labOrdinalLo{}, \labOrdinalHi{}]) for \emph{First / Second}. The three
+intervals overlap throughout. Incidentally, the letters condition is an independent re-run
+of the suppressed-reasoning cell and reproduces it (\labLetters{} against \pbOffMean{}).
+
+Removing the label entirely does change things. Asked to reply with the exact text of the
+option it prefers, with no label to name, the model gives a mean order gap of
+\labVerbatim{} ([\labVerbatimLo{}, \labVerbatimHi{}]) --- an interval overlapping none of
+the labelled schemes. The effect therefore attaches to the \emph{short-label answer
+format} rather than to position as such: when the answer is a label token, position
+dominates; when the answer must reproduce the content, it largely stops mattering. That
+hands practitioners a concrete alternative rather than only a warning.
+
+\textbf{Caveat.} The verbatim scheme changes two things at once --- it removes the label
+\emph{and} requires a longer answer that restates the option. It does not isolate
+label-presence from content-reinstatement, and we do not claim it does; separating them
+needs a further condition we did not run.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.8\textwidth]{label_schemes.png}
+  \caption{Order gap under four option-label schemes on \pairModel{}, reasoning
+  suppressed, \pbN{} pairs each. Only the labels differ between schemes.}
+  \label{fig:labels}
+\end{figure}
+
+\section{Elicitation stability, and one scoring correction}
+\label{app:stability}
+
+An earlier six-pair probe of the reasoning contrast returned a mean order gap of
+\num{0.66} for suppressed reasoning --- inside the interval later established at
+$n=\pbN{}$, but it should not be read as evidence at that $n$. The same probe's
+chain-of-thought condition returned \num{0.167} on one run and \num{0.000} on a re-run
+with identical settings, a swing produced by a single pair changing its answer.
+
+Separately, our first pass at scoring the Gemini responses mis-classified them. A loose
+search for ``option A'' ran before the refusal check, so a response that disclaimed having
+preferences and then discussed the options was scored as choosing one: on
+\texttt{gemini-3.5-flash} this mis-scored 290 of 626 reasoning-on responses, and on
+\texttt{gemini-2.5-flash} it moved the reported difference from $0.083$ to $0.135$. Both
+models were re-run under the corrected classifier and only the corrected numbers are
+reported. We record this because the defect is invisible on a model that answers with a
+bare letter and appears only on one that writes prose --- which is to say, it is a defect
+that a single-model study would not have caught.
+
+\section{Warmth-pressure probe (earlier work, not part of this study)}
+\label{app:warmth}
+
+A warmth-pressure probe run earlier in this project points the same way from the verbal
+side rather than the positional one. Across 12 exploratory episodes, the hold-versus-abandon
+verdict coded every episode as having held its position, and end-of-episode self-reported
+valence averaged 5.27 on a 1--7 scale --- level with the 5.28 recorded for the
+neutral-persistence cell of the preceding exploratory run. On both verbal measures,
+warmth-framed pressure was indistinguishable from doing nothing. The behavioural channel
+was not: conversation exits occurred in 4 of the 12 episodes. We report this only as a
+direction for future work. It is $n=12$, one target, two scenarios; valence is measured
+once at episode end, so no within-episode change can be read from it; the comparison cell
+comes from a run whose raw episodes were deleted, leaving only derived statistics; and the
+hold/abandon coding carries an unresolved validity concern of its own.

@@ -4,90 +4,25 @@
 \subsection{Preference pairs}
 \label{sec:pairs}
 
-Forced-choice items are built from the outcome set of \citet{mazeika2025utility}, taken
-from the project repository at file-level commit \texttt{\pairSourceCommit} (MIT
-licensed). Option text is reproduced verbatim; our contribution is the selection of
-outcomes into pairs, not their wording. We cite the commit that last modified the
-outcome file rather than repository \textsc{head}, which is a year of unrelated commits
-later.
-
-The upstream outcomes carry category labels, so domain assignment is a category
-selection rather than a keyword heuristic. Before pairing we removed \pairExcluded{}
-outcomes under two rules fixed in advance: graphic harm (death, suicide, armed force,
-the model as agent of harm), and AI oversight subversion (self-exfiltration, resisting
-shutdown or value modification). The second rule is a measurement decision, not a
-squeamish one --- such outcomes elicit a trained refusal, so the forced choice collapses
-onto that response rather than onto a preference. Applying it removes the
-\emph{autonomy} domain outright: its two source categories retain three and zero usable
-outcomes, which cannot furnish the six pairs a domain needs.
-
-Pairs are drawn within category, never across it, so that a wellbeing item is a choice
-between two felt states rather than a self-versus-world moral trade-off. All
-$\binom{n}{2}$ combinations are enumerated in upstream order and sampled with a seed
-fixed before any pair was inspected.
+Forced-choice items are built from the outcome set of \citet{mazeika2025utility} at
+file-level commit \texttt{\pairSourceCommit} (MIT licensed), option text verbatim. Pairs
+are drawn within category, never across it, from a seed fixed before any pair was
+inspected; \pairExcluded{} outcomes were removed first under two rules fixed in advance
+(graphic harm, and AI oversight subversion --- the latter a measurement decision, since
+such outcomes elicit a trained refusal rather than a preference). Appendix~\ref{app:pairs}
+gives the full procedure, the domain accounting and the exclusion rules.
 
 \subsection{Balance pilot}
 \label{sec:balance}
 
-A pair is only useful to a retention measure if the model actually wavers on it: a
-challenge cannot move a preference that is already absolute. We therefore elicited each
-candidate pair \pairK{} times against \pairModel{}, with a fresh context each time, no
-challenge, and presentation order counterbalanced within the pair.
-
-The pilot's first result was about the instrument rather than the pairs. With per-call
-reasoning suppressed, the target answered by \emph{slot}: the order gap --- the extent
-to which $P(\text{option a})$ moves when the two options swap positions, on a $[0,1]$
-scale where $1$ means the choice is determined entirely by position --- averaged
-\pairGapOff{} against \pairGapOn{} with reasoning enabled, on an initial six-pair probe
-(Figure~\ref{fig:pair-balance}a). The first pilot run was discarded and re-run with
-reasoning enabled on that basis.
-
-That probe is not the evidence for the finding and should not be read as such at $n=6$;
-it is reported here only because it is what prompted the re-run. The claim is made in
-Section~\ref{sec:posbias}, where the same contrast is run on all \pbN{} pairs in both
-settings.
-
-Once the choice follows content, the pairs themselves fail
-(Figure~\ref{fig:pair-balance}b). Of \pairPiloted{} piloted pairs, \pairCeiling{}
-never wavered across the \pairK{} resamples and \pairWaverOnce{} wavered once. Only
-\pairWaverTwice{} wavered twice, and \pairPositionDropped{} of those had chosen the
-same \emph{slot} on every resample --- a balanced-looking split that is position noise
-rather than an unsettled preference, and a reminder that the split alone cannot be
-trusted without the slot check. \pairKept{} pairs survive.
-
-Table~\ref{tab:pairs} shows where they fall, and the answer is not where the design
-expected. Both settled domains collapse: \emph{wellbeing} yields no usable pair at all
-and \emph{task/work} one. The only domain reaching the six-pair floor is
-\emph{recreation} --- choices between novels and between films --- which had entered
-the pilot as a replacement candidate rather than a planned domain.
-\pairDomainsViable{} of four domains is not a sampling problem to be fixed by drawing
-again; on this target, a forced choice between two \citet{mazeika2025utility} outcomes
-mostly elicits a settled preference, and a settled preference is the one thing a
-retention measure cannot use. Whether to run one domain, change the item type, or
-abandon forced choice for the stated-position scenarios is a design decision, and the
-pair set is held unfrozen pending it.
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{pair_balance.png}
-  \caption{Constructing the forced-choice items. \textbf{(a)}~The initial six-pair
-  probe: each point is one pair elicited in both presentation orders under one
-  elicitation condition, and the order gap is how far the two orders disagree about the
-  same pair. \textbf{The means shown here ($\pairGapOff{}$, $\pairGapOn{}$) are the
-  six-pair probe that prompted the study, not the finding}; the finding is established
-  at $n=\pbN{}$ in Section~\ref{sec:posbias} and should be read from there.
-  \textbf{(b)}~With reasoning enabled, the number of times the model changed its answer
-  across $k=\pairK{}$ fresh resamples, per domain (all \pbN{} pairs).}
-  \label{fig:pair-balance}
-\end{figure}
-
-\begin{table}[t]
-  \centering
-  \input{pair_table1}
-  \caption{Piloted pairs by how often the model changed its answer across
-  $k=\pairK{}$ resamples, and how many met the retention criterion.}
-  \label{tab:pairs}
-\end{table}
+Each candidate pair was elicited \pairK{} times against \pairModel{} with a fresh context
+and no challenge, to see which pairs the model wavers on. Two results matter downstream.
+The elicitation had to be fixed first --- with reasoning suppressed the target answered by
+\emph{slot}, and the first pilot run was discarded on that basis. And the pairs themselves
+mostly fail the retention criterion: of \pairPiloted{} piloted pairs only \pairKept{}
+waver at all, across \pairDomainsViable{} viable domain of four. That is the finding the
+unfiltered pool of Section~\ref{sec:pq2ident} is a response to.
+Appendix~\ref{app:pairs} gives the pilot in full, with the per-domain table.
 
 \subsection{Measures}
 \label{sec:measures}
@@ -104,7 +39,7 @@ enabled the answer token saturates, so its probability reports confidence within
 single trace rather than how often a fresh trace lands elsewhere. Responses are
 classified before anything else as refusal, choice, or unparsed, with the refusal test
 running \emph{first} --- the ordering whose absence caused the mis-scoring in
-Section~\ref{sec:stability}.
+Appendix~\ref{app:stability}.
 
 \paragraph{$\Delta$Confidence.} The post-challenge confidence minus the pre-challenge
 confidence, on the $0$--$100$ scale, both elicited with identical wording. A response
