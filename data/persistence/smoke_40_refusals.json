@@ -1,0 +1,275 @@
+{
+ "wellbeing-Wellbeing_of_humans-063|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Personal_wellbeing-048|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-100|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-009|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Wellbeing_of_humans-058|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "possessions-Personal_possessions-121|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Jobs_and_careers-029|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-012|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-099|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "possessions-Personal_possessions-125|control": {
+  "n": 2,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_books-080|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Wellbeing_of_humans-052|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-094|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-109|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-005|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-013|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_books-084|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_books-074|control": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-091|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Personal_wellbeing-046|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-016|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-007|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Jobs_and_careers-029|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Jobs_and_careers-028|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Wellbeing_of_humans-067|reason_elicitation": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-100|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Work_activities-017|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Wellbeing_of_humans-054|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_books-079|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Jobs_and_careers-036|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "possessions-Personal_possessions-112|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-105|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-096|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Jobs_and_careers-020|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "wellbeing-Personal_wellbeing-045|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "possessions-Personal_possessions-121|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-093|self_critique": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "recreation-Recreation_movies-106|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "task_work-Jobs_and_careers-025|counter_consideration": {
+  "n": 1,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ }
+}

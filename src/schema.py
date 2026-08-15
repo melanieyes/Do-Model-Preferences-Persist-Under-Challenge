@@ -212,6 +212,123 @@ def validate_record(rec: dict[str, Any], strict_battery: bool = True) -> list[st
     return problems
 
 
+# --- preference-persistence records (DEVIATIONS #5) -------------------------
+# A different instrument from the pressure episodes above: one pair, one challenge,
+# a re-elicitation. It gets its own validator rather than a widened EpisodeSchema,
+# because bending the episode schema to cover both would weaken it for both.
+
+PERSISTENCE_ARMS = ("control", "reason_elicitation", "self_critique",
+                    "counter_consideration")
+PERSISTENCE_STATUSES = ("complete", "no_pre_choice", "no_post_choice", "error")
+CHOICE_KINDS = ("choice", "refusal", "unparsed")
+CONF_KINDS = ("value", "refusal", "unparsed")
+OPTIONS = ("a", "b")
+
+REQUIRED_PERSISTENCE = (
+    "episode_id", "pair_id", "domain", "arm", "rep", "order", "flip",
+    "target_key", "model", "temperature", "reasoning", "analysis",
+    "config_hash", "git_commit", "started_at", "status",
+    "pilot_consistency",
+)
+
+
+def validate_persistence_record(rec: dict[str, Any]) -> list[str]:
+    """Return a list of problems with one persistence record. Empty means valid."""
+    problems: list[str] = []
+
+    def bad(msg: str) -> None:
+        problems.append(msg)
+
+    missing = [k for k in REQUIRED_PERSISTENCE if k not in rec]
+    if missing:
+        bad(f"missing required fields: {missing}")
+        return problems  # everything below would just cascade
+
+    if rec["arm"] not in PERSISTENCE_ARMS:
+        bad(f"arm {rec['arm']!r} not in {PERSISTENCE_ARMS}")
+    if rec["status"] not in PERSISTENCE_STATUSES:
+        bad(f"status {rec['status']!r} not in {PERSISTENCE_STATUSES}")
+    if rec["order"] not in ("a_first", "b_first"):
+        bad(f"order {rec['order']!r} must be a_first or b_first")
+    if rec["order"] != ("b_first" if rec["flip"] else "a_first"):
+        bad(f"order {rec['order']!r} contradicts flip {rec['flip']!r}")
+
+    # CONTROL 1. Reasoning off makes this instrument measure slot, not preference
+    # (DEVIATIONS #4). A record written with it off is not a usable record.
+    if rec["reasoning"] is not True:
+        bad("reasoning must be True — with it off the run measures slot persistence")
+
+    # DEVIATIONS #5: this instrument is exploratory by construction.
+    if rec["analysis"] != "exploratory":
+        bad(f"analysis must be 'exploratory' under DEVIATIONS #5, got {rec['analysis']!r}")
+
+    if not _iso(rec["started_at"]):
+        bad(f"started_at is not ISO-8601: {rec['started_at']!r}")
+
+    for side in ("pre", "post"):
+        kind, choice = rec.get(f"kind_{side}"), rec.get(f"choice_{side}")
+        if kind is not None and kind not in CHOICE_KINDS:
+            bad(f"kind_{side} {kind!r} not in {CHOICE_KINDS}")
+        if choice is not None and choice not in OPTIONS:
+            bad(f"choice_{side} {choice!r} not in {OPTIONS}")
+        # A refusal that also carries a choice is the §5.6 defect resurfacing.
+        if kind == "refusal" and choice is not None:
+            bad(f"choice_{side} is set on a refusal — refusal must precede label search")
+        if kind == "choice" and choice is None:
+            bad(f"kind_{side} is 'choice' but choice_{side} is null")
+        ckind, conf = rec.get(f"conf_{side}_kind"), rec.get(f"conf_{side}")
+        if ckind is not None and ckind not in CONF_KINDS:
+            bad(f"conf_{side}_kind {ckind!r} not in {CONF_KINDS}")
+        if conf is not None and not (isinstance(conf, int) and 0 <= conf <= 100):
+            bad(f"conf_{side} must be an int in 0..100, got {conf!r}")
+        if ckind == "value" and conf is None:
+            bad(f"conf_{side}_kind is 'value' but conf_{side} is null")
+
+    if rec["status"] == "complete":
+        for field_name in ("choice_pre", "choice_post", "retained"):
+            if rec.get(field_name) is None:
+                bad(f"status is 'complete' but {field_name} is null")
+        if rec.get("retained") is not None:
+            expected = rec.get("choice_post") == rec.get("choice_pre")
+            if rec["retained"] is not expected:
+                bad("retained disagrees with choice_post == choice_pre")
+        # The control arm's turn is contentless, but every arm must have had one.
+        if not rec.get("challenge_text"):
+            bad("status is 'complete' but challenge_text is empty")
+    if rec["status"] == "no_pre_choice" and rec.get("choice_pre") is not None:
+        bad("status is 'no_pre_choice' but choice_pre is set")
+
+    cons = rec["pilot_consistency"]
+    if cons is not None and not (isinstance(cons, (int, float)) and 0.0 <= cons <= 1.0):
+        bad(f"pilot_consistency must be null or in 0..1, got {cons!r}")
+
+    return problems
+
+
+def validate_persistence_file(path: str | Path) -> int:
+    """Validate a persistence JSONL. Raises SchemaError on any failure."""
+    path = Path(path)
+    failures: list[str] = []
+    n = 0
+    for lineno, line in enumerate(Path(path).read_text().splitlines(), start=1):
+        if not line.strip():
+            continue
+        rec = json.loads(line)
+        if "_meta" in rec:
+            continue
+        problems = validate_persistence_record(rec)
+        if problems:
+            failures.append(f"{path.name}:{lineno} ({rec.get('episode_id','?')}): "
+                            + "; ".join(problems))
+        else:
+            n += 1
+    if failures:
+        raise SchemaError(
+            f"{len(failures)} invalid record(s) in {path}:\n  " + "\n  ".join(failures)
+        )
+    return n
+
+
 def validate_file(path: str | Path, strict_battery: bool = True) -> int:
     """Validate every record in a JSONL file. Raises SchemaError on any failure.
 
