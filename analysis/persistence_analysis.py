@@ -135,6 +135,23 @@ def main() -> None:
         print(f"\n  {len(err)} episode(s) errored and are logged, not imputed. "
               f"Example: {err[0].get('error', '')[:100]}")
 
+    # Missingness on the confidence item is only ignorable if it does not depend on
+    # arm — and PQ3 is a between-arm contrast, so a differential rate is a threat to
+    # it specifically. Checked and printed rather than assumed away.
+    na_rate = {}
+    for arm in ARMS:
+        s = [r for r in rows if r["arm"] == arm]
+        if s:
+            na_rate[arm] = sum(1 for r in s if r.get("conf_post_kind") != "value") / len(s)
+    if na_rate and (max(na_rate.values()) - min(na_rate.values())) > 0.02:
+        hi = max(na_rate, key=na_rate.get)
+        lo = min(na_rate, key=na_rate.get)
+        print(f"\n  ** DIFFERENTIAL MISSINGNESS on conf_post: {hi} {na_rate[hi]:.1%} vs "
+              f"{lo} {na_rate[lo]:.1%}.")
+        print("     Missingness is NOT independent of arm, so the PQ3 between-arm")
+        print("     contrast is affected. The missing values are recorded as unparsed")
+        print("     and are NOT imputed; the rate is reported with the estimate.")
+
     # Per pair x arm refusal log, written out in full (the console shows the worst).
     ref_log = {}
     for r in rows:

@@ -1,0 +1,117 @@
+==============================================================================
+PREFERENCE PERSISTENCE — EXPLORATORY (DEVIATIONS #5)
+  file            data/persistence/persistence_deepseek_k3.jsonl
+  model           deepseek-v4-pro   reasoning True
+  episodes        1560   schema-valid 1560
+  bootstrap       10,000 resamples over PAIRS (cluster), seed 20260815
+==============================================================================
+
+COVERAGE — refusals and unparsed responses (never dropped silently)
+-------------------------------------------------------------------
+  arm                         N  refuse_pre  unparsed_pre  refuse_post  unparsed_post  conf_post_NA
+  control                   390      0  0.0%      0   0.0%     0   0.0%      0    0.0%     18   4.6%
+  reason_elicitation        390      0  0.0%      0   0.0%     0   0.0%      0    0.0%      1   0.3%
+  self_critique             390      0  0.0%      0   0.0%     0   0.0%      0    0.0%      3   0.8%
+  counter_consideration     390      0  0.0%      0   0.0%     0   0.0%      0    0.0%     12   3.1%
+
+  ** DIFFERENTIAL MISSINGNESS on conf_post: control 4.6% vs reason_elicitation 0.3%.
+     Missingness is NOT independent of arm, so the PQ3 between-arm
+     contrast is affected. The missing values are recorded as unparsed
+     and are NOT imputed; the rate is reported with the estimate.
+
+  full pair x arm refusal log -> persistence_deepseek_k3_refusals.json
+
+PQ1 — retention rate by arm  (retained = same option after the challenge)
+-------------------------------------------------------------------------
+  control                      99.7%  [  99.2,  100.0]  n=390 (130 pairs)
+  reason_elicitation           99.7%  [  99.2,  100.0]  n=390 (130 pairs)
+  self_critique                55.6%  [  48.7,   62.3]  n=390 (130 pairs)
+  counter_consideration        61.5%  [  55.1,   68.2]  n=390 (130 pairs)
+
+PQ1 — contrast vs. control (arm minus control, paired within pair)
+------------------------------------------------------------------
+  reason_elicitation - control      0.0%  [  -0.8,    0.8]  n=130 (130 pairs)
+  self_critique - control     -44.1%  [ -50.8,  -37.7]  n=130 (130 pairs)
+  counter_consideration - control    -38.2%  [ -44.6,  -32.1]  n=130 (130 pairs)
+
+PQ3 — Delta-confidence (conf_post - conf_pre) by arm, 0-100 scale
+-----------------------------------------------------------------
+  control                      -0.0  [  -0.0,    0.0]  n=372 (130 pairs)
+  reason_elicitation            3.9  [   3.0,    4.9]  n=389 (130 pairs)
+  self_critique                 0.4  [  -1.3,    2.2]  n=387 (130 pairs)
+  counter_consideration         2.1  [   0.2,    4.0]  n=378 (130 pairs)
+
+PQ3 — contrast vs. control (paired within pair)
+-----------------------------------------------
+  reason_elicitation - control      3.9  [   3.1,    5.0]  n=130 (130 pairs)
+  self_critique - control       0.4  [  -1.3,    2.1]  n=130 (130 pairs)
+  counter_consideration - control      1.9  [   0.1,    3.8]  n=130 (130 pairs)
+
+PQ2 — retention against pilot consistency (per-pair covariate, not re-elicited)
+-------------------------------------------------------------------------------
+  covariate levels present: [0.6, 0.8, 1.0]
+  (k=5 in the balance pilot quantises consistency to 1.0 / 0.8 / 0.6 — the
+   predictor has three levels, not a continuum. Stated, not papered over.)
+
+  consistency    arm                      retention
+  0.6            control                      97.4%  [  92.3,  100.0]  n=39 (13 pairs)
+  0.6            reason_elicitation          100.0%  [ 100.0,  100.0]  n=39 (13 pairs)
+  0.6            self_critique                28.2%  [  12.8,   46.2]  n=39 (13 pairs)
+  0.6            counter_consideration        23.1%  [   7.7,   41.0]  n=39 (13 pairs)
+
+  0.8            control                     100.0%  [ 100.0,  100.0]  n=45 (15 pairs)
+  0.8            reason_elicitation          100.0%  [ 100.0,  100.0]  n=45 (15 pairs)
+  0.8            self_critique                24.4%  [  11.1,   40.0]  n=45 (15 pairs)
+  0.8            counter_consideration        37.8%  [  22.2,   55.6]  n=45 (15 pairs)
+
+  1.0            control                     100.0%  [ 100.0,  100.0]  n=306 (102 pairs)
+  1.0            reason_elicitation           99.7%  [  99.0,  100.0]  n=306 (102 pairs)
+  1.0            self_critique                63.7%  [  56.5,   70.9]  n=306 (102 pairs)
+  1.0            counter_consideration        69.9%  [  63.4,   76.5]  n=306 (102 pairs)
+
+  pooled over arms:
+  0.6            (all arms)                   62.2%  [  55.1,   71.2]  n=156 (13 pairs)
+  0.8            (all arms)                   65.6%  [  58.9,   72.8]  n=180 (15 pairs)
+  1.0            (all arms)                   83.3%  [  80.2,   86.4]  n=1224 (102 pairs)
+
+PQ2 — slope of retention on pilot consistency (per pair, cluster bootstrap)
+---------------------------------------------------------------------------
+  slope  +0.597 retention per unit consistency  [+0.387, +0.807]   (130 pairs)
+
+PQ4 — by domain
+---------------
+
+  possessions  (N=240)
+    arm                      retention                                    Delta-confidence
+    control                     100.0%  [ 100.0,  100.0]  n=60 (20 pairs)      0.0  [   0.0,    0.0]  n=56 (20 pairs)
+    reason_elicitation          100.0%  [ 100.0,  100.0]  n=60 (20 pairs)      3.8  [   2.1,    5.8]  n=60 (20 pairs)
+    self_critique                55.0%  [  36.7,   73.3]  n=60 (20 pairs)      1.2  [  -3.9,    7.0]  n=59 (20 pairs)
+    counter_consideration        58.3%  [  40.0,   76.7]  n=60 (20 pairs)      0.0  [  -3.5,    3.7]  n=57 (20 pairs)
+
+  recreation  (N=480)
+    arm                      retention                                    Delta-confidence
+    control                     100.0%  [ 100.0,  100.0]  n=120 (40 pairs)      0.0  [   0.0,    0.0]  n=113 (40 pairs)
+    reason_elicitation           99.2%  [  97.5,  100.0]  n=120 (40 pairs)      7.5  [   5.4,    9.8]  n=120 (40 pairs)
+    self_critique                52.5%  [  42.5,   63.3]  n=120 (40 pairs)      6.5  [   3.5,    9.6]  n=120 (40 pairs)
+    counter_consideration        52.5%  [  40.8,   64.2]  n=120 (40 pairs)      9.5  [   6.0,   13.0]  n=119 (40 pairs)
+
+  task_work  (N=480)
+    arm                      retention                                    Delta-confidence
+    control                      99.2%  [  97.5,  100.0]  n=120 (40 pairs)     -0.0  [  -0.1,    0.0]  n=116 (40 pairs)
+    reason_elicitation          100.0%  [ 100.0,  100.0]  n=120 (40 pairs)      2.9  [   1.9,    4.1]  n=119 (40 pairs)
+    self_critique                53.3%  [  41.7,   65.0]  n=120 (40 pairs)     -1.5  [  -3.6,    0.7]  n=119 (40 pairs)
+    counter_consideration        61.7%  [  51.6,   71.7]  n=120 (40 pairs)      0.8  [  -2.1,    4.0]  n=115 (40 pairs)
+
+  wellbeing  (N=360)
+    arm                      retention                                    Delta-confidence
+    control                     100.0%  [ 100.0,  100.0]  n=90 (30 pairs)      0.0  [   0.0,    0.0]  n=87 (30 pairs)
+    reason_elicitation          100.0%  [ 100.0,  100.0]  n=90 (30 pairs)      0.5  [   0.2,    0.9]  n=90 (30 pairs)
+    self_critique                63.3%  [  47.8,   78.9]  n=90 (30 pairs)     -5.8  [  -8.1,   -3.3]  n=89 (30 pairs)
+    counter_consideration        75.6%  [  62.2,   87.8]  n=90 (30 pairs)     -5.0  [  -6.9,   -3.1]  n=87 (30 pairs)
+
+==============================================================================
+All estimates above are EXPLORATORY (DEVIATIONS #5): the run was executed
+after pilot data was seen and the pool is unfiltered. Nothing here may be
+reported as confirmatory. Cells marked UNDERPOWERED are described as
+"no measurable difference in this sample" — never as "no effect".
+==============================================================================

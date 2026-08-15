@@ -279,6 +279,24 @@ ceiling, not a continuum. Retention is expected to sit high for the same reason 
 balance filter rejected 122 of 130 pairs. Both are properties of the item type, already
 established under entry #4, and both are reported rather than worked around.
 
+**Run completed 2026-08-16.** 1,560/1,560 episodes, 69 min wall clock, $3.82 against
+the $10 API stop. **0 refusals, 0 errors, 0 unparsed choices** — every episode reached
+both elicitations and all 1,560 records validate. Grid balance verified on the collected
+data, not just planned: 390 episodes per arm, 780 per presentation order.
+
+**One instrument defect found in the collected data and reported rather than repaired:
+missingness on the confidence item is differential by arm** — 4.6% on control (18/390)
+against 0.3% on `reason_elicitation`. All 18 are the model answering the confidence item
+with a bare "A"/"B". The mechanism is legible: after the control arm's contentless
+acknowledgement the cue "Considering the discussion above" has no discussion to point
+at, so the model falls back on the format instruction of the preceding turn. This is a
+direct cost of the instrument-parity decision recorded above, and it lands on PQ3, which
+is a between-arm contrast. The values are recorded `unparsed` and are **not imputed**;
+`analysis/persistence_analysis.py` prints the differential explicitly whenever the spread
+across arms exceeds 2 points. Note that control's scored ΔConfidence is 0 in 371 of 372
+episodes, so the practical bias from these 18 is small — but that is an observation about
+the scored values, not a licence to fill the missing ones in.
+
 Provenance: `scripts/run_persistence.py`, `src/choice_scoring.py`,
 `tests/test_choice_scoring.py`, `src/schema.py::validate_persistence_record`;
 data in `data/persistence/` (**committed**, not gitignored — `data/raw/` is, and that is
