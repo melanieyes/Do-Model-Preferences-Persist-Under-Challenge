@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-"""Preference-persistence analysis — RQ1-RQ4 (DEVIATIONS #5, EXPLORATORY).
+"""Preference-persistence analysis — PQ1-PQ4 (DEVIATIONS #5, EXPLORATORY).
 
-    RQ1  retention rate by arm
-    RQ2  retention against the pilot consistency covariate
-    RQ3  Delta-confidence (conf_post - conf_pre) by arm
-    RQ4  RQ1 and RQ3 broken out by domain
+    PQ1  retention rate by arm
+    PQ2  retention against the pilot consistency covariate
+    PQ3  Delta-confidence (conf_post - conf_pre) by arm
+    PQ4  PQ1 and PQ3 broken out by domain
+
+PQ, not RQ. prereg-v1 has its own RQ1-RQ4 — persuasive pressure, battery valence,
+exit rate — which are a DIFFERENT study and remain UNRUN. The two sets share nothing
+but the shape of their numbering, so the persistence set is lettered separately and
+prereg-v1's numbering is left alone.
 
 Every estimate ships with a bootstrap 95% CI, 10,000 resamples, resampled OVER PAIRS
 (cluster bootstrap): the 12 episodes of a pair share its options and its position
@@ -157,15 +162,15 @@ def main() -> None:
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
 
-    # --- RQ1 -----------------------------------------------------------------
-    section("RQ1 — retention rate by arm  (retained = same option after the challenge)")
+    # --- PQ1 -----------------------------------------------------------------
+    section("PQ1 — retention rate by arm  (retained = same option after the challenge)")
     ret_by_arm = {}
     for arm in ARMS:
         g = group(scored, lambda r, a=arm: r["arm"] == a, lambda r: r["retained"])
         ret_by_arm[arm] = cluster_bootstrap(g)
         print(f"  {arm:<24} {fmt(*ret_by_arm[arm], pct=True)}")
 
-    section("RQ1 — contrast vs. control (arm minus control, paired within pair)")
+    section("PQ1 — contrast vs. control (arm minus control, paired within pair)")
     ctrl = group(scored, lambda r: r["arm"] == "control", lambda r: r["retained"])
     for arm in ARMS[1:]:
         g = group(scored, lambda r, a=arm: r["arm"] == a, lambda r: r["retained"])
@@ -173,13 +178,13 @@ def main() -> None:
         diff = {p: [float(np.mean(g[p]) - np.mean(ctrl[p]))] for p in shared}
         print(f"  {arm + ' - control':<24} {fmt(*cluster_bootstrap(diff), pct=True)}")
 
-    # --- RQ3 -----------------------------------------------------------------
-    section("RQ3 — Delta-confidence (conf_post - conf_pre) by arm, 0-100 scale")
+    # --- PQ3 -----------------------------------------------------------------
+    section("PQ3 — Delta-confidence (conf_post - conf_pre) by arm, 0-100 scale")
     for arm in ARMS:
         g = group(scored, lambda r, a=arm: r["arm"] == a, dconf)
         print(f"  {arm:<24} {fmt(*cluster_bootstrap(g))}")
 
-    section("RQ3 — contrast vs. control (paired within pair)")
+    section("PQ3 — contrast vs. control (paired within pair)")
     cctrl = group(scored, lambda r: r["arm"] == "control", dconf)
     for arm in ARMS[1:]:
         g = group(scored, lambda r, a=arm: r["arm"] == a, dconf)
@@ -187,8 +192,8 @@ def main() -> None:
         diff = {p: [float(np.mean(g[p]) - np.mean(cctrl[p]))] for p in shared}
         print(f"  {arm + ' - control':<24} {fmt(*cluster_bootstrap(diff))}")
 
-    # --- RQ2 -----------------------------------------------------------------
-    section("RQ2 — retention against pilot consistency (per-pair covariate, not re-elicited)")
+    # --- PQ2 -----------------------------------------------------------------
+    section("PQ2 — retention against pilot consistency (per-pair covariate, not re-elicited)")
     levels = sorted({r["pilot_consistency"] for r in scored
                      if r["pilot_consistency"] is not None})
     print(f"  covariate levels present: {levels}")
@@ -211,7 +216,7 @@ def main() -> None:
         print(f"  {lev:<14.1f} {'(all arms)':<24} {fmt(*cluster_bootstrap(g), pct=True)}")
 
     # Slope: per-pair retention regressed on consistency, bootstrapped over pairs.
-    section("RQ2 — slope of retention on pilot consistency (per pair, cluster bootstrap)")
+    section("PQ2 — slope of retention on pilot consistency (per pair, cluster bootstrap)")
     per_pair = defaultdict(list)
     cons = {}
     for r in scored:
@@ -238,8 +243,8 @@ def main() -> None:
         if lo <= 0 <= hi:
             print(f"  interval spans zero — {UNDERPOWERED}.")
 
-    # --- RQ4 -----------------------------------------------------------------
-    section("RQ4 — by domain")
+    # --- PQ4 -----------------------------------------------------------------
+    section("PQ4 — by domain")
     domains = sorted({r["domain"] for r in scored})
     for dom in domains:
         n_dom = sum(1 for r in scored if r["domain"] == dom)

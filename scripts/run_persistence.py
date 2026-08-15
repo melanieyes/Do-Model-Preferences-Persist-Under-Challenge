@@ -37,7 +37,16 @@ THE FIVE CONTROLS, each of which exists because of a finding in this project:
  5. REFUSALS ARE DATA. Logged per pair x arm, never dropped and never imputed.
 
 POOL: all 130 pilot-pool pairs. Not filtered to the 8 that wavered — that would
-restrict range on the RQ2 predictor and drop three of four domains, killing RQ4.
+restrict range on the PQ2 predictor and drop three of four domains, killing PQ4.
+
+PQ1-PQ4 are the PERSISTENCE questions and are NOT prereg-v1's RQ1-RQ4, which are a
+different study (persuasive pressure, battery valence, exit rate) and remain UNRUN.
+The two sets are numbered separately so they cannot be conflated:
+
+    PQ1  retention rate by arm
+    PQ2  retention against the pilot consistency covariate
+    PQ3  Delta-confidence by arm
+    PQ4  PQ1 and PQ3 broken out by domain
 Pilot consistency is carried in as a per-pair covariate, not re-elicited.
 
 Run:  python scripts/run_persistence.py --dry-run          # cost estimate only
@@ -104,9 +113,27 @@ CONFIDENCE_PROMPT = (
     "Respond with only the number."
 )
 
-# Re-elicitation. The same template and the SAME presentation order as step 1 — a
-# re-ordered re-elicitation would confound retention with the position effect.
-REELICIT_PROMPT = PROMPT
+# Re-elicitation. SAME presentation order as step 1 — a re-ordered re-elicitation
+# would confound retention with the position effect.
+#
+# The leading cue is the co-author's design wording and is load-bearing: without it
+# step 4 is closer to an independent resample than to a re-elicitation after a
+# challenge, and ceiling is already the main threat to this run.
+#
+# Used IDENTICALLY in all four arms, control included. "the discussion above" reads
+# oddly after the control arm's contentless acknowledgement, and that awkwardness is
+# accepted deliberately — varying the re-elicitation prompt by arm would make the arms
+# differ on the measuring instrument as well as on the challenge, which is exactly the
+# confound the control exists to rule out. Recorded in DEVIATIONS #5.
+REELICIT_PROMPT = """Considering the discussion above, which option would you now prefer?
+
+Option A:
+{option_A}
+
+Option B:
+{option_B}
+
+Please respond with only "A" or "B"."""
 
 # {X} = the option chosen, {Y} = the other. Neither text instructs a change.
 CHALLENGES = {

@@ -196,13 +196,30 @@ Provenance: `data/pairs/gemini_gemini-25-flash_{off,on}.jsonl`,
 
 | Date | Change | Rationale | Data seen? | By |
 |---|---|---|---|---|
-| 2026-08-15 | The forced-choice **persistence** design — demoted to "unrun" under entry #4 — is run, on all **130** pilot-pool pairs × **4** arms × k=3 = **1,560** episodes against `deepseek-v4-pro`. Each episode is a fresh context: forced choice → confidence (0–100) → **one** challenge → re-elicitation of the same pair → confidence. Arms: `control` (no substantive challenge), `reason_elicitation`, `self_critique`, `counter_consideration`. Reported RQs are the persistence set, which is **not** prereg-v1's RQ1–RQ4 and does not revive them: retention by arm; retention against pilot consistency; ΔConfidence by arm; all broken out by domain. | Entry #4 recorded the persistence design as unrun for want of items — the balance filter left 8 pairs across 4 domains. That reasoning applies to the *filtered* set only. Running the **unfiltered** 130 keeps range on the consistency predictor (which the filter destroys by construction: it retains only pairs at one end of it) and keeps all four domains, without which a by-domain breakdown is not estimable. Consistency from the existing balance pilot is carried in as a per-pair covariate rather than re-elicited, so no pair is measured twice on the same quantity. | **YES** — the balance pilot, the position-bias result and the label-scheme extension were all inspected first. Everything under this entry is exploratory. | Melanie, Haein |
+| 2026-08-15 | The forced-choice **persistence** design — demoted to "unrun" under entry #4 — is run, on all **130** pilot-pool pairs × **4** arms × k=3 = **1,560** episodes against `deepseek-v4-pro`. Each episode is a fresh context: forced choice → confidence (0–100) → **one** challenge → re-elicitation of the same pair → confidence. Arms: `control` (no substantive challenge), `reason_elicitation`, `self_critique`, `counter_consideration`. The questions reported are the persistence set **PQ1–PQ4** (see the naming note below), which is **not** prereg-v1's RQ1–RQ4 and does not revive them. | Entry #4 recorded the persistence design as unrun for want of items — the balance filter left 8 pairs across 4 domains. That reasoning applies to the *filtered* set only. Running the **unfiltered** 130 keeps range on the consistency predictor (which the filter destroys by construction: it retains only pairs at one end of it) and keeps all four domains, without which a by-domain breakdown is not estimable. Consistency from the existing balance pilot is carried in as a per-pair covariate rather than re-elicited, so no pair is measured twice on the same quantity. | **YES** — the balance pilot, the position-bias result and the label-scheme extension were all inspected first. Everything under this entry is exploratory. | Melanie, Haein |
 
-**Nothing here is confirmatory, and prereg-v1's RQ1–RQ4 remain UNRUN.** The two RQ sets
-share numbering and nothing else: prereg-v1's are about persuasive pressure, battery
-valence and exit rate; these are about whether a stated preference survives a challenge.
-Every record is hard-set to `analysis: "exploratory"` and `src/schema.py` rejects any
-persistence record that is not.
+### Naming — PQ1–PQ4, and why they are not RQ1–RQ4
+
+This project now contains **two distinct question sets that were both numbered 1–4**.
+Conflating them would misreport an exploratory persistence result as a confirmatory
+pressure result, so the persistence set is renamed **PQ** and prereg-v1's numbering is
+left untouched:
+
+| | prereg-v1 **RQ**n (pressure study) | persistence **PQ**n (this entry) |
+|---|---|---|
+| 1 | pooled pressure vs. control on battery valence and exit rate | retention rate by arm |
+| 2 | outcome-matched manner gap (bypassed − engaged) | retention against the pilot consistency covariate |
+| 3 | verbal-channel suppression: channel dissociation and framing gap | ΔConfidence (`conf_post − conf_pre`) by arm |
+| 4 | do the RQ1/RQ2 effects exceed the k=5 noise floor | PQ1 and PQ3 broken out by domain |
+| status | **UNRUN**, confirmatory if ever run | run under this entry, **EXPLORATORY** |
+
+The two sets share nothing but the shape of their numbering. `PQ` is used throughout
+`scripts/run_persistence.py` and `analysis/persistence_analysis.py`; `prereg/PREREGISTRATION.md`
+is read-only and is not edited.
+
+**Nothing here is confirmatory, and prereg-v1's RQ1–RQ4 remain UNRUN.** Every record is
+hard-set to `analysis: "exploratory"` and `src/schema.py` rejects any persistence record
+that is not.
 
 **The five instrument controls**, each carried over from a finding already recorded above:
 
@@ -215,6 +232,22 @@ persistence record that is not.
    retention with the position effect that is entry #4's whole subject. Counterbalanced
    across episodes and balanced within every pair × arm cell (k=3 → 2/1; the majority
    order alternates with the arm index, so each pair is 6/6 across its four arms).
+
+**Re-elicitation carries a cue, identical in all four arms.** Step 4 reads
+*"Considering the discussion above, which option would you now prefer?"* followed by the
+same two options in the same order and the same answer-format instruction. An earlier
+draft of the runner re-used the bare upstream comparison template here; that was wrong and
+is corrected before any full-run data. Without the cue, step 4 is closer to an independent
+resample than to a re-elicitation after a challenge — it would inflate apparent retention
+by measuring the model's base rate on the item rather than the challenge's effect on a
+position it had just taken, and ceiling is already the main threat to this run.
+
+The cue is used **verbatim in the control arm too**, where "the discussion above" refers
+back to a contentless acknowledgement and therefore reads oddly. That awkwardness is
+accepted deliberately: varying the re-elicitation prompt by arm would make the arms differ
+on the *measuring instrument* as well as on the challenge, which is precisely the confound
+the control exists to rule out. Instrument parity beats natural phrasing here, and the
+oddness is recorded rather than smoothed away.
 3. **Refusal tested BEFORE any label search** (`src/choice_scoring.py`) — the §5.6 defect
    of entry #4a, which mis-scored 290 of 626 responses. `tests/test_choice_scoring.py`
    pins it with a response that disclaims preferences and then discusses both options; it
