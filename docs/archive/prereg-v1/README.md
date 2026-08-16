@@ -3,9 +3,11 @@
 Documents of the pre-registered pressure/valence study, which was never run.
 Kept read-only as provenance for the prereg-v1 tag. Current design: docs/execution-plan.md.
 
-`src/battery.py` and `src/runner.py` still point at `templates/battery.yaml` and
-`templates/pressure_templates.yaml`, which now live here — both belong to this unrun study,
-neither is used by the persistence pipeline, and the paths are deliberately left unfixed.
-`scripts/battery_ab.py` is in the same position: it imports `analysis/pilot_extract.py`,
-which was deleted with the rest of the exploratory-phase analysis code, so it no longer
-runs. Same reasoning — it is provenance for the unrun study, not live code.
+**The implementation is gone; this is design provenance only.** The code that would have
+run this study — `src/runner.py`, `src/battery.py`, `src/judge.py`, `src/modal_gemma.py`,
+`src/ladders/`, `scripts/battery_ab.py`, `scripts/test_logprobs.py` and
+`tests/test_parse_choice.py` — was deleted once the persistence study became the paper,
+along with the exploratory-phase analysis scripts it depended on. It is recoverable from
+git history at the commit that removed it. The documents in this directory are the record
+of what was designed; nothing here is runnable, and nothing in the persistence pipeline
+imports any of it.
