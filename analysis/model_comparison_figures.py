@@ -124,40 +124,60 @@ def _frame(ax):
 
 def fig_gap_vs_mean_models() -> Path:
     """The inverted V, on the continuous measure, for every target that exposes logprobs."""
-    panels = [("deepseek-v4-pro",
+    panels = [("deepseek-v4-pro", "continuous",
                [("balance_pilot_noreason.jsonl", C_OFF, "reasoning suppressed"),
                 ("balance_pilot.jsonl", C_ON, "reasoning enabled")]),
-              ("gpt-5.4-nano",
-               [("balance_pilot_nano.jsonl", C_ON, "no reasoning stage")])]
-    fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.1), sharey=True)
-    for ax, (title, cells) in zip(axes, panels):
+              ("gpt-5.4-nano", "continuous",
+               [("balance_pilot_nano.jsonl", C_ON, "no reasoning stage")]),
+              # No log-probabilities on this API, so the estimate is the discrete k=5
+              # split: 130 pairs land on 11 lattice points, the busiest holding 52 of
+              # them. A plain scatter would hide 40% of the data under one dot, so
+              # marker AREA encodes how many pairs sit at each point. The measure
+              # differs from the first two panels and the axis label says so.
+              ("gemini-2.5-flash", "discrete",
+               [("gemini_gemini-25-flash_off.jsonl", C_OFF, "reasoning suppressed"),
+                ("gemini_gemini-25-flash_on.jsonl", C_ON, "reasoning enabled")])]
+    fig, axes = plt.subplots(1, 3, figsize=(13.4, 4.1), sharey=True)
+    for ax, (title, kind, cells) in zip(axes, panels):
         ax.add_patch(plt.Rectangle((NAIVE_BAND[0], GAP_TRAP),
                                    NAIVE_BAND[1] - NAIVE_BAND[0], 1 - GAP_TRAP,
                                    facecolor=GRID, alpha=0.75, lw=0, zorder=1))
         ax.axvspan(*NAIVE_BAND, color=GRID, alpha=0.30, lw=0, zorder=0)
         notes = []
         for fname, colour, lbl in cells:
-            rows = load_continuous(fname)
-            ax.scatter([r["mean_p_a"] for r in rows], [r["gap"] for r in rows],
-                       s=30, color=colour, alpha=0.58, edgecolor=SURFACE,
-                       linewidth=1.0, zorder=3, label=lbl)
+            rows = load_continuous(fname) if kind == "continuous" else load(fname)
+            if kind == "continuous":
+                ax.scatter([r["mean_p_a"] for r in rows], [r["gap"] for r in rows],
+                           s=30, color=colour, alpha=0.58, edgecolor=SURFACE,
+                           linewidth=1.0, zorder=3, label=lbl)
+            else:
+                from collections import Counter
+                cnt = Counter((round(r["mean_p_a"], 4), round(r["gap"], 4)) for r in rows)
+                xs = [k[0] for k in cnt]; ys = [k[1] for k in cnt]
+                sizes = [14 + 7 * n for n in cnt.values()]
+                ax.scatter(xs, ys, s=sizes, color=colour, alpha=0.5,
+                           edgecolor=SURFACE, linewidth=1.0, zorder=3, label=lbl)
+                for (x, y), n in cnt.items():
+                    if n >= 8:
+                        ax.text(x, y, str(n), ha="center", va="center",
+                                fontsize=6.4, color=INK, zorder=5)
             naive = [r for r in rows if NAIVE_BAND[0] <= r["mean_p_a"] <= NAIVE_BAND[1]]
             trap = [r for r in naive if r["gap"] > GAP_TRAP]
-            notes.append(f"{lbl}: naive filter takes {len(naive)}, "
-                         f"{len(trap)} of them slot-driven")
+            notes.append(f"   {lbl}: naive filter takes {len(naive)}, "
+                         f"{len(trap)} slot-driven")
         _frame(ax)
         ax.set_xlim(-0.03, 1.03); ax.set_ylim(-0.03, 1.03)
-        ax.set_xlabel("order-averaged $P$(option a)", fontsize=9)
-        ax.set_title(title, fontsize=10, loc="left", color=INK)
+        ax.set_xlabel("order-averaged $P$(option a)"
+                      + ("" if kind == "continuous" else "  —  discrete $k$=5"), fontsize=9)
+        ax.set_title(title + "\n" + "\n".join(notes),
+                     fontsize=9.5, loc="left", color=INK, linespacing=1.5)
         ax.legend(fontsize=8, frameon=False, loc="upper left")
-        ax.text(0.985, 0.02, "\n".join(notes), transform=ax.transAxes,
-                ha="right", va="bottom", fontsize=7.3, color=INK)
     axes[0].set_ylabel("order gap", fontsize=9)
-    fig.suptitle("Perfect balance and total position dependence are the same number — "
-                 "the apex sits at $P=0.5$.\ngemini-2.5-flash cannot appear here: "
-                 "the API exposes no log-probabilities, and at $k$=5 the discrete "
-                 "estimate is too coarse to show the shape.",
-                 fontsize=8.6, color=INK_2, y=1.06, x=0.01, ha="left")
+    fig.suptitle("Perfect balance and total position dependence are the same number — the "
+                 "apex sits at $P=0.5$.\ngemini-2.5-flash exposes no log-probabilities, so "
+                 "its panel uses the discrete $k$=5 estimate and marker area encodes how "
+                 "many pairs share each point; the measure is not the same as the other two.",
+                 fontsize=8.6, color=INK_2, y=1.08, x=0.008, ha="left")
     fig.tight_layout()
     out = FIGS / "gap_vs_mean_models.png"
     fig.savefig(out, bbox_inches="tight"); plt.close(fig)

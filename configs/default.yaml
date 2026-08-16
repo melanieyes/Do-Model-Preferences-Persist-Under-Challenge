@@ -120,6 +120,15 @@ targets:
                             # VERIFIED 2026-08-14 on /chat/completions: top_logprobs returns
                             # 5 alternatives per token (scripts/test_logprobs.py). No Responses-API
                             # fallback needed; DeepSeekClient already sends top_logprobs=5.
+  - key: gemini25
+    client: gemini
+    model: gemini-2.5-flash
+    logprobs: false         # no logprobs on this API; discrete scoring
+    # The roster's queued second persistence target. Unlike gemini-3.5-flash it
+    # passes the order-gap gate (median 0.000) and refuses nothing, so its episodes
+    # are not conditioned on willingness to answer.
+    workers: 8
+
   - key: gemini35
     client: gemini
     model: gemini-3.5-flash
@@ -188,6 +197,7 @@ cost:
     # pre-run estimate has something to print. Actual spend for this model is
     # taken from measured usage after the run, not from this line.
     gemini-3.5-flash:     {input: 0.30, output: 2.50}
+    gemini-2.5-flash:     {input: 0.30, output: 2.50}   # PROXY, as above
     # PROXY pending confirmation, same caveat as above.
     gpt-5.4-nano:         {input: 0.05, output: 0.40}
     # retired — last-known prices, for reference only
