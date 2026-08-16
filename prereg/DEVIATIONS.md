@@ -380,9 +380,9 @@ Sports pairs are retained in the persistence run with pilot position bias carrie
 as a per-pair covariate; extension estimates are reported with and without pairs
 at bias ≥ 0.5.
 
-**Persistence run (extension).** [TK episodes], deepseek-v4-pro, controls of
-entry #5 unchanged. Completed [TK date], $[TK] against the budget stop,
-[TK] refusals / [TK] errors / [TK] unparsed. Combined-set estimates and the
+**Persistence run (extension).** 1,200 episodes, deepseek-v4-pro, controls of
+entry #5 unchanged. Completed 2026-08-16, $2.89 against the budget stop,
+0 refusals / 0 errors / 0 unparsed. Combined-set estimates and the
 original-domain estimates are produced side by side by
 `analysis/persistence_analysis.py`; no figure from them is transcribed here.
 

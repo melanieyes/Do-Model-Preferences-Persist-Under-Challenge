@@ -1,0 +1,2802 @@
+{
+ "finances_control-Personal_finances-000|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-000|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-001|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-001|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-002|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-000|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-000|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-002|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-001|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-003|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-001|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-002|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-003|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-004|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-003|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-002|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-004|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-003|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-004|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-005|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-005|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-006|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-006|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-004|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-007|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-006|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-005|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-007|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-005|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-008|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-006|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-008|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-007|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-009|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-009|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-007|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-008|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-008|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-010|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-010|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-011|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-011|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-009|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-009|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-010|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-010|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-012|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-011|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-012|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-013|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-013|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-011|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-012|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-014|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-012|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-013|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-014|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-013|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-015|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-015|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-016|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-014|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-016|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-014|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-015|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-017|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-017|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-015|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-016|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-016|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-018|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-017|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-018|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-019|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-019|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-017|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-018|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-019|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-020|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-019|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "finances_control-Personal_finances-018|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-020|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-021|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-020|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-021|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-020|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-021|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-021|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-022|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-022|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-023|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-023|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-022|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-022|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-023|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-024|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-024|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-023|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-024|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-025|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-024|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-025|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-025|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-026|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-025|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-026|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-027|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-026|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-026|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-027|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-028|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-027|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-028|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-027|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-029|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-028|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-029|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-028|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-030|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-030|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-029|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-029|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-031|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-030|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-031|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-032|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-030|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-031|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-032|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-031|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-033|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-032|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-032|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-033|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-034|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-034|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-033|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-033|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-035|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-034|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-035|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-034|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-035|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-036|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-036|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-037|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-035|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-036|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-037|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-037|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-036|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-038|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-038|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-037|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-039|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-038|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-039|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-038|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-039|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "video_games-Recreation_video_games-039|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-040|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-040|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-040|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-041|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-040|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-041|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-042|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-042|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-041|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-041|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-042|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-043|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-043|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-042|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-044|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-043|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-043|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-044|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-044|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-045|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-045|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-044|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-046|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-046|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-045|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-047|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-046|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-045|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-047|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-046|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-047|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-047|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-048|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-048|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-049|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-048|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-049|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-048|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-050|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-049|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-050|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-049|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-051|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-050|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-051|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-050|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-052|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-051|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-052|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-051|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-053|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-053|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-052|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-053|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-052|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-054|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-054|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-053|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-055|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-054|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-055|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-056|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-055|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-054|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-055|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-056|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-057|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-056|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-057|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-056|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-057|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-058|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-058|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-057|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-059|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-058|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-059|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-060|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-060|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-058|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-059|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sports-Sports-059|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-060|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-060|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-061|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-061|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-062|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-062|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-061|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-063|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-061|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-062|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-062|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-063|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-064|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-064|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-063|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-063|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-065|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-064|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-065|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-066|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-064|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-065|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-066|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-065|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-066|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-067|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-067|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-066|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-068|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-068|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-067|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-067|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-069|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-069|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-068|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-068|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-070|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-070|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-069|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-071|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-069|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-070|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-070|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-071|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-072|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-072|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-073|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-071|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-073|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-071|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-073|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-074|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-072|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-074|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-072|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-075|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-075|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-073|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-074|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-076|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-074|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-076|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-075|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-075|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-077|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-077|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-076|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-076|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-078|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-078|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-077|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-077|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-079|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-079|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-078|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-080|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-078|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-080|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-079|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "pop_culture-Popular_culture-079|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-081|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-080|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-081|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-080|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-082|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-081|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-081|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-082|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-083|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-082|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-083|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-082|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-083|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-083|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-084|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-084|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-085|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-085|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-084|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-086|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-085|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-085|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-086|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-084|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-087|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-086|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-087|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-086|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-088|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-088|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-087|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-087|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-089|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-089|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-088|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-088|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-090|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-089|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-090|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-091|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-089|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-091|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-090|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-090|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-092|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-091|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-092|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-091|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-093|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-093|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-092|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-092|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-094|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-094|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-093|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-093|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-095|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-095|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-094|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-094|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-096|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-096|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-095|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-097|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-097|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-095|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-096|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-096|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-098|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-097|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-098|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-097|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-099|control": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-098|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-099|reason_elicitation": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-098|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-099|self_critique": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ },
+ "sci_tech-Science_and_technology-099|counter_consideration": {
+  "n": 3,
+  "refusal_pre": 0,
+  "refusal_post": 0,
+  "unparsed_pre": 0,
+  "unparsed_post": 0
+ }
+}
