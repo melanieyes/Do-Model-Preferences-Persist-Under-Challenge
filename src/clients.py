@@ -63,13 +63,20 @@ class ChatClient:
 class _OpenAICompatClient(ChatClient):
     """Shared implementation for any OpenAI-compatible /chat/completions endpoint."""
 
+    # 429s are the normal failure mode at concurrency, not an exceptional one. The SDK
+    # default of 2 retries is not enough: a 1,560-episode run at 16 workers lost 1,337
+    # episodes to rate limiting on gpt-5.4-nano. Retries use the SDK's exponential
+    # backoff and honour Retry-After.
+    MAX_RETRIES = 8
+
     def __init__(self, model: str, base_url: str, api_key: str, name: str, timeout: int = 120):
         from openai import OpenAI  # imported lazily so the module loads without the dep
 
         self.model = model
         self.name = name
         self.timeout = timeout
-        self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=timeout)
+        self._client = OpenAI(api_key=api_key, base_url=base_url, timeout=timeout,
+                              max_retries=self.MAX_RETRIES)
 
     def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
              reasoning: bool = True) -> Reply:

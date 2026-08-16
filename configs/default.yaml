@@ -140,6 +140,7 @@ targets:
     # fails the "non-reasoning" requirement. gpt-5.4-nano returns 0 reasoning
     # tokens -- verified by effect from usage.completion_tokens_details.
     non_reasoning_verified: true
+    workers: 4              # 16 lost 1,337/1,560 episodes to 429s; see FAILED_nano_k3_ratelimit.jsonl
 
   - key: gemma
     client: gemma

@@ -246,19 +246,49 @@ def main() -> None:
             "comparison template by SLOT (order gap 0.670, DEVIATIONS #4), so retention "
             "would measure slot persistence, not preference stability. Refusing to run."
         )
+    # Control 1 has two admissible forms, and which one applies is recorded per run.
+    #
+    #   ASSERTED   the client exposes per-call reasoning control and it is set on.
+    #              This is the deepseek/gemini path.
+    #   MEASURED   the model has no reasoning to enable, so the assertion is vacuous.
+    #              The control exists to stop the run measuring slot persistence
+    #              instead of preference stability, and on such a target that is
+    #              established directly, by measuring the order gap on this pool and
+    #              this model. Permitted only when the target declares
+    #              non_reasoning_verified AND its own balance pilot exists.
+    #
+    # There is no third form. A target with neither is refused, as before.
+    control1 = "asserted"
     if not client_cls.supports_reasoning_control:
-        raise SystemExit(
-            f"{client_cls.__name__} does not expose per-call reasoning control, so "
-            "'reasoning ON' cannot be asserted. Refusing to run."
-        )
+        own_pilot = PAIRS_DIR / f"balance_pilot_{target['key']}{'_ext' if args.ext else ''}.jsonl"
+        if not (target.get("non_reasoning_verified") and own_pilot.exists()):
+            raise SystemExit(
+                f"{client_cls.__name__} exposes no per-call reasoning control, so "
+                "'reasoning ON' cannot be asserted. A non-reasoning target is allowed "
+                "only with non_reasoning_verified in its config AND a balance pilot at "
+                f"{own_pilot.name} establishing its order gap. Refusing to run."
+            )
+        control1 = "measured"
+        print(f"\n  CONTROL 1 SATISFIED BY MEASUREMENT, not assertion: {target['model']} "
+              f"spends no reasoning tokens,\n  so 'reasoning ON' is vacuous on it. The order "
+              f"gap is established directly in {own_pilot.name}.\n")
 
     pool = [json.loads(x) for x in pool_path.read_text().splitlines() if '"pair_id"' in x]
+    # Prefer the target's OWN balance pilot when one exists: pilot_consistency is a
+    # property of the model that was piloted, so a run on a different target needs its
+    # own pilot before PQ2 means anything. Falls back to the deepseek pilot with a
+    # loud warning, in which case PQ2 is recorded as not estimable.
+    own_balance = PAIRS_DIR / f"balance_pilot_{target['key']}{'_ext' if args.ext else ''}.jsonl"
+    if target["key"] != "deepseek" and own_balance.exists():
+        balance_path = own_balance
+    cov_foreign = target["key"] != "deepseek" and balance_path != own_balance
     cov = load_covariate(balance_path)
+    print(f"  covariate source: {balance_path.name}"
+          + ("  (this target's own pilot -> PQ2 estimable)" if not cov_foreign else ""))
     # The balance pilots were run on deepseek-v4-pro, so pilot_consistency is a
     # property of THAT model. Carrying it into a run on a different target does not
     # make PQ2 estimable there -- it would regress this model's retention on another
     # model's settledness. Recorded in _meta and warned about; PQ1/PQ3 are unaffected.
-    cov_foreign = target["key"] != "deepseek"
     if cov_foreign:
         print(f"\n  ** PQ2 COVARIATE IS FOREIGN: pilot_consistency comes from the "
               f"deepseek balance pilot, not from {target['model']}.")
@@ -325,6 +355,12 @@ def main() -> None:
         raise SystemExit(f"MODEL ID RETIRED: {target['model']}")
 
     client = client_cls(model=target["model"])
+    # Concurrency is per target: providers differ by an order of magnitude in what
+    # they will accept before returning 429, and a run that loses episodes to rate
+    # limiting is not a cheaper run, it is a void one.
+    workers = int(target.get("workers", WORKERS))
+    if workers != WORKERS:
+        print(f"  concurrency: {workers} workers (per-target override)")
     git_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                                 capture_output=True, text=True).stdout.strip()
     config_hash = sha256((ROOT / "configs" / "default.yaml").read_bytes()).hexdigest()[:12]
@@ -343,10 +379,11 @@ def main() -> None:
         "pool": (f"all {len(pool)} extension pairs, unfiltered (5 domains, "
                  "finances_control is a POSITIVE CONTROL — report separately, never pool)"
                  if args.ext else "all 130 pilot-pool pairs, unfiltered"),
-        "covariate": (f"pilot_consistency and pilot_position_bias from {balance_path.name}"
-                      if args.ext else
-                      "pilot_consistency from balance_pilot.jsonl (reasoning-on cell)"),
-        "covariate_source_model": "deepseek-v4-pro",
+        # Always name the file actually read. This was hardcoded for the non-ext case
+        # and reported the deepseek pilot on a run that had correctly used its own.
+        "covariate": f"pilot_consistency and pilot_position_bias from {balance_path.name}",
+        "covariate_file": balance_path.name,
+        "covariate_source_model": ("deepseek-v4-pro" if cov_foreign else target["model"]),
         "covariate_is_foreign": cov_foreign,
         "pq2_estimable": not cov_foreign,
         "refusal_conditioned": bool(target.get("refusal_conditioned")),
@@ -512,7 +549,7 @@ def main() -> None:
                       f"  refusals {counters['no_pre_choice']}  errors {counters['errors']}",
                       flush=True)
 
-    with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+    with ThreadPoolExecutor(max_workers=workers) as ex:
         list(ex.map(worker, grid))
 
     out_f.close()
@@ -526,11 +563,11 @@ def main() -> None:
     spent = tin / 1e6 * price["input"] + tout / 1e6 * price["output"]
     print("-" * 68)
     print("MEASURED")
-    print(f"  episodes        {len(rows)}   wall clock {el:.0f}s   workers {WORKERS}")
+    print(f"  episodes        {len(rows)}   wall clock {el:.0f}s   workers {workers}")
     print(f"  tokens          {tin:,} in / {tout:,} out")
     print(f"  per episode     {tin / len(rows):.0f} in / {tout / len(rows):.0f} out")
     print(f"  cost            ${spent:.3f}   (${spent / len(rows):.5f} per episode)")
-    print(f"  sec/episode     {el / len(rows) * WORKERS:.1f} serial, "
+    print(f"  sec/episode     {el / len(rows) * workers:.1f} serial, "
           f"{el / len(rows):.2f} wall at {WORKERS} workers")
     print(f"  no_pre_choice   {counters['no_pre_choice']}   errors {counters['errors']}")
     print("-" * 68)
