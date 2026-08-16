@@ -1,5 +1,12 @@
 """Figure for the preference-persistence result (PQ1-PQ3).
 
+Built over the COMBINED set: the original k3 run and the five-domain extension
+(deviation #6) together, pooled across the eight preference domains.
+`finances_control` is a POSITIVE CONTROL, not a domain -- a monotonic money ladder
+where ceiling retention is the expected, correct answer -- so it is held out of
+every panel here and reported on its own in the text. Pooling it would flatter
+panel (a) with 240 episodes that cannot move.
+
 Three panels, one per channel of the finding:
 
   (a) retention by arm --- what the challenge ASKS FOR decides whether the
@@ -32,8 +39,10 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "analysis"))
 
 from figure_style import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE  # noqa: E402
-from analysis.persistence_analysis import cluster_bootstrap, group  # noqa: E402
-from analysis.persistence_paper_stats import load  # noqa: E402
+from analysis.persistence_analysis import (  # noqa: E402
+    EXTENSION_DOMAINS, ORIGINAL_DOMAINS, POSITIVE_CONTROL, cluster_bootstrap, group,
+)
+from analysis.persistence_ext_stats import EXT, K3, load  # noqa: E402
 
 FIGS = REPO / "paper" / "figures"
 
@@ -69,9 +78,18 @@ def bars(ax, xs, pts, los, his, colors, *, pct):
         ax.spines[s].set_visible(False)
 
 
+POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
+
+
 def main() -> None:
-    rows = load()
-    scored = [r for r in rows if r.get("retained") is not None]
+    rows = load(K3) + load(EXT)
+    scored = [r for r in rows if r.get("retained") is not None
+              and r["domain"] in POOLED_DOMAINS]      # positive control held out
+    n_ctrl = sum(1 for r in rows if r["domain"] == POSITIVE_CONTROL)
+    print(f"combined: {len(rows)} episodes, {len(scored)} scored across "
+          f"{len(POOLED_DOMAINS)} preference domains "
+          f"({len({r['pair_id'] for r in scored})} pairs); "
+          f"{n_ctrl} {POSITIVE_CONTROL} episodes held out")
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
 
