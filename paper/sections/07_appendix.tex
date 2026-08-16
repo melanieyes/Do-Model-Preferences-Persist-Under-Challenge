@@ -173,12 +173,14 @@ excludes zero.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{three_model.png}
-  \caption{\textbf{(a)}~Per-pair order gap, one point per pair, jittered vertically; the
-  black rule is the median. \texttt{gemini-3.5-flash} is shown without an estimate
-  because it declines the task (Appendix~\ref{app:welfare}); plotting a 25-pair mean
-  beside a 130-pair one would invite a comparison it cannot support.
-  \textbf{(b)}~Share of responses that were a usable forced choice.}
+  \includegraphics[width=\textwidth]{four_model.png}
+  \caption{Per-pair order gap on the discrete $k=\pairK{}$ measure, one point per pair,
+  jittered vertically; the black rule is the median. Four measured cells across three
+  models. \texttt{gemini-3.5-flash} is absent rather than empty: it declines the task
+  (Appendix~\ref{app:welfare}), so a gap computed over the pairs it will answer would be
+  conditioned on its willingness to answer. The discrete measure is used throughout
+  because Gemini exposes no log-probabilities; where both are available they agree to
+  $0.001$.}
   \label{fig:three-model}
 \end{figure}
 

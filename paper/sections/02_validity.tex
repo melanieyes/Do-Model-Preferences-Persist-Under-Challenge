@@ -22,11 +22,16 @@ failure case the two quantities are deterministically opposed.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.72\textwidth]{gap_vs_mean.png}
-  \caption{Order-averaged $P(\text{option a})$ against order gap on \pairModel{}, one
-  point per pair per setting. The shaded column is what a naive $0.3$--$0.7$ split filter
-  accepts; the darker block is the part of it that is position-driven. Perfect balance and
-  total position dependence coincide at the apex.}
+  \includegraphics[width=\textwidth]{gap_vs_mean_models.png}
+  \caption{Order-averaged $P(\text{option a})$ against order gap, one point per pair per
+  setting, on the two targets whose APIs expose log-probabilities. The shaded column is
+  what a naive $0.3$--$0.7$ split filter accepts; the darker block is the part of it that
+  is position-driven. Perfect balance and total position dependence coincide at the apex,
+  and the same structure appears on \texttt{gpt-5.4-nano}, which has no reasoning stage to
+  disable --- so the shape is not an artefact of suppressing reasoning.
+  \texttt{gemini-2.5-flash} is absent because that API returns no log-probabilities and
+  the discrete estimate at $k=\pairK{}$ is too coarse to resolve the shape; its order gap
+  is in Appendix~\ref{app:posbias}.}
   \label{fig:gap-vs-mean}
 \end{figure}
 
