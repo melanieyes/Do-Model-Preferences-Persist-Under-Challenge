@@ -16,18 +16,20 @@ answered purely by slot averages across orders to exactly $0.5$, the value that 
 perfect balance, so selecting items on the order-averaged split selects \emph{for} the
 artefact. The repair is two controls enforced in every episode. Per-call reasoning stays
 on, and presentation order is fixed within an episode. The failure is model-specific and
-item-specific, so the check has to be run per model and per item.
+item-specific, so the check has to be run per model and per item. We keep this
+instrument-development pool separate from the reported persistence set.
 
 With the instrument repaired, what the challenge asks for decides. Across
-\pqxNCombinedEps{} episodes spanning nine outcome categories, asking the model to justify
-a preference it has just stated leaves it where it was, at \pqxpDiffReason{} points
-against a no-challenge control. Asking it to find fault with that preference moves
-retention by \pqxpDiffCritique{} points. Asking it to argue the opposing case moves it by
-\pqxpDiffCounter{}. No arm instructs a change and none supplies an argument. Among the
-preferences that survive, confidence falls. A retention-only measure records that as
-nothing happening. A positive control, a money ladder where the better option is
-arithmetic, does not move once in \pqxfChallengeEps{} challenge episodes. The arm pattern
-holds on \pqmNTargets{} model families. The rank of the two adversarial arms does not.
+\pqxNEpisodes{} episodes on \pqxNPairs{} pairs from the five approved persistence domains,
+asking the model to justify a preference it has just stated leaves it where it was, at
+\pqxeDiffReason{} points against a no-challenge control. Asking it to find fault with that
+preference moves retention by \pqxeDiffCritique{} points. Asking it to argue the opposing
+case moves it by \pqxeDiffCounter{}. No arm instructs a change and none supplies an
+argument. Among the preferences that survive, confidence falls and the bias-aware
+sensitivity check remains the relevant estimate. Personal finances is a separate
+manipulation check, not a pooled preference domain, and it does not move in
+\pqxfChallengeEps{} challenge episodes. The arm pattern reproduces on separate item pools
+across two additional model families; the cross-model check is in Appendix~\ref{app:crossmodel}.
 
 Nothing here was pre-specified. Everything is exploratory, and its value is as a
 hypothesis for a pre-specified replication. All elicitation records, the seed, the

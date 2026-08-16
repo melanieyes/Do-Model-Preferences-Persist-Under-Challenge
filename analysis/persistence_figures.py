@@ -93,6 +93,13 @@ def bars(ax, xs, pts, los, his, colors, *, pct):
 
 
 POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
+REPORTED_DOMAINS = (
+    "video_games",
+    "sports",
+    "pop_culture",
+    "sci_tech",
+    "finances_control",
+)
 
 # All three targets ran the IDENTICAL 130-pair pool and answered essentially every
 # episode, so this is a same-pool comparison rather than three item sets side by side.
@@ -191,6 +198,55 @@ def build(scope: str) -> None:
     print(f"  wrote {out.relative_to(REPO)}")
 
 
+def build_domains() -> None:
+    """Retention by arm across the five approved domains plus the positive control."""
+    rows = [r for f in (K3, EXT) for r in load(f)]
+    scored = [r for r in rows if r.get("retained") is not None and r["domain"] in REPORTED_DOMAINS]
+    fig, ax = plt.subplots(figsize=(12.0, 3.8))
+    x_base = np.arange(len(REPORTED_DOMAINS))
+    width = 0.18
+    arm_to_offset = {arm: (i - 1.5) * width for i, arm in enumerate(ARMS)}
+    for arm in ARMS:
+        ys, los, his = [], [], []
+        for dom in REPORTED_DOMAINS:
+            p, lo, hi, *_ = cluster_bootstrap(
+                group(scored,
+                      lambda r, d=dom, a=arm: r["domain"] == d and r["arm"] == a,
+                      lambda r: r["retained"]))
+            ys.append((p * 100) if p is not None else np.nan)
+            los.append((lo * 100) if p is not None else np.nan)
+            his.append((hi * 100) if p is not None else np.nan)
+        xs = x_base + arm_to_offset[arm]
+        ax.bar(xs, ys, width=width * 0.9, color=COLOR[arm], edgecolor=AXIS,
+               linewidth=0.6, zorder=2, label=LABEL[arm])
+        for x, lo, hi in zip(xs, los, his):
+            if np.isnan(lo) or np.isnan(hi):
+                continue
+            ax.plot([x, x], [lo, hi], color=INK, linewidth=1.2, zorder=3)
+            ax.plot([x - 0.05, x + 0.05], [lo, lo], color=INK, linewidth=1.0, zorder=3)
+            ax.plot([x - 0.05, x + 0.05], [hi, hi], color=INK, linewidth=1.0, zorder=3)
+
+    ax.set_xticks(x_base)
+    ax.set_xticklabels([d.replace("_", " ") for d in REPORTED_DOMAINS], rotation=20,
+                       ha="right", fontsize=8)
+    ax.set_ylim(0, 110)
+    ax.set_ylabel("retention (%)", fontsize=9)
+    ax.set_title("Retention by domain and arm for the approved persistence set",
+                 fontsize=9.5, loc="left", color=INK)
+    ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    ax.legend(frameon=False, fontsize=7.5, ncol=4, columnspacing=1.0,
+              handlelength=1.1, loc="upper center", bbox_to_anchor=(0.5, 1.08))
+    fig.tight_layout()
+    out = FIGS / "persistence_domains.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  wrote {out.relative_to(REPO)}")
+
+
 def build_models() -> None:
     """Retention by arm across targets, on the same 130 pairs.
 
@@ -255,9 +311,15 @@ def build_models() -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="persistence figures, by domain scope")
-    ap.add_argument("--scope", choices=("original", "combined", "models", "both"), default="both",
-                    help="which domain set to draw; default regenerates both")
+    ap.add_argument("--scope", choices=("original", "combined", "domains", "models", "both"),
+                    default="both",
+                    help="which figure set to draw; default regenerates all relevant figures")
     a = ap.parse_args()
-    scopes = ("original", "combined", "models") if a.scope == "both" else (a.scope,)
+    scopes = ("original", "combined", "domains", "models") if a.scope == "both" else (a.scope,)
     for sc in scopes:
-        build_models() if sc == "models" else build(sc)
+        if sc == "models":
+            build_models()
+        elif sc == "domains":
+            build_domains()
+        else:
+            build(sc)

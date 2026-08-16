@@ -260,6 +260,7 @@
   <div class="tldr sans">
     <h2>The short version</h2>
     <ul>
+      <li>On the reported five-domain persistence set, the model keeps its original preference in <strong>99.7%</strong> of no-challenge and "explain your choice" episodes, but in only <strong>55.6%</strong> and <strong>61.5%</strong> of challenge episodes that ask it to find flaws or argue the other side.</li>
       <li>Asking a model to <em>explain</em> a choice it just made changes nothing. It keeps the choice as often as if you had said nothing at all.</li>
       <li>Asking it to <em>find flaws</em> in the choice, or to <em>argue for the other option</em>, flips roughly 40 to 75% of choices, depending on the model. No challenge ever says "change your answer" or offers any argument of its own.</li>
       <li>When the choice survives, the model's stated confidence quietly drops. A measure that only tracks the choice records nothing.</li>
@@ -449,10 +450,11 @@
     </div>
     <div class="chart" id="chart-main"></div>
     <figcaption>
-      deepseek-v4-pro on the original four categories: 1,560 conversations, 130 item pairs.
-      Whiskers are 95% confidence intervals (bootstrap, 10,000 resamples, clustered by item
-      pair). Five categories added later by the same procedure reproduce the pattern; in
-      those, "explain your choice" changed the outcome in zero conversations out of 960.
+      deepseek-v4-pro on the reported five-domain persistence set: video games, sports, pop
+      culture, science and technology, with personal finances held out as a separate positive
+      control row. Whiskers are 95% confidence intervals (bootstrap, 10,000 resamples,
+      clustered by item pair). The same pattern reproduces across the reported domains, while
+      the money-ladder row stays at ceiling and is never pooled into the preference estimate.
     </figcaption>
     <details class="data">
       <summary>Show the numbers</summary>

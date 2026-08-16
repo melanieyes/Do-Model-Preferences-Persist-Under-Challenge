@@ -384,8 +384,8 @@ carry this in the Limitations as a live risk rather than a resolved one.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence.png}
-  \caption{Persistence under challenge on the original four domains: \pqNEpisodes{}
-  episodes, \pbN{} pairs, \pairModel{}. These are the estimates quoted in
+  \caption{Persistence under challenge on the reported five-domain set: \pqxNEpisodes{}
+  episodes, \pqxNPairs{} pairs, \pairModel{}. These are the main estimates quoted in
   Sections~\ref{sec:pq1} and \ref{sec:pq3}. Bars are means, whiskers bootstrap 95\% CIs
   over pairs, \num{10000} resamples. \textbf{(a)}~Retention by arm.
   \textbf{(b)}~$\Delta$confidence among episodes that \emph{held}, as per-arm means and
@@ -399,28 +399,42 @@ carry this in the Limitations as a live risk rather than a resolved one.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_combined.png}
-  \caption{The same three channels over the combined set of
-  Section~\ref{sec:extension}: the original run and the five-domain extension pooled
-  across the \pqxNPooledDomains{} preference domains, \pqxpEps{} scored episodes,
-  \pqxpPairs{} pairs. \texttt{finances\_control} is a positive control rather than a
-  domain and is held out of all three panels (\pqxfEps{} episodes), since ceiling
-  retention there is the expected result and pooling it would flatter panel~(a). The arm
-  pattern is unchanged from Figure~\ref{fig:persistence}: what the challenge asks for
-  decides, and the two arms that move choices cost confidence on the ones they leave
-  standing.}
+  \caption{The same three channels over the five approved persistence domains with the
+  positive-control row shown separately. The preference-domain estimate is built from the
+  four reported domains, while \texttt{finances\_control} is held out of the PQ panels
+  because ceiling retention there is the expected result and pooling it would flatten
+  panel~(a). The arm pattern is unchanged from Figure~\ref{fig:persistence}: what the
+  challenge asks for decides, and the two arms that move choices cost confidence on the
+  ones they leave standing.}
   \label{fig:persistence-combined}
 \end{figure}
 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_domains.png}
+  \caption{Retention by arm across the four preference domains and the positive-control
+  row: \texttt{video\_games}, \texttt{sports}, \texttt{pop\_culture},
+  \texttt{sci\_tech}, and \texttt{finances\_control}. The final row is a manipulation
+  check rather than a pooled preference domain, so it is shown explicitly but never mixed
+  into the preference-domain estimate. Bars show the mean per domain and arm with
+  bootstrap 95\% CIs over pairs.}
+  \label{fig:persistence-domains}
+\end{figure}
+
+Figure~\ref{fig:persistence-domains} makes the domain comparison explicit: the same arm
+ordering appears across the four reported preference domains, and the financial ladder
+stays at ceiling as expected under the positive-control check.
+
 \paragraph{PQ2 in full.} Pooled over arms, retention runs \pqConsSix{}\%,
 \pqConsEight{}\% and \pqConsTen{}\% at balance-pilot consistency $0.6$, $0.8$ and $1.0$
-(\pqConsSixPairs{}, \pqConsEightPairs{} and \pqConsTenPairs{} pairs on the original
-four domains). At $k=\pairK{}$ the covariate takes only these three values, so it is a
+(\pqConsSixPairs{}, \pqConsEightPairs{} and \pqConsTenPairs{} pairs in the reported
+persistence set). At $k=\pairK{}$ the covariate takes only these three values, so it is a
 three-level ordinal predictor with most of its mass at ceiling rather than a continuum.
 
-\paragraph{PQ4 in full.} On the original four domains, \emph{wellbeing} holds up best
-under challenge (\pqWellRetCritique{}\% and \pqWellRetCounter{}\%) and \emph{recreation}
-worst (\pqRecRetCritique{}\% under both challenge arms). The confidence pattern runs
-with it: \emph{wellbeing} is the only domain where confidence falls
+\paragraph{PQ4 in full.} On the reported four preference domains, \emph{wellbeing} holds
+up best under challenge (\pqWellRetCritique{}\% and \pqWellRetCounter{}\%) and
+\emph{recreation} worst (\pqRecRetCritique{}\% under both challenge arms). The confidence
+pattern runs with it: \emph{wellbeing} is the only domain where confidence falls
 (\pqWellConfCritique{} and \pqWellConfCounter{}), while \emph{recreation} gains
 (\pqRecConfCritique{} and \pqRecConfCounter{}).
 
@@ -439,14 +453,14 @@ flip rate does not depend on which slot the model's first choice occupied
 retention differs between the two presentation orders by at most \pqOrdGapMax{} points,
 against an arm effect of \pqDiffCritique{}.
 
-\paragraph{The slot-driven pairs of the original pool.} The \pqSlottyPairs{} pairs the
+\paragraph{The slot-driven pairs of the extension pool.} The \pqSlottyPairs{} pairs the
 balance pilot flagged as slot-driven, meaning the model chose the same slot on every
 pilot resample, flip at \pqSlottyFlip{}\% under challenge against \pqOtherFlip{}\% for the
 remaining \pqOtherPairs{}. That is what one would expect if position instability and
 challenge instability share a cause, but it is \pqSlottyPairs{} pairs and
 \pqSlottyEps{} episodes, and we report it as a direction rather than a result. The
-extension's sports domain (Section~\ref{sec:extension}) is the same phenomenon at a
-size that supports a sensitivity analysis.
+sports domain of the reported extension is the same phenomenon at a size that supports a
+sensitivity analysis.
 
 
 \begin{figure}[!htb]
@@ -501,8 +515,8 @@ pooled. The ordering is not a quirk of one sample. Across the \pqxPredOneOf{} pr
 domains, \texttt{self\_critique} reverses more in \pqxPredOneDoms{} and
 \texttt{counter\_consideration} in \pqxPredOneCounterMore{}. The two arms tie exactly in
 \pqxPredOneTied{} (\emph{recreation}, both at \pqRecRetCritique{}\%). On this target
-\texttt{counter\_consideration} is nowhere the most reversing arm, in the original four
-domains or the five added ones.
+\texttt{counter\_consideration} is nowhere the most reversing arm in the reported
+preference domains.
 
 We had expected that supplying the opposing case would be the stronger intervention,
 because it does more of the work for the model. The data say the opposite. Being asked to
@@ -530,10 +544,9 @@ than assuming it. Among choices that did not move, confidence falls under both c
 arms and rises under reason-elicitation.
 
 \paragraph{Prediction 3: higher-consistency pairs retain more.} Holds, in every domain
-set. The slope of per-pair retention on balance-pilot consistency is \pqxoSlope{}
-(\([\pqxoSlopeLo{}, \pqxoSlopeHi{}]\)) on the original four domains, \pqxpSlope{}
-(\([\pqxpSlopeLo{}, \pqxpSlopeHi{}]\)) pooled over \pqxNPooledDomains{}, and
-\pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)) on the extension domains alone. No
-interval reaches zero. This is the prediction the unfiltered pool was run to make
+set. The slope of per-pair retention on balance-pilot consistency is \pqxpSlope{}
+(\([\pqxpSlopeLo{}, \pqxpSlopeHi{}]\)) pooled over the reported preference domains and
+\pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)) on the approved extension set alone.
+No interval reaches zero. This is the prediction the unfiltered pool was run to make
 estimable. It is also the least surprising of the three. A preference the model already
 wavered on without any challenge is one a challenge can move.

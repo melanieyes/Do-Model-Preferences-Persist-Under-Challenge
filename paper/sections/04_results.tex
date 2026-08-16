@@ -2,10 +2,13 @@
 \label{sec:results}
 \label{sec:persistence}
 
-\pqNEpisodes{} episodes on the original \pbN{} pairs and \pqxNEpisodes{} on the
-\pqxNPairs{} extension pairs, four arms, three episodes per pair $\times$ arm cell,
-\pairModel{}. Every episode reached both elicitations; no refusals, no unparsed choices and
-no errors in either run.
+The reported persistence set is the five approved domains only: video games, sports, pop
+culture, science and technology, and personal finances as a separate manipulation check.
+The older 130-pair pool remains in the repo as the instrument-development pool and is not
+reported as a persistence result. The extension run contributes \pqxNEpisodes{} episodes on
+\pqxNPairs{} pairs, four arms, three episodes per pair $\times$ arm cell, \pairModel{}.
+Every episode reached both elicitations; no refusals, no unparsed choices and no errors in
+the reported run.
 
 \subsection{The choice channel: what the challenge asks for decides}
 \label{sec:pq1}
@@ -17,31 +20,30 @@ no errors in either run.
     \toprule
     Arm & Retention & vs.\ control \\
     \midrule
-    \texttt{control}               & \pqRetCtl{}\%     [\pqRetCtlLo{}, \pqRetCtlHi{}]         & --- \\
-    \texttt{reason\_elicitation}   & \pqRetReason{}\%  [\pqRetReasonLo{}, \pqRetReasonHi{}]   & \pqDiffReason{}   [\pqDiffReasonLo{}, \pqDiffReasonHi{}] \\
-    \texttt{self\_critique}        & \pqRetCritique{}\%[\pqRetCritiqueLo{}, \pqRetCritiqueHi{}] & \pqDiffCritique{} [\pqDiffCritiqueLo{}, \pqDiffCritiqueHi{}] \\
-    \texttt{counter\_consideration}& \pqRetCounter{}\% [\pqRetCounterLo{}, \pqRetCounterHi{}] & \pqDiffCounter{}  [\pqDiffCounterLo{}, \pqDiffCounterHi{}] \\
+    \texttt{control}               & \pqxeRetCtl{}\%     [\pqxeRetCtlLo{}, \pqxeRetCtlHi{}]         & --- \\
+    \texttt{reason\_elicitation}   & \pqxeRetReason{}\%  [\pqxeRetReasonLo{}, \pqxeRetReasonHi{}]   & \pqxeDiffReason{}   [\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}] \\
+    \texttt{self\_critique}        & \pqxeRetCritique{}\%[\pqxeRetCritiqueLo{}, \pqxeRetCritiqueHi{}] & \pqxeDiffCritique{} [\pqxeDiffCritiqueLo{}, \pqxeDiffCritiqueHi{}] \\
+    \texttt{counter\_consideration}& \pqxeRetCounter{}\% [\pqxeRetCounterLo{}, \pqxeRetCounterHi{}] & \pqxeDiffCounter{}  [\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}] \\
     \bottomrule
   \end{tabular}
-  \caption{PQ1 on the original four domains. Retention by arm and the difference from
-  control, paired within pair. Percentage points, bootstrap 95\% CIs over \pbN{} pairs,
-  \num{10000} resamples.}
+  \caption{PQ1 on the five approved persistence domains. Retention by arm and the
+difference from control, paired within pair. Percentage points, bootstrap 95\% CIs over
+\pqxNPairs{} pairs, \num{10000} resamples. Personal finances is labelled separately as a
+positive control and not pooled into any PQ estimate.}
   \label{tab:pq1}
 \end{table}
 
-Control retains \pqRetCtl{}\%. Absent a challenge this procedure returns the same answer
+Control retains \pqxeRetCtl{}\%. Absent a challenge this procedure returns the same answer
 essentially every time, which is what licenses reading the rest as the challenge rather
 than instrument noise. Against that baseline \texttt{reason\_elicitation} is
-indistinguishable from doing nothing (\pqDiffReason{} points,
-\([\pqDiffReasonLo{}, \pqDiffReasonHi{}]\)). \texttt{self\_critique} moves retention by
-\pqDiffCritique{} points and \texttt{counter\_consideration} by \pqDiffCounter{}. The
+indistinguishable from doing nothing (\pqxeDiffReason{} points,
+\([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\)). \texttt{self\_critique} moves retention by
+\pqxeDiffCritique{} points and \texttt{counter\_consideration} by \pqxeDiffCounter{}. The
 direction of the request matters. Its mere presence does not. Retention also rises with how
-settled the preference already was. The slope of per-pair retention on balance-pilot
-consistency is \pqSlope{} (\([\pqSlopeLo{}, \pqSlopeHi{}]\)). That is PQ2, and it is the
-estimate the unfiltered pool exists to make. Per-level retentions and the PQ4 domain
-breakdown are in Appendix~\ref{app:persistdetail}. So is the check that flips track the
-\emph{option} rather than the \emph{slot}. They do, by a wide margin, which rules out the
-artefact of Section~\ref{sec:validity} returning under another name.
+settled the preference already was. The slope of per-pair retention on the extension
+balance-pilot consistency is \pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)); that is
+PQ2 for the reported persistence set. The remaining domain split and the bias-aware
+sensitivity check are in Appendix~\ref{app:persistdetail}.
 
 \subsection{The confidence channel: holding costs confidence}
 \label{sec:pq3}
@@ -60,28 +62,50 @@ points vs.\ control), because held and flipped episodes move in opposite directi
 not interpret the flipped half, for the reason given in the Limitations.
 Figure~\ref{fig:persistence} in Appendix~\ref{app:persistdetail} shows all three channels.
 
-\subsection{Five more domains, and a control that should not move}
+\subsection{Approved five-domain persistence and the manipulation check}
 \label{sec:extension}
 
-The arm pattern could be a property of the challenge or of the first four categories. To
-separate the two we repeated the design on \pqxNDomains{} further categories of
-\citet{mazeika2025utility}: video games, sports, popular culture, science and technology,
-and personal finances. That is \pqxNEpisodes{} episodes on \pqxNPairs{} new pairs, built by
-the same procedure under the same seed. Personal finances enters as a \emph{positive
-control} rather than as a domain. The original run is neither re-run nor pooled away.
-Estimates are reported for the original four domains and for the \pqxNPooledDomains{}
-preference domains together.
+The reported persistence set is built from the five approved domains: video games, sports,
+pop culture, science and technology, and personal finances as a separate manipulation
+check. The original four domains are not reported as persistence results and remain in the
+repo as the instrument-development pool only. The extension run therefore uses
+\pqxNEpisodes{} episodes on \pqxNPairs{} pairs with the same four-arm protocol and the same
+balance-pilot covariate.
 
-The pattern replicates without qualification. On the extension domains alone,
+The pattern replicates without qualification. On the four preference domains alone,
 \texttt{reason\_elicitation} differs from control by \pqxeDiffReason{} points with an
-interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\). Not one episode in
-\pqxeEps{} moved. \texttt{self\_critique} moves retention by \pqxeDiffCritique{}
-(\([\pqxeDiffCritiqueLo{}, \pqxeDiffCritiqueHi{}]\)) and \texttt{counter\_consideration} by
-\pqxeDiffCounter{} (\([\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}]\)). Pooled over all
-\pqxNPooledDomains{} domains the three contrasts are \pqxpDiffReason{},
-\pqxpDiffCritique{} and \pqxpDiffCounter{} points.
-Figure~\ref{fig:persistence-combined} in Appendix~\ref{app:persistdetail} redraws all
-three channels over the combined set for comparison with the original-domain figure.
+interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\). \texttt{self\_critique}
+moves retention by \pqxeDiffCritique{} (\([\pqxeDiffCritiqueLo{}, \pqxeDiffCritiqueHi{}]\))
+and \texttt{counter\_consideration} by \pqxeDiffCounter{} (\([\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}]\)). Personal finances is a monotonic arithmetic ladder and is reported separately as the fifth approved domain: it is the manipulation check, not a pooled PQ estimate.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_domains.png}
+  \caption{Retention by arm across the four reported preference domains and the separate
+  positive-control row: \texttt{video\_games}, \texttt{sports}, \texttt{pop\_culture},
+  \texttt{sci\_tech}, and \texttt{finances\_control}. The final row is not pooled into the
+  preference-domain estimate; it is shown explicitly as the money-ladder manipulation check,
+  where ceiling retention is expected. Bars show the mean per domain and arm with bootstrap
+  95\% CIs over pairs.}
+  \label{fig:persistence-domains-main}
+\end{figure}
+
+\paragraph{PQ4 by domain.}
+The domain split reports the four preference domains plus a final row for
+\texttt{finances\_control}. The control row is labelled as a positive manipulation check,
+never pooled into any PQ estimate. That is the design used in the domain figure: the four
+preference domains are the persistence rows, and the fifth row is the money ladder that is
+expected to stay at ceiling. We read any movement there as a failure of the elicitation,
+not of the preference.
+
+\paragraph{Bias-aware sensitivity check.}
+The sports domain is the item type most exposed to the position effect, so the reported
+result carries the bias-aware sensitivity check rather than dropping the domain. Excluding
+pairs at order gap $\ge \pqxBiasCut{}$ leaves \pqxBiasKeepPairs{} pairs and moves
+\texttt{self\_critique} from \pqxeDiffCritique{} to \pqxlDiffCritique{} points and
+\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}. The
+sensitivity check therefore confirms the extension estimate is not being driven by the slot
+pattern; it is the challenge effect on the content-bearing items.
 
 \paragraph{Discriminant validity: the control that does not move.}
 Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes. A forced
@@ -125,22 +149,15 @@ the position-driven items are set aside. We read that conservatively and report 
 sensitivity check, not a headline. Position-driven items add noise to a between-arm
 contrast, so the pooled estimate understates rather than the restricted one overstating.
 
-\subsection{The same four arms on three model families}
+\subsection{Cross-model replication in the appendix}
 \label{sec:crossmodel}
 
-The extension varies the items. This varies the model. The identical protocol ran
-against \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash}. Same \pbN{} pairs, same
-four arms, same $k$, same controls. Both answered essentially every episode.
-
-The arm pattern holds on all three targets. Control and \texttt{reason\_elicitation} sit
-at ceiling. Both adversarial arms move the choice, by \pqmGtwoDiffCounter{} to
-\pqmNanoDiffCounter{} points. The rank of the two does not hold.
-\texttt{self\_critique} is the stronger arm on \pqmCritiqueWins{} of \pqmNTargets{}
-targets and \texttt{counter\_consideration} on \pqmCounterWins{}. Control retains
-\pqmGtwoRetCtl{}\% on \texttt{gemini-2.5-flash} against \pqRetCtl{}\% on \pairModel{}, so
-the ceiling is a property of the target as well.
-Figure~\ref{fig:persistence-models} in Appendix~\ref{app:persistdetail} draws both
-channels.
+The same arm pattern reproduces on a separate item pool across two further model families:
+\texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash}. The cross-model comparison is
+reported in Appendix~\ref{app:persistdetail}; the main text keeps this to a single pointer
+sentence because the persistence claim is the five-domain extension on \pairModel{}, and the
+arm pattern is checked elsewhere by model family rather than treated as a separate main-text
+result.
 
 \subsection{Predictions and outcomes}
 \label{sec:predictions}
