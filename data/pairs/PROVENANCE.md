@@ -210,6 +210,11 @@ having a team preference); the observed rate below is the check.
 | `pop_culture` | 20 | 0.0% | 19 | 0 | 1 | 1 |
 | `sci_tech` | 20 | 0.0% | 16 | 0 | 4 | 2 |
 
+Sports returned a zero refusal rate but reproduced deviation #4's position-bias
+failure mode with reasoning on, so its pairs are retained with pilot position
+bias carried as a per-pair covariate rather than dropped; the numbers and the
+reasoning are in `prereg/DEVIATIONS.md` #6.
+
 ## Reproduce
 
 ```bash

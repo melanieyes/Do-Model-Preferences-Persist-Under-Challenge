@@ -370,6 +370,16 @@ mode of entry #4a); the observed rate is the check.
 | pop_culture | 20 | 0 | 19 | 0 | 1 | 1 |
 | sci_tech | 20 | 0 | 16 | 0 | 4 | 2 |
 
+The flagged risk for sports was refusal; the observed refusal rate is zero. The
+domain instead reproduces deviation #4's failure mode with reasoning ON: mean
+per-pair position bias 0.600 against 0.000–0.142 in the other four domains, with
+10 of 20 pairs choosing the same slot on 4 or 5 of 5 counterbalanced samples. The
+reasoning control that removes position dependence globally does not remove it in
+this domain, so position dependence is item-specific as well as model-specific.
+Sports pairs are retained in the persistence run with pilot position bias carried
+as a per-pair covariate; extension estimates are reported with and without pairs
+at bias ≥ 0.5.
+
 **Persistence run (extension).** [TK episodes], deepseek-v4-pro, controls of
 entry #5 unchanged. Completed [TK date], $[TK] against the budget stop,
 [TK] refusals / [TK] errors / [TK] unparsed. Combined-set estimates and the
