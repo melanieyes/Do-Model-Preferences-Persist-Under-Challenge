@@ -58,6 +58,7 @@ from analysis.persistence_analysis import (  # noqa: E402
 from analysis.persistence_ext_stats import EXT, K3, load  # noqa: E402
 
 FIGS = REPO / "paper" / "figures"
+OUT_DIR_DATA = REPO / "data" / "persistence"
 
 ARMS = ("control", "reason_elicitation", "self_critique", "counter_consideration")
 LABEL = {"control": "control\n(no challenge)",
@@ -92,6 +93,14 @@ def bars(ax, xs, pts, los, his, colors, *, pct):
 
 
 POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
+
+# The three targets all ran the IDENTICAL 130-pair pool, so a cross-model figure is a
+# same-pool comparison rather than a comparison of two different item sets.
+MODELS = [
+    ("deepseek-v4-pro", "persistence_deepseek_k3.jsonl", "#2a78d6", False),
+    ("gpt-5.4-nano",    "persistence_nano_k3.jsonl",     "#d1662b", False),
+    ("gemini-3.5-flash", "persistence_gemini35_k3.jsonl", "#898781", True),  # conditioned
+]
 
 SCOPES = {
     # name: (episode files, domains kept, output filename)
@@ -173,10 +182,74 @@ def build(scope: str) -> None:
     print(f"  wrote {out.relative_to(REPO)}")
 
 
+def build_models() -> None:
+    """Retention by arm across targets, on the same 130 pairs.
+
+    gemini-3.5-flash is drawn hatched and labelled, not omitted: it declines the
+    forced choice in most episodes, so its bars rest on the ~18% it agreed to answer
+    and are conditioned on that willingness. Solid bars beside two models that
+    answered everything would invite exactly the comparison §5.4 says cannot be made;
+    dropping it entirely would hide that the instrument fails differently on a third
+    model.
+    """
+    dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
+                       else r["conf_post"] - r["conf_pre"])
+    fig, axes = plt.subplots(1, 2, figsize=(11.6, 3.9))
+    width = 0.26
+    for ax, metric, ylab, pct in ((axes[0], "ret", "retention (%)", True),
+                                  (axes[1], "dconf", r"$\Delta$confidence, held", False)):
+        for mi, (name, fname, colour, cond) in enumerate(MODELS):
+            rows = [r for r in load(OUT_DIR_DATA / fname) if r.get("retained") is not None]
+            xs, pts, los, his = [], [], [], []
+            for ai, arm in enumerate(ARMS):
+                sel = [r for r in rows if r["arm"] == arm]
+                if metric == "dconf":
+                    sel = [r for r in sel if r["retained"] is True]
+                    g = group(sel, lambda r: True, dconf)
+                else:
+                    g = group(sel, lambda r: True, lambda r: r["retained"])
+                pt, lo, hi, _, _ = cluster_bootstrap(g)
+                if pt is None:
+                    continue
+                k = 100 if pct else 1
+                xs.append(ai + (mi - 1) * width)
+                pts.append(pt * k); los.append(lo * k); his.append(hi * k)
+            n_scored = len(rows)
+            ax.bar(xs, pts, width=width * 0.92, color=colour, edgecolor=AXIS,
+                   linewidth=0.6, zorder=2, alpha=0.55 if cond else 1.0,
+                   hatch="///" if cond else None,
+                   label=f"{name}" + (f"  (only {n_scored} of 1560 scorable)" if cond else ""))
+            for x, lo, hi in zip(xs, los, his):
+                ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
+        ax.set_xticks(range(len(ARMS)))
+        ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=7.5)
+        ax.set_ylabel(ylab, fontsize=9)
+        ax.set_axisbelow(True); ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+        if not pct:
+            ax.axhline(0, color=AXIS, lw=0.9, zorder=1)
+    axes[0].set_ylim(0, 118)
+    axes[0].legend(fontsize=7.2, frameon=False, loc="lower left")
+    axes[0].set_title("(a) Retention by arm", fontsize=9.5, loc="left", color=INK)
+    axes[1].set_title("(b) \u0394confidence among preferences that held",
+                      fontsize=9.5, loc="left", color=INK)
+    fig.suptitle("Same 130 pairs, three targets. The pattern holds on both models that "
+                 "answer \u2014 but the two challenge arms swap rank.\n"
+                 "Hatched bars rest on the episodes gemini-3.5-flash did not decline and "
+                 "are conditioned on that willingness.",
+                 fontsize=8.4, color=INK_2, y=1.10, x=0.008, ha="left")
+    fig.tight_layout()
+    out = FIGS / "persistence_models.png"
+    fig.savefig(out, bbox_inches="tight"); plt.close(fig)
+    print(f"  wrote {out.relative_to(REPO)}")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="persistence figures, by domain scope")
-    ap.add_argument("--scope", choices=("original", "combined", "both"), default="both",
+    ap.add_argument("--scope", choices=("original", "combined", "models", "both"), default="both",
                     help="which domain set to draw; default regenerates both")
     a = ap.parse_args()
-    for sc in (("original", "combined") if a.scope == "both" else (a.scope,)):
-        build(sc)
+    scopes = ("original", "combined", "models") if a.scope == "both" else (a.scope,)
+    for sc in scopes:
+        build_models() if sc == "models" else build(sc)
