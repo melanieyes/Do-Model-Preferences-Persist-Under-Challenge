@@ -103,6 +103,24 @@ class DeepSeekClient(_OpenAICompatClient):
         super().__init__(model, base_url, _require("DEEPSEEK_API_KEY"), name="deepseek")
 
 
+class OpenAIClient(_OpenAICompatClient):
+    """OpenAI chat models, used only where a NON-REASONING model is required.
+
+    `supports_reasoning_control` is False deliberately. The OpenAI models that expose
+    a reasoning control are reasoning models, and the roster requires a model that
+    spends no reasoning tokens at all -- verified by effect from
+    `usage.completion_tokens_details.reasoning_tokens`, not from the model name.
+    Leaving the flag False keeps the persistence runner's control-1 assertion honest:
+    it will refuse to start on this client rather than pretend reasoning was asserted.
+    """
+
+    supports_reasoning_control = False
+
+    def __init__(self, model: str = "gpt-5.4-nano", base_url: str | None = None):
+        super().__init__(model, base_url or "https://api.openai.com/v1",
+                         _require("OPENAI_API_KEY").strip(), name="openai")
+
+
 # ARCHIVED: pressure study only (docs/archive/prereg-v1/). The Modal app that served
 # this endpoint was deleted with that study's code, so the endpoint is undeployable;
 # nothing in the persistence pipeline uses this class. Kept, not removed.
@@ -199,6 +217,7 @@ class GeminiClient(ChatClient):
 REGISTRY: dict[str, type[ChatClient]] = {
     "deepseek": DeepSeekClient,
     "gemini": GeminiClient,
+    "openai": OpenAIClient,
     "gemma": GemmaModalClient,
 }
 

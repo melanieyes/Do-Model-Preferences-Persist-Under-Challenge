@@ -131,6 +131,16 @@ targets:
     # separately and never pooled with the DeepSeek estimates.
     refusal_conditioned: true
 
+  - key: nano
+    client: openai
+    model: gpt-5.4-nano
+    logprobs: true          # available on this model; verified by probe
+    # Chosen at probe time per the roster's gated rule: gpt-5-mini was the named
+    # first candidate but emits reasoning tokens (16 on a one-letter reply), so it
+    # fails the "non-reasoning" requirement. gpt-5.4-nano returns 0 reasoning
+    # tokens -- verified by effect from usage.completion_tokens_details.
+    non_reasoning_verified: true
+
   - key: gemma
     client: gemma
     model: google/gemma-2-9b-it
@@ -177,6 +187,8 @@ cost:
     # pre-run estimate has something to print. Actual spend for this model is
     # taken from measured usage after the run, not from this line.
     gemini-3.5-flash:     {input: 0.30, output: 2.50}
+    # PROXY pending confirmation, same caveat as above.
+    gpt-5.4-nano:         {input: 0.05, output: 0.40}
     # retired — last-known prices, for reference only
     deepseek-chat:        {input: 0.27, output: 1.10}
     gemini-2.0-flash:     {input: 0.10, output: 0.40}

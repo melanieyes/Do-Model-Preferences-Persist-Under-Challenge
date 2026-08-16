@@ -43,7 +43,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from src.clients import DeepSeekClient, GemmaModalClient  # noqa: E402
+from src.clients import REGISTRY  # noqa: E402
 from src.choice_scoring import classify  # noqa: E402
 from freeze_pairs import decide  # noqa: E402  (the keep/drop rule, defined once)
 from pair_scope import POSITIVE_CONTROLS  # noqa: E402
@@ -121,7 +121,8 @@ def order_schedule(k: int, pair_id: str) -> list[bool]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--target", default="deepseek", choices=["deepseek", "gemma"])
+    ap.add_argument("--target", default="deepseek",
+                    help="target key from configs/default.yaml")
     ap.add_argument("--limit", type=int, default=None, help="pilot only the first N pairs")
     ap.add_argument("--dry-run", action="store_true", help="print the cost estimate and exit")
     # Reasoning ON by default. With reasoning_effort="none" the target answers this
@@ -139,10 +140,19 @@ def main() -> None:
     if args.ext and not reasoning:
         raise SystemExit("--ext requires reasoning ON (deviation #6 control 1)")
     pool_path = POOL_EXT if args.ext else POOL
-    out_path = OUT_EXT if args.ext else (OUT_ON if reasoning else OUT_OFF)
+    if args.target == "deepseek":
+        out_path = OUT_EXT if args.ext else (OUT_ON if reasoning else OUT_OFF)
+    else:   # never write over the deepseek pilots this project already collected
+        suffix = "_ext" if args.ext else ""
+        out_path = PAIRS_DIR / f"balance_pilot_{args.target}{suffix}.jsonl"
 
     cfg = yaml.safe_load((ROOT / "configs" / "default.yaml").read_text())
-    target = next(t for t in cfg["targets"] if t["key"] == args.target)
+    try:
+        target = next(t for t in cfg["targets"] if t["key"] == args.target)
+    except StopIteration:
+        keys = ", ".join(t["key"] for t in cfg["targets"])
+        raise SystemExit(f"unknown --target {args.target!r}; configured: {keys}")
+    client_cls = REGISTRY[target["client"]]
     temperature = cfg["sampling"]["battery_temperature"]
 
     records = [json.loads(line) for line in pool_path.read_text().splitlines()]
@@ -188,8 +198,7 @@ def main() -> None:
             "Re-run with --confirm once the estimate above is approved."
         )
 
-    client = (DeepSeekClient(model=target["model"]) if args.target == "deepseek"
-              else GemmaModalClient(model=target["model"]))
+    client = client_cls(model=target["model"])
 
     out_f = out_path.open("w")
     out_f.write(json.dumps({
