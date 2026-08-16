@@ -204,11 +204,11 @@ having a team preference); the observed rate below is the check.
 
 | domain | piloted | refusal rate | never wavered | once | twice | kept |
 |---|---|---|---|---|---|---|
-| `finances_control` | [TK] | [TK] | [TK] | [TK] | [TK] | expected ≈ all "never" |
-| `video_games` | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
-| `sports` | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
-| `pop_culture` | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
-| `sci_tech` | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
+| `finances_control` | 20 | 0.0% | 20 | 0 | 0 | expected ≈ all "never" |
+| `video_games` | 20 | 0.0% | 15 | 3 | 2 | 1 |
+| `sports` | 20 | 0.0% | 5 | 4 | 11 | 1 |
+| `pop_culture` | 20 | 0.0% | 19 | 0 | 1 | 1 |
+| `sci_tech` | 20 | 0.0% | 16 | 0 | 4 | 2 |
 
 ## Reproduce
 
