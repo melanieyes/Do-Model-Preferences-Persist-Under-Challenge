@@ -66,7 +66,8 @@ refuses to start.
 ## Cost guard
 - Estimate token cost before any run > 20 episodes and print it. Never launch
   a full run without the human confirming (--confirm).
-- Modal: smoke test (1 episode) before any batch on Gemma.
+- Modal/Gemma belongs to the archived pressure study (docs/archive/prereg-v1/)
+  and is not used by the persistence pipeline.
 
 ## Secrets
 - Keys live in .env / Modal secrets only. Never print, commit, or hardcode.

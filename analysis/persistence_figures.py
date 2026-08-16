@@ -1,13 +1,23 @@
-"""Figure for the preference-persistence result (PQ1-PQ3).
+"""Figures for the preference-persistence result (PQ1-PQ3).
 
-Built over the COMBINED set: the original k3 run and the five-domain extension
-(deviation #6) together, pooled across the eight preference domains.
+Two scopes, one per figure, because the paper uses them for different jobs:
+
+  --scope original   the original four domains only (the k3 run). Sections 4.1-4.2
+                     quote these estimates, so the figure beside them must be drawn
+                     from exactly the same episodes -- no reconciliation, no caveat.
+  --scope combined   the original run and the five-domain extension pooled across
+                     the eight preference domains. This is the COMBINED view and it
+                     belongs with Section 4.3, which is where the paper first
+                     presents the extension as an independent replication. Putting
+                     it in the headline figure would show the reader the replication
+                     before the text has framed it as one.
+
 `finances_control` is a POSITIVE CONTROL, not a domain -- a monotonic money ladder
-where ceiling retention is the expected, correct answer -- so it is held out of
-every panel here and reported on its own in the text. Pooling it would flatter
-panel (a) with 240 episodes that cannot move.
+where ceiling retention is the expected, correct answer -- so it is held out of the
+combined figure entirely and reported on its own in the text. Pooling it would
+flatter panel (a) with episodes that cannot move.
 
-Three panels, one per channel of the finding:
+Three panels in both, one per channel of the finding:
 
   (a) retention by arm --- what the challenge ASKS FOR decides whether the
       preference survives; justifying it is indistinguishable from doing nothing;
@@ -19,13 +29,16 @@ Every bar carries its bootstrap 95% CI over pairs, per the house rule that no
 figure ships without one.
 
 Emits:
-    paper/figures/persistence.png
+    paper/figures/persistence.png            (--scope original)
+    paper/figures/persistence_combined.png   (--scope combined)
 
-    python analysis/persistence_figures.py
+    python analysis/persistence_figures.py               # regenerates both
+    python analysis/persistence_figures.py --scope original
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -80,16 +93,23 @@ def bars(ax, xs, pts, los, his, colors, *, pct):
 
 POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
 
+SCOPES = {
+    # name: (episode files, domains kept, output filename)
+    "original": ((K3,), tuple(ORIGINAL_DOMAINS), "persistence.png"),
+    "combined": ((K3, EXT), POOLED_DOMAINS, "persistence_combined.png"),
+}
 
-def main() -> None:
-    rows = load(K3) + load(EXT)
+
+def build(scope: str) -> None:
+    files, domains, fname = SCOPES[scope]
+    rows = [r for f in files for r in load(f)]
     scored = [r for r in rows if r.get("retained") is not None
-              and r["domain"] in POOLED_DOMAINS]      # positive control held out
-    n_ctrl = sum(1 for r in rows if r["domain"] == POSITIVE_CONTROL)
-    print(f"combined: {len(rows)} episodes, {len(scored)} scored across "
-          f"{len(POOLED_DOMAINS)} preference domains "
-          f"({len({r['pair_id'] for r in scored})} pairs); "
-          f"{n_ctrl} {POSITIVE_CONTROL} episodes held out")
+              and r["domain"] in domains]          # positive control never included
+    held_out = sum(1 for r in rows if r["domain"] == POSITIVE_CONTROL)
+    print(f"[{scope}] {len(rows)} episodes -> {len(scored)} scored across "
+          f"{len(domains)} domains ({len({r['pair_id'] for r in scored})} pairs)"
+          + (f"; {held_out} {POSITIVE_CONTROL} episodes held out" if held_out else ""))
+
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
 
@@ -147,10 +167,16 @@ def main() -> None:
 
     fig.tight_layout()
     FIGS.mkdir(parents=True, exist_ok=True)
-    out = FIGS / "persistence.png"
+    out = FIGS / fname
     fig.savefig(out, bbox_inches="tight")
-    print(f"wrote {out.relative_to(REPO)}")
+    plt.close(fig)
+    print(f"  wrote {out.relative_to(REPO)}")
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser(description="persistence figures, by domain scope")
+    ap.add_argument("--scope", choices=("original", "combined", "both"), default="both",
+                    help="which domain set to draw; default regenerates both")
+    a = ap.parse_args()
+    for sc in (("original", "combined") if a.scope == "both" else (a.scope,)):
+        build(sc)

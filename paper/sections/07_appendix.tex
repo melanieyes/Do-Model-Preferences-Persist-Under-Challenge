@@ -376,20 +376,31 @@ carry this in the Limitations as a live risk rather than a resolved one.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence.png}
-  \caption{Persistence under challenge over the combined set --- the original run and the
-  five-domain extension together, \pqxpEps{} scored episodes across the
-  \pqxNPooledDomains{} preference domains, \pqxpPairs{} pairs on \pairModel{}. Bars are
-  means, whiskers bootstrap 95\% CIs over pairs. \texttt{finances\_control} is a positive
-  control rather than a domain and is held out of all three panels
-  (\pqxfEps{} episodes); it is reported on its own in Section~\ref{sec:extension}.
-  \textbf{(a)}~Retention by arm. \textbf{(b)}~$\Delta$confidence among episodes that
-  \emph{held}, not differenced against control --- control sits at zero. The held-episode
-  figures quoted in Section~\ref{sec:pq3} are the original-domain estimates and are
-  slightly smaller than the pooled ones shown here; the difference is which domains are
-  included, not a disagreement.
-  \textbf{(c)}~PQ2: retention against balance-pilot consistency, which at $k=\pairK{}$
-  takes three values.}
+  \caption{Persistence under challenge on the original four domains --- \pqNEpisodes{}
+  episodes, \pbN{} pairs, \pairModel{}. These are the estimates quoted in
+  Sections~\ref{sec:pq1} and \ref{sec:pq3}. Bars are means, whiskers bootstrap 95\% CIs
+  over pairs, \num{10000} resamples. \textbf{(a)}~Retention by arm.
+  \textbf{(b)}~$\Delta$confidence among episodes that \emph{held}, as per-arm means and
+  not differenced against control, which sits at zero here. The contrasts quoted in
+  Section~\ref{sec:pq3} are paired within pair before averaging, so they differ from
+  these bars by a few tenths of a point. \textbf{(c)}~PQ2: retention against
+  balance-pilot consistency, which at $k=\pairK{}$ takes three values.}
   \label{fig:persistence}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_combined.png}
+  \caption{The same three channels over the combined set of
+  Section~\ref{sec:extension} --- the original run and the five-domain extension pooled
+  across the \pqxNPooledDomains{} preference domains, \pqxpEps{} scored episodes,
+  \pqxpPairs{} pairs. \texttt{finances\_control} is a positive control rather than a
+  domain and is held out of all three panels (\pqxfEps{} episodes), since ceiling
+  retention there is the expected result and pooling it would flatter panel~(a). The arm
+  pattern is unchanged from Figure~\ref{fig:persistence}: what the challenge asks for
+  decides, and the two arms that move choices cost confidence on the ones they leave
+  standing.}
+  \label{fig:persistence-combined}
 \end{figure}
 
 \paragraph{PQ2 in full.} Pooled over arms, retention runs \pqConsSix{}\%,

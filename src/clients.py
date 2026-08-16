@@ -98,6 +98,9 @@ class DeepSeekClient(_OpenAICompatClient):
         super().__init__(model, base_url, _require("DEEPSEEK_API_KEY"), name="deepseek")
 
 
+# ARCHIVED: pressure study only (docs/archive/prereg-v1/). The Modal app that served
+# this endpoint was deleted with that study's code, so the endpoint is undeployable;
+# nothing in the persistence pipeline uses this class. Kept, not removed.
 class GemmaModalClient(_OpenAICompatClient):
     """Target 2: Gemma-2-9B-IT on Modal/SGLang. Logprobs available (refusal mass).
 
