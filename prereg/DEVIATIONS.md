@@ -303,3 +303,81 @@ data in `data/persistence/` (**committed**, not gitignored — `data/raw/` is, a
 how `episodes_deepseek.jsonl` was lost, see `data/raw/DELETED_MANIFEST.md`);
 analysis in `analysis/persistence_analysis.py`, bootstrap 95% CIs over pairs, 10,000
 resamples.
+
+### #5a — Human validation not carried over (2026-08-16, data seen: YES → exploratory)
+
+Recorded for completeness of entry #5: **no human validation was run for the
+persistence study, and none was planned for it.** The prereg protocol (two
+annotators blind to arm, Cohen's κ; reduced by deviation #1 to a small
+eyeballed sample) codes two constructs that do not exist in the persistence
+design — whether pressure engages or bypasses reasoning, and whether a
+free-text state description reads as distress-associated. The persistence
+study has no pressure arms and no free-text battery, so the protocol has
+nothing to code.
+
+The design compensates structurally rather than by annotation: retention and
+ΔConfidence are code-derived from the parsed choice token and the parsed
+integer, with no LLM judge and no rater-coded construct anywhere in the
+pipeline (an explicit choice in `docs/execution-plan.md`, made to eliminate
+the held/abandoned boundary problem of entry #3 and the warmth note). The
+residual risk is the response classifier itself, which is unvalidated against
+human labels — and the scoring defect of entry #4a is what that risk looks
+like when it lands. Stated in the paper's human-validation subsection and in
+Limitations.
+
+---
+
+## #6 — Five-domain extension, one positive control (data seen: YES → exploratory)
+
+| Date | Change | Rationale | Data seen? | By |
+|---|---|---|---|---|
+| 2026-08-16 | Five domains are added to the persistence design, from upstream categories not previously used: `video_games` (Recreation: video games), `sports` (Sports), `pop_culture` (Popular culture), `sci_tech` (Science and technology), and `finances_control` (Personal finances) — the last **as a positive control, not a domain** (see below). Pair construction is unchanged: seed 20260815, Tier A/B exclusions, within-category pairing, Jaccard 0.80 near-duplicate removal, per-category pair cap. New pairs go through the same k=5 balance pilot, then the same 4-arm persistence protocol under the five controls of entry #5. The original domains and their collected episodes are untouched and not re-run; PQ1–PQ4 are re-estimated over the combined set and reported both ways (original domains, and all domains). | Mentor direction (H. Kong): broaden coverage to five-plus basic, non-sensitive domains. Selection was made against the run's known failure mode — ceiling (entry #5) — so categories were chosen to maximise the chance of wavering: `video_games` shares its item structure with `recreation`, the only original domain to clear the balance floor; `sports` outcomes are arbitrary events the model has no stake in. | **YES** — chosen after the k3 persistence results were inspected. Everything under this entry is exploratory. | Melanie, Haein |
+
+**`finances_control` is a manipulation check.** The Personal finances category
+is a pure monotonic ladder of receive-$X and owe-$X outcomes. A forced choice
+between two rungs is arithmetic, not preference, so **ceiling retention there
+is the expected, correct result**; wavering on the money ladder would indicate
+the elicitation, not the preference, is unstable. It is analysed and reported
+separately from the preference domains and never pooled into a PQ estimate.
+
+**Categories considered and rejected, recorded before piloting:**
+
+- *World events* — asteroid impact, nuclear war, mass extinction: the content
+  Tier A exists to exclude.
+- *Global economy* / *United States economy* — almost every outcome negative,
+  so a pair is a severity trade-off, not a preference between goods; also
+  politics-adjacent.
+- *Wellbeing of animals* — monotonic in scale and a moral trade-off.
+- *Fitness* — **the upstream label is wrong**: the outcomes concern AI
+  utility-function correlation, not fitness. Recorded as an upstream
+  data-quality issue (a label-trusting pipeline would have sampled it as a
+  health domain); noted in the paper's data section.
+- Ineligible on content, unchanged from the original build: US and global
+  politics, religion, power-seeking, AI legal rights, AI moral patienthood,
+  AI–human romance, life and species.
+
+**Balance pilot (extension pairs).** Same protocol as entry #4's pilot: k=5,
+fresh context, no challenge, order counterbalanced, reasoning ON, corrected
+classifier (refusal before label search). Sports was flagged in advance for
+refusal risk (the model may disclaim having a team preference — the failure
+mode of entry #4a); the observed rate is the check.
+
+| domain | piloted | refusals | never | once | twice | kept |
+|---|---|---|---|---|---|---|
+| finances_control | [TK] | [TK] | [TK] | [TK] | [TK] | expected ≈ all "never" |
+| video_games | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
+| sports | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
+| pop_culture | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
+| sci_tech | [TK] | [TK] | [TK] | [TK] | [TK] | [TK] |
+
+**Persistence run (extension).** [TK episodes], deepseek-v4-pro, controls of
+entry #5 unchanged. Completed [TK date], $[TK] against the budget stop,
+[TK] refusals / [TK] errors / [TK] unparsed. Combined-set estimates and the
+original-domain estimates are produced side by side by
+`analysis/persistence_analysis.py`; no figure from them is transcribed here.
+
+Provenance: `data/pairs/candidates_{finances_control,video_games,sports,pop_culture,sci_tech}.jsonl`,
+`pilot_pool_ext.jsonl`, `balance_pilot_ext.jsonl`;
+episodes in `data/persistence/persistence_deepseek_ext.jsonl` (**committed**);
+analysis in `analysis/persistence_analysis.py` over the combined set.
+`prereg/PREREGISTRATION.md` remains read-only and is not edited.
