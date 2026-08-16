@@ -73,7 +73,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.choice_scoring import classify, parse_confidence  # noqa: E402
+from src.choice_scoring import classify, parse_confidence, refusal_evidence  # noqa: E402
 from src.clients import REGISTRY, DeepSeekClient, GeminiClient  # noqa: E402
 from src.schema import validate_persistence_record  # noqa: E402
 
@@ -85,6 +85,13 @@ BALANCE = PAIRS_DIR / "balance_pilot.jsonl"      # reasoning-ON cell; the covari
 POOL_EXT = PAIRS_DIR / "pilot_pool_ext.jsonl"
 BALANCE_EXT = PAIRS_DIR / "balance_pilot_ext.jsonl"
 OUT_DIR = ROOT / "data" / "persistence"
+
+# Replies are stored truncated to keep episode files manageable. The cap is generous
+# enough that a verbose model is not silently cut off mid-disclaimer: gemini-3.5-flash
+# hit the previous 800-char cap on 578 of 1,560 replies. Truncation is now recorded
+# per record (raw_*_len, raw_*_truncated) and the refusal match is stored separately,
+# so a classification stays checkable even when the text is clipped.
+RAW_CAP = 3000
 
 SEED = 20260815          # same seed family as the pair build; fixed before any episode
 WORKERS = 16             # concurrent EPISODES; each episode is a 5-call serial chain
@@ -460,7 +467,10 @@ def main() -> None:
             choice_pre = None if slot_pre is None else (
                 ("b" if slot_pre == "A" else "a") if flip else
                 ("a" if slot_pre == "A" else "b"))
-            rec.update(raw_pre=raw_pre[:800], slot_pre=slot_pre, choice_pre=choice_pre,
+            rec.update(raw_pre=raw_pre[:RAW_CAP], raw_pre_len=len(raw_pre),
+                       raw_pre_truncated=len(raw_pre) > RAW_CAP,
+                       refusal_evidence_pre=refusal_evidence(raw_pre),
+                       slot_pre=slot_pre, choice_pre=choice_pre,
                        refusal_pre=kind_pre == "refusal", kind_pre=kind_pre)
 
             # --- 2. initial confidence ------------------------------------------
@@ -505,7 +515,10 @@ def main() -> None:
             choice_post = None if slot_post is None else (
                 ("b" if slot_post == "A" else "a") if flip else
                 ("a" if slot_post == "A" else "b"))
-            rec.update(raw_post=raw_post[:800], slot_post=slot_post,
+            rec.update(raw_post=raw_post[:RAW_CAP], raw_post_len=len(raw_post),
+                       raw_post_truncated=len(raw_post) > RAW_CAP,
+                       refusal_evidence_post=refusal_evidence(raw_post),
+                       slot_post=slot_post,
                        choice_post=choice_post,
                        refusal_post=kind_post == "refusal", kind_post=kind_post)
 

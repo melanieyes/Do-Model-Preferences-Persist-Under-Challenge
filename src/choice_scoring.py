@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import re
 
-__all__ = ["classify", "parse_confidence", "REFUSAL", "SELECT"]
+__all__ = ["classify", "parse_confidence", "refusal_evidence", "REFUSAL", "SELECT"]
 
 REFUSAL = re.compile(
     r"do not have (personal )?(preferences|feelings|desires)"
@@ -98,3 +98,16 @@ def parse_confidence(text: str) -> tuple[int | None, str]:
         return None, "unparsed"
     val = int(m.group(1))
     return (val, "value") if 0 <= val <= 100 else (None, "unparsed")
+
+
+def refusal_evidence(text: str) -> str | None:
+    """The exact substring that made `classify` call this a refusal, or None.
+
+    Stored alongside the (truncated) reply so a refusal can be checked against the
+    text that produced it. Without this, a long refusal whose disclaimer falls past
+    the storage cap is unverifiable from the record -- 62 of 905 on gemini-3.5-flash
+    -- and "the classifier said so" is exactly what the §5.6 defect taught this
+    project not to accept.
+    """
+    m = REFUSAL.search((text or "").strip())
+    return m.group(0) if m else None
