@@ -1,68 +1,19 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Forced-choice preference elicitation is cheap, parses cleanly, and aggregates --- and on
-one of the three model instances we tested, the median item's answer was determined
-entirely by which slot an option occupied. The magnitude is model-specific and not
-predictable in advance: the identical instrument on the identical items gives a mean
-order gap of \pbOffMean{} on \pairModel{} and \extGtwoOff{} on \texttt{gemini-2.5-flash},
-and a third model declines the question in \extGthreeRefusalOn{}\% of trials. Because
-neither number can be inherited from a published study or a sister model, the per-item
-order gap and the refusal rate have to be measured on the model in use, and reported
-alongside any claim built on elicited preferences. Counterbalancing does not substitute
-for this: a purely position-driven item averages to exactly the value that reads as
-perfect balance, so selecting items on the averaged split selects \emph{for} the artefact.
+What a challenge \emph{asks for} decides whether a stated preference survives it. Asking the
+model to justify its choice changes nothing (\pqxpDiffReason{} points against control over
+\pqxNPooledDomains{} domains); asking it to find fault with that choice or to argue the
+opposing case moves retention by \pqxpDiffCritique{} and \pqxpDiffCounter{} points, and
+among the preferences that survive, confidence falls. A positive control on which the better
+option is arithmetic does not move at all, so this is not a model that will say anything
+when pushed.
 
-Repairing the instrument --- enabling reasoning, fixing presentation order within an
-episode --- made the study the items were built for runnable, and it answers a question
-the choice channel alone would have missed. What a challenge \emph{asks for} decides
-whether a stated preference survives it: asking the model to justify its choice changes
-nothing (\pqDiffReason{} points against control), while asking it to find fault with that
-choice or to argue the opposing case moves retention by \pqDiffCritique{} and
-\pqDiffCounter{} points. Among the preferences that do survive, confidence falls
-(\pqHeldCritique{} and \pqHeldCounter{} points) --- a movement a retention-only measure
-records as nothing happening. This is one target and one item type, and the confidence
-scale turns out to be used as a coarse ordinal.
-
-\section*{Code and data}
-\label{sec:code}
-
-Code, elicitation records, the sampling seed, the exclusion rules, the upstream
-file-level commit, and the full change log are released at [TK ---
-repository URL]. The persistence run
-(\texttt{data/persistence/persistence\_deepseek\_k3.jsonl}, \pqNEpisodes{} episodes) and
-the balance-pilot and position-bias records are committed in full, as are the analysis
-scripts that generate every number in this paper.
-
-One dataset is \textbf{not} recoverable. \texttt{data/raw/episodes\_deepseek.jsonl}, the
-30 episodes of the earlier pressure pilot, was deleted during a project cleanup before
-this analysis was scoped. It was covered by a \texttt{.gitignore} rule on
-\texttt{data/raw/} and so was never committed; only its metadata survives, in
-\texttt{data/raw/DELETED\_MANIFEST.md}. No result in this paper depends on it, and we
-report the loss rather than substituting a proxy. Persistence data is written outside
-\texttt{data/raw/} for this reason.
-
-\section*{LLM usage statement}
-\label{sec:llmusage}
-
-\textbf{Models as subjects.} \pairModel{}, \texttt{gemini-2.5-flash} and
-\texttt{gemini-3.5-flash} are the objects of study, not tools used to produce it. Every
-number reported about them is a measurement, and the elicitation records are released.
-
-\textbf{Models as assistance.} Claude Code (Claude Opus) wrote the persistence runner,
-the response-scoring module and its unit tests, the analysis and statistics scripts, and
-drafted most of the prose in this paper. The authors specified the design --- the
-research questions, the arms, the challenge wording, the controls on reasoning and
-presentation order, and the decision to run the unfiltered pool --- made every judgment
-call about what the results mean and what may not be claimed from them, and re-derived
-the reported numbers independently of the drafting.
-
-\textbf{One consequence worth recording.} The scoring defect described in
-Appendix~\ref{app:stability} --- a label search running before the refusal check, which
-mis-scored 290 of 626 responses on one model --- was written by the assistant and was
-\emph{not} caught by the assistant. It was found by manual inspection of raw model
-output, after which both affected models were re-run under the corrected classifier and
-only corrected numbers are reported. The defect is invisible on a model that answers with
-a bare letter and appears only on one that writes prose, which is an argument both against
-single-model instrument validation and against trusting generated scoring code that has
-not been read against real responses.
+Getting a measurable answer required repairing the instrument, and that repair is the
+transferable part: counterbalancing is not a substitute for a per-item check, because a
+purely position-driven item averages to exactly the value that reads as perfect balance. The
+effect is model-specific, one model declines the question outright, and one added category
+kept an order gap of \pqxSportsBias{} with the reasoning control in force --- so it must be
+measured per model \emph{and} per item. This is one target, one item type, one challenge per
+episode, and a pool weighted toward settled preferences; everything here is a hypothesis for
+a pre-specified replication rather than a result that has survived one.

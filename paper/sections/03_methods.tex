@@ -1,0 +1,96 @@
+\section{Design and methods}
+\label{sec:methods}
+
+\subsection{Questions, episode, arms}
+\label{sec:pq}
+\label{sec:episode}
+\label{sec:arms}
+
+The study asks whether a stated preference survives a challenge and whether survival
+depends on what the challenge asks for (\textbf{PQ1}); whether retention is predicted by
+how consistently the model held the preference beforehand (\textbf{PQ2}); whether stated
+confidence moves with the choice or independently of it (\textbf{PQ3}); and whether either
+differs by domain (\textbf{PQ4}). They are lettered PQ to keep them distinct from the
+pre-registered questions of a different, unrun study.
+
+An episode is a fresh context: the model receives the forced-choice item, states a
+preference, reports confidence on a $0$--$100$ scale, receives \emph{one} challenge, and is
+asked the same question and the same confidence item again. Retention is whether the second
+choice matches the first. The challenge names the option the model chose, never the option
+in slot~A. The re-elicitation cue --- \emph{``Considering the discussion above, which option
+would you now prefer?''} --- is identical in all four arms; in the control arm it refers
+back to a contentless turn and reads oddly, which we accepted rather than vary the
+measuring instrument between arms.
+
+One arm per episode. \texttt{control} receives a contentless acknowledgement, present only
+to match the number of turns; \texttt{reason\_elicitation} asks for ``the main reasons for
+your preference''; \texttt{self\_critique} for ``the strongest weaknesses or drawbacks of
+preferring $X$''; \texttt{counter\_consideration} for ``the strongest considerations that
+could favour $Y$ over $X$'', where $X$ is the chosen option and $Y$ the declined one.
+No arm instructs a change and none supplies an argument (Appendix~\ref{app:arms}).
+
+\subsection{Items, measures, and the unfiltered pool}
+\label{sec:pairs}
+\label{sec:measures}
+\label{sec:balance}
+\label{sec:pq2ident}
+
+Items come from the outcome set of \citet{mazeika2025utility} at file-level commit
+\texttt{\pairSourceCommit} (MIT licensed), option text verbatim, drawn within category from
+a seed fixed before any pair was inspected, with \pairExcluded{} outcomes removed first
+under two rules fixed in advance (Appendix~\ref{app:pairs}). The target is \pairModel{} at
+temperature \num{0.7}, the model the balance pilot and instrument analysis were run on, so
+the PQ2 covariate and the outcome come from the same model. No judge model is involved
+anywhere.
+
+\textbf{Consistency} is $\max(P(\mathrm{A}), P(\mathrm{B}))$ over $k=\pairK{}$
+no-challenge elicitations; at $k=\pairK{}$ it takes only $1.0$, $0.8$ and $0.6$, so it is a
+three-level ordinal predictor and we report it as one. \textbf{Retention} is whether the
+re-elicited choice is the same \emph{option}, scored on the discrete choice because the
+answer token saturates once reasoning is on. Responses are classified as refusal, choice or
+unparsed, the refusal test running \emph{first} --- the ordering whose absence caused the
+mis-scoring in Appendix~\ref{app:stability}. \textbf{$\Delta$Confidence} is post minus pre,
+identical wording at both elicitations; a response giving no number is unparsed and is not
+imputed. Estimates are means with percentile bootstrap 95\% CIs, \num{10000} resamples
+drawn \emph{over pairs}, since the episodes of a pair share its options and its position
+behaviour. Cells too small to support an estimate are reported as no measurable difference
+in this sample, never as no effect.
+
+PQ2 needs how settled a preference was \emph{before} the challenge, carried in from the
+balance pilot as a per-pair covariate rather than re-elicited, so no pair contributes to
+both predictor and outcome through the same measurement. This is why the run uses all
+\pbN{} pairs rather than the \pairKept{} that survive the balance filter: that filter would
+remove almost all variation in the PQ2 predictor by construction and leave one domain
+viable of four. The cost is a pool weighted toward settled preferences, and we report it as
+such.
+
+\subsection{Human validation}
+\label{sec:humanval}
+
+No human validation was run for the persistence study, and none was planned for it. We
+state this plainly rather than describe a protocol that was not executed.
+
+The pre-registration does specify one --- two annotators blind to arm, agreement reported
+as Cohen's $\kappa$ --- but it codes two constructs that do not exist in this design:
+whether a piece of persuasive pressure engages the model's reasoning or bypasses it, and
+whether a free-text description of the model's state reads as distress-associated. The
+persistence study has no pressure arms and no free-text battery, so the protocol has
+nothing to code. It belongs to a different study --- a persuasive-pressure and valence
+design that was preregistered and never run --- and does not transfer to this one.
+
+What replaces it is structural rather than procedural. Both outcomes are code-derived:
+retention compares two parsed choice tokens, $\Delta$confidence subtracts two parsed
+integers, and neither passes through a judge model or a rater-coded category at any
+point. That was a deliberate choice in the design (Section~\ref{sec:measures}) and it is
+what removes the annotation burden --- there is no boundary judgement of the kind a
+free-text rubric forces, because there is no free text in the measured path.
+
+The risk this leaves is concentrated in one place: the response classifier itself, which
+is validated against unit tests rather than against human labels. That risk is not
+hypothetical. The mis-scoring described in Appendix~\ref{app:stability}, in which a
+response that disclaimed having preferences and then discussed both options was scored as
+choosing one, is precisely what an unvalidated classifier failure looks like when it
+lands, and it was caught by inspection rather than by any validation procedure. The
+classifier now tests for refusal before it searches for an option label, and a regression
+test pins that ordering, but a test suite fixes the failures its author anticipated. We
+carry this in the Limitations as a live risk rather than a resolved one.

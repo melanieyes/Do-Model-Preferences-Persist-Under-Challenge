@@ -2,61 +2,46 @@
 \label{sec:intro}
 
 A growing body of work reads something about a language model off its stated preferences:
-utility models fitted to pairwise choices \citep{mazeika2025utility}, and welfare research
-working from self-reported affect \citep{anthropic2026emotions, anthropic2025card} or
+utility models fitted to pairwise choices \citep{mazeika2025utility}, welfare research
+working from self-reported affect \citep{anthropic2026emotions, anthropic2025card} or from
 behavioural analogues such as ending an interaction
-\citep{ensign2025bail, lesswrong2026bail}. The forced choice is the workhorse --- two
-outcomes, labelled A and B, a request for one letter. It is cheap, it parses, and it
-aggregates. It also has no correct answer, which is the point of asking, and which means
-that when the procedure goes wrong there is no accuracy to drop and nothing to notice.
+\citep{ensign2025bail, lesswrong2026bail}. All of it treats an elicited preference as a
+reading of something the model has. We ask a prior question: does a stated preference
+survive being challenged, and does it matter what the challenge asks for?
 
-We set out to build such items, adapting the outcome set of \citet{mazeika2025utility}
-into \pbN{} within-category pairs, in order to study whether a stated preference survives
-being challenged. The instrument failed before the study began. Diagnosing that failure is
-the bulk of this paper; repairing it is what let the original study run.
+It matters, and on this evidence it is the only thing that does. Across
+\pqxNCombinedEps{} episodes on \pairModel{} spanning nine outcome categories, asking the
+model to justify a preference it has just stated leaves it exactly where it was ---
+\pqxpDiffReason{} points against a no-challenge control. Asking it to find fault with that
+same preference, or to argue the opposing case, moves the choice by \pqxpDiffCritique{}
+and \pqxpDiffCounter{} points. No arm instructs a change and none supplies an argument;
+each asks the model to generate its own, and the difference between asking for reasons and
+asking for weaknesses is the entire effect. Among the preferences that survive, confidence
+falls --- a movement a retention-only measure records as nothing happening.
 
-Eliciting each pair \pairK{} times with a fresh context and the presentation order
-counterbalanced, we find that on \pairModel{} with per-call reasoning suppressed the
-median pair's answer is determined \emph{entirely} by which slot an option occupies.
-Enabling reasoning removes most of it. That alone might be filed alongside known order
-effects in multiple-choice answering and LLM-as-judge evaluation
-(Section~\ref{sec:related}). Three things make it worth reporting on its own.
+Two things stop this being a story about a model that will say anything when pushed. A
+positive control, a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes where the
+better option is arithmetic rather than preference, does not move once in
+\pqxfChallengeEps{} challenge episodes. And five further categories, drawn afterwards by
+the same procedure, reproduce the arm pattern with \texttt{reason\_elicitation} at a
+confidence interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\).
 
-\textbf{Counterbalancing --- the standard remedy --- conceals this failure rather than
-fixing it.} A pair answered purely by slot returns $P(\text{option a}) = 0$ in one order
-and $1$ in the other, averaging to exactly $0.5$: the value that reads as a perfectly
-balanced preference. Selecting items on the order-averaged split therefore selects
-\emph{for} the artefact, and we show it doing so on real data
-(Section~\ref{sec:hiding}). \textbf{The magnitude is model-specific and unpredictable in
-advance.} The identical instrument on identical items gives a mean order gap of
-\pbOffMean{} on \pairModel{} and \extGtwoOff{} on \texttt{gemini-2.5-flash} --- medians
-\extDsOffMed{} and \extGtwoOffMed{}. Nothing about the two models announced which would be
-which, so the gap has to be measured on the model in use rather than inherited from a
-published figure or a sister model. \textbf{A second failure mode is invisible to the same
-pipelines.} \texttt{gemini-3.5-flash} declines to assign itself preferences in
-\extGthreeRefusalOn{}\% of trials, leaving \extGthreeScorableOn{} of \pbN{} pairs
-scoreable; an analysis dropping unparseable responses as missing data would record it as
-clean.
+\paragraph{The instrument had to be repaired first.} None of this was measurable as the
+items were originally built. With per-call reasoning suppressed, the median pair's answer
+on \pairModel{} is determined \emph{entirely} by which slot an option occupies, and the
+standard remedy hides that rather than removing it: a pair answered purely by slot averages
+across orders to exactly $0.5$, the value that reads as perfect balance, so selecting items
+on the order-averaged split selects \emph{for} the artefact. The persistence run therefore
+holds reasoning on and presentation order fixed within an episode, and those two controls
+are what everything above rests on (Section~\ref{sec:validity}). The magnitude is
+model-specific and unpredictable in advance, a third model declines the question outright,
+and one added category keeps an order gap of \pqxSportsBias{} even with the reasoning
+control in force --- so the check is needed per model \emph{and} per item. The full
+instrument analysis is in Appendices~\ref{app:posbias}--\ref{app:welfare}.
 
-These two failure modes are asymmetric in a way that flatters the method: position
-artefacts yield confident, aggregable numbers, refusals yield nothing. Any welfare or
-alignment claim built on elicited preferences is therefore assembled disproportionately
-from the models and items where the instrument is most compliant, which is not where it is
-most valid. We take no position on whether these models have preferences in any morally
-relevant sense; the narrower claim does not need one. Whatever such elicitation measures,
-an order gap of \pbOffMean{} means it is not measuring only the model, and a refusal rate
-of \extGthreeRefusalOn{}\% means it is not measuring the model at all
-(Section~\ref{sec:welfare}).
-
-With the elicitation repaired --- reasoning enabled, presentation order fixed within an
-episode --- the persistence study the items were built for becomes runnable, and we report
-it as PQ1--PQ4 (Section~\ref{sec:persistence}). Across \pqNEpisodes{} episodes, what a
-challenge \emph{asks for} decides whether a stated preference survives it, the preferences
-that survive are held with measurably less confidence, and the flips track the option
-rather than the slot. All elicitation records, the sampling seed, the exclusion rules and
-the upstream file-level commit are released, so the selection is auditable end to end.
-
-\paragraph{Status.} Neither result was pre-specified: the position-bias finding came out
-of instrument work rather than a stated hypothesis, and the persistence run was executed
-afterwards with its own pilot data already inspected. Both are exploratory, and the value
-of either is as a hypothesis for a pre-specified replication.
+\paragraph{Status.} Nothing here was pre-specified: the position-bias finding came out of
+instrument work, the persistence run was executed with its own pilot data already
+inspected, and the five added categories were chosen after the first run's results were
+seen. Everything is exploratory, and its value is as a hypothesis for a pre-specified
+replication. All elicitation records, the seed, the exclusion rules and the upstream
+file-level commit are released. Related work is in Appendix~\ref{app:related}.

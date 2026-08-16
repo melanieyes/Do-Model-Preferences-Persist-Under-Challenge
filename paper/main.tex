@@ -9,8 +9,18 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage{siunitx}
+\usepackage{fancyhdr}
 
 \graphicspath{{figures/}}
+
+% Running header — tracks the persistence-primary structure.
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Do Model Preferences Persist Under Challenge?}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\small\thepage}%
+  \renewcommand{\headrulewidth}{0pt}}
 
 % Generated numbers — do not hand-edit either file.
 %   python analysis/pair_balance_figures.py
@@ -38,49 +48,42 @@
 \maketitle
 
 \begin{abstract}
-Forced-choice preference elicitation underpins a growing body of work that reads values,
-and increasingly welfare, off language models. We run one such instrument --- \pbN{} item
-pairs drawn verbatim from the outcome set of \citet{mazeika2025utility} --- unchanged
-across three model instances, and find that how much it measures the model rather than
-the layout of the question is \emph{model-specific and not predictable in advance}. With
-per-call reasoning suppressed, the mean order gap (how far $P(\text{option a})$ moves when
-the two options swap positions) is \pbOffMean{} on \pairModel{} but \extGtwoOff{} on
-\texttt{gemini-2.5-flash}; the medians are \extDsOffMed{} and \extGtwoOffMed{}, so on the
-first model the typical item is decided entirely by position and on the second it is not
-affected at all. Enabling reasoning shrinks the effect on \pairModel{} by \pbDiff{}
-(95\% CI [\pbDiffLo{}, \pbDiffHi{}]). Counterbalancing does not repair this, it conceals
-it: a purely position-driven pair averages to exactly $0.5$ across orders, so the items
-that look most balanced are the ones most determined by position, and a naive split
-filter accepts \pbTrapOff{} such pairs out of \pbNaiveOff{}. Relabelling the options
-\emph{1/2} or \emph{First/Second} leaves the effect intact; requiring the model to repeat
-the preferred option's text instead of naming a label drops it to \labVerbatim{}. A third
-model, \texttt{gemini-3.5-flash}, declines to assign itself preferences in
-\extGthreeRefusalOn{}\% of trials, so the question cannot be posed on it at all. Because
-the magnitude varies this much with nothing to anticipate it from, the per-item order gap
-must be measured on the model in use rather than assumed --- and any welfare or alignment
-method built on elicited stated preferences inherits both failure modes, one of which
-produces confident numbers and the other of which produces nothing.
+Forced-choice preference elicitation underpins a growing body of work reading values, and
+increasingly welfare, off language models. We ask whether a stated preference survives being
+challenged, and find that \emph{what the challenge asks for} decides. Across
+\pqxNCombinedEps{} episodes on \pairModel{} spanning nine outcome categories, asking the
+model to justify a preference it has just stated leaves it untouched (\pqxpDiffReason{}
+points against a no-challenge control, CI [\pqxpDiffReasonLo{}, \pqxpDiffReasonHi{}]);
+asking it to find fault with that preference or to argue the opposing case moves retention
+by \pqxpDiffCritique{} and \pqxpDiffCounter{} points. No arm instructs a change or supplies
+an argument. Among the preferences that survive, confidence falls (\pqHeldCritique{} and
+\pqHeldCounter{} points) --- a movement a retention-only measure records as nothing
+happening. A positive control, a money ladder where the better option is arithmetic, does
+not move once in \pqxfChallengeEps{} challenge episodes.
 
-With the elicitation repaired --- reasoning enabled, presentation order held fixed within
-an episode --- the persistence study the items were built for becomes runnable, and we
-report it: across \pqNEpisodes{} episodes, asking the model to justify a stated preference
-leaves it untouched (\pqDiffReason{} points against control), while asking it to critique
-that preference or argue the opposing case moves retention by \pqDiffCritique{} and
-\pqDiffCounter{} points. Among the choices that do survive, confidence falls
-(\pqHeldCritique{} and \pqHeldCounter{} points). Flips track the option rather than the
-slot, so the effect is content and not the position artefact returning.
+None of this was measurable as the items were first built. With reasoning suppressed the
+median item's answer is decided entirely by which slot an option occupies, and
+counterbalancing conceals that rather than fixing it: a purely position-driven item averages
+across orders to exactly $0.5$, the value that reads as perfect balance, so selecting on the
+averaged split selects \emph{for} the artefact. The run therefore holds reasoning on and
+order fixed within an episode. The effect is model-specific, one model declines the question
+in \extGthreeRefusalOn{}\% of trials, and it is \emph{item}-specific: one added category
+keeps an order gap of \pqxSportsBias{} with reasoning on, and excluding those items returns
+the extension estimates to the original ones. All results are exploratory.
 \end{abstract}
 
 \input{sections/01_intro}
-\input{sections/02_related}
-\input{sections/03_design}
-\input{sections/04_methods}
-\input{sections/05_results}
+\input{sections/02_validity}
+\input{sections/03_methods}
+\input{sections/04_results}
 \input{sections/06_discussion}
 \input{sections/07_closing}
+\label{sec:endmain}
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
+
+\input{sections/08_statements}
 
 \clearpage
 \input{sections/07_appendix}
