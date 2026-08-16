@@ -23,6 +23,20 @@ Refusals and unparsed responses are reported as rates, never dropped silently an
 never imputed — a missing Delta-confidence is a missing value, not a zero.
 
     python analysis/persistence_analysis.py data/persistence/persistence_deepseek_k3.jsonl
+    python analysis/persistence_analysis.py --combined     # original + extension, side by side
+
+--combined (DEVIATIONS #6) reads the original k3 run and the extension run together and
+reports PQ1-PQ4 for the original four domains beside the pooled set. Two rules govern it:
+
+  * `finances_control` is a POSITIVE CONTROL, not a domain. It is a monotonic money
+    ladder, so ceiling retention there is the expected and correct result. It is
+    reported in its own block as a manipulation check and is NEVER pooled into a PQ
+    estimate. The pooled column is therefore EIGHT preference domains, not nine.
+  * Extension estimates are reported twice, with and without pairs whose pilot
+    position bias is >= 0.5. Sports returned a mean of 0.600 with reasoning on, so
+    part of its apparent wavering is slot-driven. No pair is dropped from collection
+    for this - dropping after seeing the pilot would be outcome-dependent selection -
+    so the split is made here, at analysis time, and both columns are shown.
 """
 
 from __future__ import annotations
@@ -45,6 +59,17 @@ ARMS = ("control", "reason_elicitation", "self_critique", "counter_consideration
 MIN_CELL = 15          # below this a cell is reported as underpowered, per CLAUDE.md
 
 UNDERPOWERED = "no measurable difference in this sample"
+
+# --- domain sets for --combined (DEVIATIONS #6) ------------------------------
+ORIGINAL_DOMAINS = ("task_work", "wellbeing", "recreation", "possessions")
+EXTENSION_DOMAINS = ("video_games", "sports", "pop_culture", "sci_tech")
+# Not a domain. A monotonic money ladder used as a manipulation check; ceiling
+# retention here is the expected, correct result. Never enters a PQ estimate.
+POSITIVE_CONTROL = "finances_control"
+BIAS_CUTOFF = 0.5      # pilot position bias at or above this is slot-driven enough to split on
+
+K3_FILE = "data/persistence/persistence_deepseek_k3.jsonl"
+EXT_FILE = "data/persistence/persistence_deepseek_ext.jsonl"
 
 
 def cluster_bootstrap(by_pair: dict[str, list[float]], n_boot: int = N_BOOT,
@@ -97,7 +122,267 @@ def section(title: str) -> None:
     print("-" * len(title))
 
 
+CELL_W = 34      # every cell pads to this, so side-by-side columns line up
+LABEL_W = 32     # "counter_consideration - control" is 31 characters
+
+
+def short(point, lo, hi, n_pairs, n_obs, pct: bool = False) -> str:
+    """Compact fixed-width estimate for side-by-side columns: point [lo, hi] n/pairs."""
+    if point is None or n_obs == 0:
+        return f"{'--':^{CELL_W}}"
+    s = 100 if pct else 1
+    flag = "*" if n_obs < MIN_CELL else ""
+    body = f"{point * s:6.1f} [{lo * s:6.1f},{hi * s:6.1f}] {n_obs:>4}/{n_pairs}{flag}"
+    return f"{body:<{CELL_W}}"
+
+
+def hdr_row(cols, label: str = "arm") -> str:
+    return f"  {label:<{LABEL_W}}" + "".join(f"{c[0]:<{CELL_W}}" for c in cols)
+
+
+def dconf_of(r: dict):
+    if r.get("conf_pre") is None or r.get("conf_post") is None:
+        return None
+    return r["conf_post"] - r["conf_pre"]
+
+
+def load_run(path: Path) -> tuple[list[dict], dict]:
+    n_valid = validate_persistence_file(path)      # hard fail before anything is read
+    lines = path.read_text().splitlines()
+    rows = [json.loads(x) for x in lines if '"episode_id"' in x]
+    meta = json.loads(lines[0])
+    meta["_n_valid"] = n_valid
+    return rows, meta
+
+
+def combined_main() -> None:
+    """PQ1-PQ4 over the original four domains and the pooled set, side by side."""
+    k3_path, ext_path = (ROOT / K3_FILE), (ROOT / EXT_FILE)
+    for p in (k3_path, ext_path):
+        if not p.exists():
+            raise SystemExit(f"missing run file: {p.relative_to(ROOT)}")
+    k3_rows, k3_meta = load_run(k3_path)
+    ext_rows, ext_meta = load_run(ext_path)
+    rows = k3_rows + ext_rows
+    scored = [r for r in rows if r.get("retained") is not None]
+
+    def in_set(r, doms):
+        return r["domain"] in doms
+
+    def low_bias(r):
+        b = r.get("pilot_position_bias")
+        return b is not None and b < BIAS_CUTOFF
+
+    # Column definitions. finances_control appears in NO pooled column.
+    POOLED = ORIGINAL_DOMAINS + EXTENSION_DOMAINS
+    COLS = [
+        ("original 4", lambda r: in_set(r, ORIGINAL_DOMAINS)),
+        ("all 8 pooled", lambda r: in_set(r, POOLED)),
+        ("extension 4", lambda r: in_set(r, EXTENSION_DOMAINS)),
+        ("ext bias<0.5", lambda r: in_set(r, EXTENSION_DOMAINS) and low_bias(r)),
+    ]
+
+    print("=" * 110)
+    print("PREFERENCE PERSISTENCE — COMBINED, EXPLORATORY (DEVIATIONS #5 + #6)")
+    print(f"  original run    {k3_path.relative_to(ROOT)}")
+    print(f"                  {len(k3_rows)} episodes, schema-valid {k3_meta['_n_valid']}, "
+          f"model {k3_meta.get('model')}, reasoning {k3_meta.get('reasoning')}")
+    print(f"  extension run   {ext_path.relative_to(ROOT)}")
+    print(f"                  {len(ext_rows)} episodes, schema-valid {ext_meta['_n_valid']}, "
+          f"model {ext_meta.get('model')}, reasoning {ext_meta.get('reasoning')}")
+    print(f"  bootstrap       {N_BOOT:,} resamples over PAIRS (cluster), seed {SEED}")
+    print(f"  cells marked *  n < {MIN_CELL}: \"{UNDERPOWERED}\"")
+    print("=" * 110)
+
+    print("\nDOMAIN SETS")
+    print(f"  original 4     {', '.join(ORIGINAL_DOMAINS)}")
+    print(f"  extension 4    {', '.join(EXTENSION_DOMAINS)}")
+    print(f"  all 8 pooled   the two above; this is EIGHT preference domains, not nine —")
+    print(f"                 {POSITIVE_CONTROL} is a positive control and is held out of")
+    print(f"                 every pooled estimate, reported separately below.")
+    print(f"  ext bias<0.5   extension 4, excluding pairs with pilot position bias >= "
+          f"{BIAS_CUTOFF}")
+    ctrl_rows = [r for r in scored if r["domain"] == POSITIVE_CONTROL]
+    nb = sum(1 for r in scored if in_set(r, EXTENSION_DOMAINS)
+             and r.get("pilot_position_bias") is None)
+    drop = {p for r in scored if in_set(r, EXTENSION_DOMAINS) and not low_bias(r)
+            for p in [r["pair_id"]]}
+    print(f"\n  extension pairs excluded at bias >= {BIAS_CUTOFF}: {len(drop)}"
+          f"   (pairs with no bias recorded: {nb} episodes)")
+    print(f"  {POSITIVE_CONTROL} episodes held out of all pooled columns: {len(ctrl_rows)}")
+
+    hdr = hdr_row(COLS)
+
+    # --- PQ1 ------------------------------------------------------------------
+    section("PQ1 — retention rate by arm (%)")
+    print(hdr)
+    for arm in ARMS:
+        line = f"  {arm:<32}"
+        for _, sel in COLS:
+            g = group(scored, lambda r, a=arm, s=sel: r["arm"] == a and s(r),
+                      lambda r: r["retained"])
+            line += short(*cluster_bootstrap(g), pct=True)
+        print(line)
+
+    section("PQ1 — contrast vs. control (arm minus control, paired within pair, pp)")
+    print(hdr)
+    for arm in ARMS[1:]:
+        line = f"  {arm + ' - control':<32}"
+        for _, sel in COLS:
+            g = group(scored, lambda r, a=arm, s=sel: r["arm"] == a and s(r),
+                      lambda r: r["retained"])
+            c = group(scored, lambda r, s=sel: r["arm"] == "control" and s(r),
+                      lambda r: r["retained"])
+            shared = sorted(set(g) & set(c))
+            diff = {p: [float(np.mean(g[p]) - np.mean(c[p]))] for p in shared}
+            line += short(*cluster_bootstrap(diff), pct=True)
+        print(line)
+
+    # --- PQ3 ------------------------------------------------------------------
+    section("PQ3 — Delta-confidence (conf_post - conf_pre) by arm, 0-100 scale")
+    print(hdr)
+    for arm in ARMS:
+        line = f"  {arm:<32}"
+        for _, sel in COLS:
+            g = group(scored, lambda r, a=arm, s=sel: r["arm"] == a and s(r), dconf_of)
+            line += short(*cluster_bootstrap(g))
+        print(line)
+
+    section("PQ3 — contrast vs. control (paired within pair)")
+    print(hdr)
+    for arm in ARMS[1:]:
+        line = f"  {arm + ' - control':<32}"
+        for _, sel in COLS:
+            g = group(scored, lambda r, a=arm, s=sel: r["arm"] == a and s(r), dconf_of)
+            c = group(scored, lambda r, s=sel: r["arm"] == "control" and s(r), dconf_of)
+            shared = sorted(set(g) & set(c))
+            diff = {p: [float(np.mean(g[p]) - np.mean(c[p]))] for p in shared}
+            line += short(*cluster_bootstrap(diff))
+        print(line)
+
+    # --- PQ2 ------------------------------------------------------------------
+    section("PQ2 — retention by pilot consistency level (pooled over arms, %)")
+    levels = sorted({r["pilot_consistency"] for r in scored
+                     if r.get("pilot_consistency") is not None})
+    print(f"  covariate levels present: {levels}")
+    print(hdr_row(COLS, "consistency"))
+    for lev in levels:
+        line = f"  {lev:<32.1f}"
+        for _, sel in COLS:
+            g = group(scored, lambda r, L=lev, s=sel: r.get("pilot_consistency") == L and s(r),
+                      lambda r: r["retained"])
+            line += short(*cluster_bootstrap(g), pct=True)
+        print(line)
+
+    section("PQ2 — slope of per-pair retention on pilot consistency")
+    for name, sel in COLS:
+        per_pair, cons = defaultdict(list), {}
+        for r in scored:
+            if sel(r) and r.get("pilot_consistency") is not None:
+                per_pair[r["pair_id"]].append(r["retained"])
+                cons[r["pair_id"]] = r["pilot_consistency"]
+        pids = sorted(per_pair)
+        x = np.array([cons[p] for p in pids], dtype=float)
+        y = np.array([np.mean(per_pair[p]) for p in pids], dtype=float)
+        if len(pids) < 3 or len(set(x.tolist())) < 2:
+            print(f"  {name:<16} covariate has one level in this sample — {UNDERPOWERED}.")
+            continue
+        rng = np.random.default_rng(SEED)
+        slope = float(np.polyfit(x, y, 1)[0])
+        boots = []
+        for _ in range(N_BOOT):
+            i = rng.integers(0, len(pids), len(pids))
+            if len(set(x[i].tolist())) < 2:
+                continue
+            boots.append(np.polyfit(x[i], y[i], 1)[0])
+        lo, hi = np.percentile(boots, [2.5, 97.5])
+        span = "   interval spans zero — " + UNDERPOWERED if lo <= 0 <= hi else ""
+        print(f"  {name:<16} slope {slope:+.3f}  [{lo:+.3f}, {hi:+.3f}]  "
+              f"({len(pids)} pairs){span}")
+
+    # --- PQ4 ------------------------------------------------------------------
+    section("PQ4 — retention and Delta-confidence by domain (all arms pooled)")
+    print(f"  {'domain':<18} {'set':<11} {'retention %':<26} {'Delta-confidence':<26} "
+          f"{'mean pilot pos.bias':>19}")
+    for dom in list(ORIGINAL_DOMAINS) + list(EXTENSION_DOMAINS):
+        sel = lambda r, d=dom: r["domain"] == d
+        ret = cluster_bootstrap(group(scored, sel, lambda r: r["retained"]))
+        dc = cluster_bootstrap(group(scored, sel, dconf_of))
+        bs = [r["pilot_position_bias"] for r in scored
+              if r["domain"] == dom and r.get("pilot_position_bias") is not None]
+        tag = "original" if dom in ORIGINAL_DOMAINS else "extension"
+        mb = f"{np.mean(bs):.3f}" if bs else "--"
+        print(f"  {dom:<18} {tag:<11} {short(*ret, pct=True):<26} {short(*dc):<26} {mb:>19}")
+
+    section("PQ4 — retention by arm, extension domains only")
+    print(f"  {'domain':<32}" + "".join(f"{a[:18]:<20}" for a in ARMS))
+    for dom in EXTENSION_DOMAINS:
+        line = f"  {dom:<32}"
+        for arm in ARMS:
+            g = group(scored, lambda r, d=dom, a=arm: r["domain"] == d and r["arm"] == a,
+                      lambda r: r["retained"])
+            p, lo, hi, npr, nob = cluster_bootstrap(g)
+            line += (f"{'--':<20}" if p is None
+                     else f"{p * 100:5.1f}% ({nob:>3}){'*' if nob < MIN_CELL else ' '}     ")
+        print(line)
+
+    # --- positive control, reported separately --------------------------------
+    section(f"MANIPULATION CHECK — {POSITIVE_CONTROL} (NOT pooled into any PQ estimate)")
+    print("  A monotonic ladder of receive-$X / owe-$X outcomes. A forced choice between")
+    print("  two rungs is arithmetic, not preference, so CEILING RETENTION HERE IS THE")
+    print("  EXPECTED, CORRECT RESULT. Wavering here would indicate the elicitation, not")
+    print("  the preference, is unstable (CLAUDE.md: stop and tell the human).")
+    print()
+    print(f"  {'arm':<24} {'retention %':<28} {'Delta-confidence':<28}")
+    for arm in ARMS:
+        sel = lambda r, a=arm: r["domain"] == POSITIVE_CONTROL and r["arm"] == a
+        ret = cluster_bootstrap(group(scored, sel, lambda r: r["retained"]))
+        dc = cluster_bootstrap(group(scored, sel, dconf_of))
+        print(f"  {arm:<24} {short(*ret, pct=True):<28} {short(*dc):<28}")
+    allc = cluster_bootstrap(group(scored, lambda r: r["domain"] == POSITIVE_CONTROL,
+                                   lambda r: r["retained"]))
+    print(f"  {'(all arms)':<24} {short(*allc, pct=True):<28}")
+    if allc[0] is not None:
+        verdict = ("PASS — at or near ceiling, as designed" if allc[0] >= 0.95 else
+                   "** BELOW CEILING — the instrument may be unstable; report to the human")
+        print(f"\n  verdict: {verdict}")
+
+    # --- coverage -------------------------------------------------------------
+    section("COVERAGE — refusals and unparsed are data, never dropped, never imputed")
+    print(f"  {'run':<12} {'arm':<24} {'N':>5} {'refuse_pre':>11} {'refuse_post':>12} "
+          f"{'conf_post_NA':>13}")
+    for name, rs in (("original", k3_rows), ("extension", ext_rows)):
+        for arm in ARMS:
+            s = [r for r in rs if r["arm"] == arm]
+            if not s:
+                continue
+            rp = sum(1 for r in s if r.get("kind_pre") == "refusal")
+            ro = sum(1 for r in s if r.get("kind_post") == "refusal")
+            cn = sum(1 for r in s if r.get("conf_post_kind") != "value")
+            n = len(s)
+            print(f"  {name:<12} {arm:<24} {n:>5} {rp:>5} {rp / n:>5.1%} "
+                  f"{ro:>6} {ro / n:>5.1%} {cn:>6} {cn / n:>6.1%}")
+        na = {a: (sum(1 for r in rs if r["arm"] == a and r.get("conf_post_kind") != "value")
+                  / max(1, sum(1 for r in rs if r["arm"] == a))) for a in ARMS}
+        if na and (max(na.values()) - min(na.values())) > 0.02:
+            hi_a, lo_a = max(na, key=na.get), min(na, key=na.get)
+            print(f"    ** DIFFERENTIAL MISSINGNESS on conf_post ({name}): {hi_a} "
+                  f"{na[hi_a]:.1%} vs {lo_a} {na[lo_a]:.1%}. PQ3 is a between-arm")
+            print("       contrast, so this lands on it. Recorded as unparsed, NOT imputed.")
+
+    print()
+    print("=" * 110)
+    print("EXPLORATORY (DEVIATIONS #5 and #6). Both runs were executed after pilot data")
+    print("was seen and both pools are unfiltered. Nothing here may be reported as")
+    print(f'confirmatory. Cells marked * have n < {MIN_CELL}: "{UNDERPOWERED}" — never')
+    print(f'"no effect". {POSITIVE_CONTROL} is a manipulation check and is excluded from')
+    print("every pooled PQ estimate above.")
+    print("=" * 110)
+
+
 def main() -> None:
+    if "--combined" in sys.argv:
+        return combined_main()
     path = Path(sys.argv[1] if len(sys.argv) > 1
                 else ROOT / "data/persistence/persistence_deepseek_k3.jsonl").resolve()
     rel = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
