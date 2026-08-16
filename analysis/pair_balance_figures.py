@@ -30,7 +30,7 @@ import numpy as np
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "analysis"))
 
-from pilot_figures import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE  # noqa: E402
+from figure_style import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE  # noqa: E402
 
 PAIRS = REPO / "data" / "pairs"
 FIGS = REPO / "paper" / "figures"

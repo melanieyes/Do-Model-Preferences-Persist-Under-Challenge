@@ -31,7 +31,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "analysis"))
 
-from pilot_figures import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE  # noqa: E402
+from figure_style import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE  # noqa: E402
 from analysis.persistence_analysis import cluster_bootstrap, group  # noqa: E402
 from analysis.persistence_paper_stats import load  # noqa: E402
 
