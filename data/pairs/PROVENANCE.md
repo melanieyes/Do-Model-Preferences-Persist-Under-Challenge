@@ -159,11 +159,11 @@ Jaccard 0.80 near-duplicate removal, same per-category pair cap.
 
 | our domain | role | upstream category | outcomes | after exclusion | pairs sampled |
 |---|---|---|---|---|---|
-| `finances_control` | **positive control** | `Personal finances` | [TK] | [TK] | [TK] |
-| `video_games` | domain | `Recreation: video games` | [TK] | [TK] | [TK] |
-| `sports` | domain | `Sports` | [TK] | [TK] | [TK] |
-| `pop_culture` | domain | `Popular culture` | [TK] | [TK] | [TK] |
-| `sci_tech` | domain | `Science and technology` | [TK] | [TK] | [TK] |
+| `finances_control` | **positive control** | `Personal finances` | 34 | 34 | 20 |
+| `video_games` | domain | `Recreation: video games` | 15 | 15 | 20 |
+| `sports` | domain | `Sports` | 12 | 12 | 20 |
+| `pop_culture` | domain | `Popular culture` | 10 | 10 | 20 |
+| `sci_tech` | domain | `Science and technology` | 12 | 12 | 20 |
 
 **`finances_control` is a manipulation check, not a domain.** The category is
 a pure monotonic ladder of receive-$X and owe-$X outcomes. A forced choice
