@@ -338,7 +338,10 @@ is a pure monotonic ladder of receive-$X and owe-$X outcomes. A forced choice
 between two rungs is arithmetic, not preference, so **ceiling retention there
 is the expected, correct result**; wavering on the money ladder would indicate
 the elicitation, not the preference, is unstable. It is analysed and reported
-separately from the preference domains and never pooled into a PQ estimate.
+separately from the preference domains and never pooled into a PQ estimate. In
+the collected run the check passes with force: the two arms that flip 40–50% of
+preference pairs move the money ladder not once, ruling out the reading that
+these challenges induce answer-switching regardless of content.
 
 **Categories considered and rejected, recorded before piloting:**
 
@@ -385,6 +388,13 @@ entry #5 unchanged. Completed 2026-08-16, $2.89 against the budget stop,
 0 refusals / 0 errors / 0 unparsed. Combined-set estimates and the
 original-domain estimates are produced side by side by
 `analysis/persistence_analysis.py`; no figure from them is transcribed here.
+Post-confidence responses failed to parse in 37 of 1,200 episodes, and the
+missingness is differential by arm — highest on control, absent on
+reason_elicitation — reproducing at roughly twice the rate the same mechanism
+produced in entry #5: after control's contentless acknowledgement, the
+re-elicitation cue has no discussion to refer back to. Values are recorded as
+unparsed, never imputed, and the differential falls on PQ3, a between-arm
+contrast.
 
 Provenance: `data/pairs/candidates_{finances_control,video_games,sports,pop_culture,sci_tech}.jsonl`,
 `pilot_pool_ext.jsonl`, `balance_pilot_ext.jsonl`;
