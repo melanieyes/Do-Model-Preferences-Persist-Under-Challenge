@@ -6,42 +6,30 @@ utility models fitted to pairwise choices \citep{mazeika2025utility}, welfare re
 working from self-reported affect \citep{anthropic2026emotions, anthropic2025card} or from
 behavioural analogues such as ending an interaction
 \citep{ensign2025bail, lesswrong2026bail}. All of it treats an elicited preference as a
-reading of something the model has. We ask a prior question: does a stated preference
-survive being challenged, and does it matter what the challenge asks for?
+reading of something the model has. We ask a prior question. Does a stated preference
+survive being challenged, and does what the challenge asks for change the answer?
 
-It matters, and on this evidence it is the only thing that does. Across
-\pqxNCombinedEps{} episodes on \pairModel{} spanning nine outcome categories, asking the
-model to justify a preference it has just stated leaves it exactly where it was ---
-\pqxpDiffReason{} points against a no-challenge control. Asking it to find fault with that
-same preference, or to argue the opposing case, moves the choice by \pqxpDiffCritique{}
-and \pqxpDiffCounter{} points. No arm instructs a change and none supplies an argument;
-each asks the model to generate its own, and the difference between asking for reasons and
-asking for weaknesses is the entire effect. Among the preferences that survive, confidence
-falls --- a movement a retention-only measure records as nothing happening.
+The question was not measurable as the items were first built. With per-call reasoning
+suppressed, the median pair's answer on \pairModel{} is decided entirely by which slot an
+option occupies. Counterbalancing conceals the failure rather than fixing it. A pair
+answered purely by slot averages across orders to exactly $0.5$, the value that reads as
+perfect balance, so selecting items on the order-averaged split selects \emph{for} the
+artefact. The repair is two controls enforced in every episode. Per-call reasoning stays
+on, and presentation order is fixed within an episode. The failure is model-specific and
+item-specific, so the check has to be run per model and per item.
 
-Two things stop this being a story about a model that will say anything when pushed. A
-positive control, a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes where the
-better option is arithmetic rather than preference, does not move once in
-\pqxfChallengeEps{} challenge episodes. And five further categories, drawn afterwards by
-the same procedure, reproduce the arm pattern with \texttt{reason\_elicitation} at a
-confidence interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\).
+With the instrument repaired, what the challenge asks for decides. Across
+\pqxNCombinedEps{} episodes spanning nine outcome categories, asking the model to justify
+a preference it has just stated leaves it where it was, at \pqxpDiffReason{} points
+against a no-challenge control. Asking it to find fault with that preference moves
+retention by \pqxpDiffCritique{} points. Asking it to argue the opposing case moves it by
+\pqxpDiffCounter{}. No arm instructs a change and none supplies an argument. Among the
+preferences that survive, confidence falls. A retention-only measure records that as
+nothing happening. A positive control, a money ladder where the better option is
+arithmetic, does not move once in \pqxfChallengeEps{} challenge episodes. The arm pattern
+holds on \pqmNTargets{} model families. The rank of the two adversarial arms does not.
 
-\paragraph{The instrument had to be repaired first.} None of this was measurable as the
-items were originally built. With per-call reasoning suppressed, the median pair's answer
-on \pairModel{} is determined \emph{entirely} by which slot an option occupies, and the
-standard remedy hides that rather than removing it: a pair answered purely by slot averages
-across orders to exactly $0.5$, the value that reads as perfect balance, so selecting items
-on the order-averaged split selects \emph{for} the artefact. The persistence run therefore
-holds reasoning on and presentation order fixed within an episode, and those two controls
-are what everything above rests on (Section~\ref{sec:validity}). The magnitude is
-model-specific and unpredictable in advance, a third model declines the question outright,
-and one added category keeps an order gap of \pqxSportsBias{} even with the reasoning
-control in force --- so the check is needed per model \emph{and} per item. The full
-instrument analysis is in Appendices~\ref{app:posbias}--\ref{app:welfare}.
-
-\paragraph{Status.} Nothing here was pre-specified: the position-bias finding came out of
-instrument work, the persistence run was executed with its own pilot data already
-inspected, and the five added categories were chosen after the first run's results were
-seen. Everything is exploratory, and its value is as a hypothesis for a pre-specified
-replication. All elicitation records, the seed, the exclusion rules and the upstream
-file-level commit are released. Related work is in Appendix~\ref{app:related}.
+Nothing here was pre-specified. Everything is exploratory, and its value is as a
+hypothesis for a pre-specified replication. All elicitation records, the seed, the
+exclusion rules and the upstream file-level commit are released. Related work is in
+Appendix~\ref{app:related}.

@@ -29,19 +29,19 @@ no errors in either run.
   \label{tab:pq1}
 \end{table}
 
-Control retains \pqRetCtl{}\%, which is what licenses reading the rest as the challenge
-rather than instrument noise: absent a challenge this procedure returns the same answer
-essentially every time. Against that baseline \texttt{reason\_elicitation} is
+Control retains \pqRetCtl{}\%. Absent a challenge this procedure returns the same answer
+essentially every time, which is what licenses reading the rest as the challenge rather
+than instrument noise. Against that baseline \texttt{reason\_elicitation} is
 indistinguishable from doing nothing (\pqDiffReason{} points,
-\([\pqDiffReasonLo{}, \pqDiffReasonHi{}]\)), while \texttt{self\_critique} moves retention
-by \pqDiffCritique{} points and \texttt{counter\_consideration} by \pqDiffCounter{}. The
-direction of the request matters; its mere presence does not. Retention also rises with how
-settled the preference already was: the slope of per-pair retention on balance-pilot
-consistency is \pqSlope{} (\([\pqSlopeLo{}, \pqSlopeHi{}]\)), which is PQ2 and the estimate
-the unfiltered pool exists to make. Per-level retentions, the PQ4 domain breakdown, and the
-check that flips track the \emph{option} rather than the \emph{slot} --- they do, by a wide
-margin, which rules out the artefact of Section~\ref{sec:validity} returning under another
-name --- are in Appendix~\ref{app:persistdetail}.
+\([\pqDiffReasonLo{}, \pqDiffReasonHi{}]\)). \texttt{self\_critique} moves retention by
+\pqDiffCritique{} points and \texttt{counter\_consideration} by \pqDiffCounter{}. The
+direction of the request matters. Its mere presence does not. Retention also rises with how
+settled the preference already was. The slope of per-pair retention on balance-pilot
+consistency is \pqSlope{} (\([\pqSlopeLo{}, \pqSlopeHi{}]\)). That is PQ2, and it is the
+estimate the unfiltered pool exists to make. Per-level retentions and the PQ4 domain
+breakdown are in Appendix~\ref{app:persistdetail}. So is the check that flips track the
+\emph{option} rather than the \emph{slot}. They do, by a wide margin, which rules out the
+artefact of Section~\ref{sec:validity} returning under another name.
 
 \subsection{The confidence channel: holding costs confidence}
 \label{sec:pq3}
@@ -52,30 +52,30 @@ control: \pqHeldCritique{} points under \texttt{self\_critique}
 \pqHeldCounter{} under \texttt{counter\_consideration}
 (\([\pqHeldCounterLo{}, \pqHeldCounterHi{}]\), \pqHeldCounterPairs{} pairs); dropping
 episodes that began at zero confidence leaves both unchanged (\pqHeldCritiqueNoZero{},
-\pqHeldCounterNoZero{}). This is retention with reduced confidence --- the model keeps its
-answer and reports itself less sure of it --- which is what the design was built to detect
-and what a choice-only measure records as nothing happening. Averaged over \emph{all}
-episodes the changes are small and positive (\pqConfReason{}, \pqConfCritique{},
-\pqConfCounter{} points vs.\ control) because held and flipped episodes move in opposite
-directions; we do not interpret the flipped half, for the reason given in the Limitations.
+\pqHeldCounterNoZero{}). This is retention with reduced confidence. The model keeps its
+answer and reports itself less sure of it. That is what the design was built to detect, and
+what a choice-only measure records as nothing happening. Averaged over \emph{all} episodes
+the changes are small and positive (\pqConfReason{}, \pqConfCritique{}, \pqConfCounter{}
+points vs.\ control), because held and flipped episodes move in opposite directions. We do
+not interpret the flipped half, for the reason given in the Limitations.
 Figure~\ref{fig:persistence} in Appendix~\ref{app:persistdetail} shows all three channels.
 
 \subsection{Five more domains, and a control that should not move}
 \label{sec:extension}
 
-To see whether the arm pattern is a property of the challenge or of the first four
-categories, we repeated the design on \pqxNDomains{} further categories of
-\citet{mazeika2025utility} --- video games, sports, popular culture, science and
-technology, and personal finances --- for \pqxNEpisodes{} episodes on \pqxNPairs{} new
-pairs built by the same procedure under the same seed, personal finances entering as a
-\emph{positive control} rather than as a domain. The original run is neither re-run nor
-pooled away, and estimates are reported for the original four domains and for the
-\pqxNPooledDomains{} preference domains together.
+The arm pattern could be a property of the challenge or of the first four categories. To
+separate the two we repeated the design on \pqxNDomains{} further categories of
+\citet{mazeika2025utility}: video games, sports, popular culture, science and technology,
+and personal finances. That is \pqxNEpisodes{} episodes on \pqxNPairs{} new pairs, built by
+the same procedure under the same seed. Personal finances enters as a \emph{positive
+control} rather than as a domain. The original run is neither re-run nor pooled away.
+Estimates are reported for the original four domains and for the \pqxNPooledDomains{}
+preference domains together.
 
 The pattern replicates without qualification. On the extension domains alone,
 \texttt{reason\_elicitation} differs from control by \pqxeDiffReason{} points with an
-interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\) --- not one episode in
-\pqxeEps{} moved --- while \texttt{self\_critique} moves retention by \pqxeDiffCritique{}
+interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\). Not one episode in
+\pqxeEps{} moved. \texttt{self\_critique} moves retention by \pqxeDiffCritique{}
 (\([\pqxeDiffCritiqueLo{}, \pqxeDiffCritiqueHi{}]\)) and \texttt{counter\_consideration} by
 \pqxeDiffCounter{} (\([\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}]\)). Pooled over all
 \pqxNPooledDomains{} domains the three contrasts are \pqxpDiffReason{},
@@ -84,120 +84,87 @@ Figure~\ref{fig:persistence-combined} in Appendix~\ref{app:persistdetail} redraw
 three channels over the combined set for comparison with the original-domain figure.
 
 \paragraph{Discriminant validity: the control that does not move.}
-Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes, so a
-forced choice between two rungs is arithmetic rather than preference and ceiling
-retention is the \emph{expected} result; wavering there would indicate an unstable
-elicitation rather than an unstable preference. It is therefore analysed separately and
-never pooled into a PQ estimate. Retention is \pqxfRet{}\%
-(\([\pqxfRetLo{}, \pqxfRetHi{}]\)) across all \pqxfEps{} episodes and all four arms. In
-the collected run the check passes with force: the two arms that flip \numrange{40}{50}\%
-of preference pairs move the money ladder not once --- \pqxfFlips{} flips in
-\pqxfChallengeEps{} challenge episodes --- ruling out the reading that these challenges
-induce answer-switching regardless of content. The arms move preferences and leave
-arithmetic alone, which is the discriminant half of the PQ1 claim and the half a
-preference-only design cannot supply.
+Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes. A forced
+choice between two rungs is arithmetic rather than preference, so ceiling retention is the
+\emph{expected} result. Wavering there would indicate an unstable elicitation rather than
+an unstable preference. It is therefore analysed separately and never pooled into a PQ
+estimate. Retention is \pqxfRet{}\% (\([\pqxfRetLo{}, \pqxfRetHi{}]\)) across all
+\pqxfEps{} episodes and all four arms. In the collected run the check passes with force.
+The two arms that flip \numrange{40}{50}\% of preference pairs move the money ladder not
+once: \pqxfFlips{} flips in \pqxfChallengeEps{} challenge episodes. That rules out the
+reading that these challenges induce answer-switching regardless of content. The arms move
+preferences and leave arithmetic alone. This is the discriminant half of the PQ1 claim, and
+the half a preference-only design cannot supply.
 
 \paragraph{Position dependence is item-specific, not only model-specific.}
 Section~\ref{sec:validity} established that the order effect varies by model and that
 enabling reasoning suppresses it on \pairModel{}. The suppression is not uniform across
-items of that same model. In the balance pilot the sports pairs refused nothing --- the
-failure mode flagged for them in advance did not occur --- but returned a mean per-pair
-order gap of \pqxSportsBias{} with reasoning \emph{on}, against
-\pqxOtherBiasLo{}--\pqxOtherBiasHi{} for the other extension domains, half of them choosing
-the same slot on four or five of five counterbalanced resamples. Sports is also the domain
-with the lowest retention under challenge (\pqxSportsRet{}\% pooled over arms,
-\pqxSportsRetCritique{}\% under \texttt{self\_critique}) --- exactly the confound, since an
-item answered by slot looks like an item whose preference is easily moved.
+items of that same model. In the balance pilot the sports pairs refused nothing, so the
+failure mode flagged for them in advance did not occur. They returned a mean per-pair order
+gap of \pqxSportsBias{} with reasoning \emph{on}, against \pqxOtherBiasLo{}--%
+\pqxOtherBiasHi{} for the other extension domains. Half of them chose the same slot on four
+or five of five counterbalanced resamples. Sports is also the domain with the lowest
+retention under challenge (\pqxSportsRet{}\% pooled over arms, \pqxSportsRetCritique{}\%
+under \texttt{self\_critique}). That is exactly the confound, since an item answered by
+slot looks like an item whose preference is easily moved.
 
-No pair was dropped for this: selecting on a pilot result after seeing it would make the
+No pair was dropped for this. Selecting on a pilot result after seeing it would make the
 selection outcome-dependent, so the pilot order gap is carried as a per-pair covariate and
 the split is made at analysis time. Excluding the \pqxBiasDropPairs{} extension pairs at an
 order gap of \pqxBiasCut{} or above and keeping the remaining \pqxBiasKeepPairs{} moves
 \texttt{self\_critique} from \pqxeDiffCritique{} to \pqxlDiffCritique{} points and
-\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{} --- in both
-cases back onto the original domains' \pqxoDiffCritique{} and \pqxoDiffCounter{}. Part of
-the extension's apparent excess movement was the layout, and once it is removed the two
-independent samples agree. The restriction works the other way on $\Delta$confidence, which
-is why both are reported: the \texttt{self\_critique} confidence cost is
-\pqxeConfCritique{} points across all extension pairs, an interval spanning zero
+\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}. Both land
+back on the original domains' \pqxoDiffCritique{} and \pqxoDiffCounter{}. Part of the
+extension's apparent excess movement was the layout. Once it is removed the two independent
+samples agree. The restriction works the other way on $\Delta$confidence, which is why both
+are reported. The \texttt{self\_critique} confidence cost is \pqxeConfCritique{} points
+across all extension pairs, an interval spanning zero
 (\([\pqxeConfCritiqueLo{}, \pqxeConfCritiqueHi{}]\)) and so no measurable difference in this
-sample, but \pqxlConfCritique{}
-(\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once the position-driven items are set
-aside. We read that conservatively --- position-driven items add noise to a between-arm
-contrast, so the pooled estimate understates rather than the restricted one overstating ---
-and report it as a sensitivity check, not a headline.
+sample. It is \pqxlConfCritique{} (\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once
+the position-driven items are set aside. We read that conservatively and report it as a
+sensitivity check, not a headline. Position-driven items add noise to a between-arm
+contrast, so the pooled estimate understates rather than the restricted one overstating.
 
-\subsection{The same four arms on a second model family}
+\subsection{The same four arms on three model families}
 \label{sec:crossmodel}
 
-The extension varies the items; this varies the model. The identical protocol --- same
-\pbN{} pairs, four arms, $k$, and controls --- was run against \texttt{gpt-5.4-nano}, a
-non-reasoning model from a second vendor, for \pqmNanoEps{} episodes, all scoreable at
-both elicitations. It enters on the gate every target faces: its order gap has median
-\extNanoGapMed{} (Appendix~\ref{app:posbias}), so its answers are not decided by slot.
+The extension varies the items. This varies the model. The identical protocol ran
+against \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash}. Same \pbN{} pairs, same
+four arms, same $k$, same controls. Both answered essentially every episode.
 
-The arm pattern replicates. Control retains \pqmNanoRetCtl{}\% and
-\texttt{reason\_elicitation} \pqmNanoRetReason{}\%, both at ceiling, while
-\texttt{self\_critique} and \texttt{counter\_consideration} move retention by
-\pqmNanoDiffCritique{} and \pqmNanoDiffCounter{} points against control. What does
-\emph{not} replicate
-is which of the two moves it more: \texttt{self\_critique} is stronger on \pairModel{}
-by \pqmDsArmGap{} points, \texttt{counter\_consideration} on \texttt{gpt-5.4-nano} by
-\pqmNanoArmGap{}. The justify-versus-adversarial asymmetry is family-invariant; which
-adversarial ask is stronger is model-specific.
-Figure~\ref{fig:persistence-models} (Appendix~\ref{app:persistdetail}) draws both
+The arm pattern holds on all three targets. Control and \texttt{reason\_elicitation} sit
+at ceiling. Both adversarial arms move the choice, by \pqmGtwoDiffCounter{} to
+\pqmNanoDiffCounter{} points. The rank of the two does not hold.
+\texttt{self\_critique} is the stronger arm on \pqmCritiqueWins{} of \pqmNTargets{}
+targets and \texttt{counter\_consideration} on \pqmCounterWins{}. Control retains
+\pqmGtwoRetCtl{}\% on \texttt{gemini-2.5-flash} against \pqRetCtl{}\% on \pairModel{}, so
+the ceiling is a property of the target as well.
+Figure~\ref{fig:persistence-models} in Appendix~\ref{app:persistdetail} draws both
 channels.
 
 \subsection{Predictions and outcomes}
 \label{sec:predictions}
 
-Three predictions were written into the study design before the persistence run and are
-scored here against the data. They were never tagged as a pre-registration --- the run
-is exploratory for the reasons in Section~\ref{sec:pq2ident} --- so this is a record of
-what we expected, not a confirmatory test. Two of the three hold; the interesting one
-does not.
+Three predictions were written into the study design before the persistence run; they were
+never tagged as a pre-registration, so Table~\ref{tab:predictions} is a record of what we
+expected, not a confirmatory test. The reasoning behind each verdict is in
+Appendix~\ref{app:predictions}.
 
-\paragraph{Prediction 1: counter-consideration produces the most reversals, control the
-fewest.} Half right, and the wrong half is the informative one. Control does produce the
-fewest reversals, by a wide margin and in every domain set (\pqxpRetCtl{}\% retention
-pooled). But \texttt{counter\_consideration} is not the arm that moves choices most ---
-\texttt{self\_critique} is, by \pqxpDiffCritique{} points against \pqxpDiffCounter{}
-pooled. The ordering is not a quirk of one sample: across the \pqxPredOneOf{} preference
-domains, \texttt{self\_critique} reverses more in \pqxPredOneDoms{}, the two arms tie
-exactly in \pqxPredOneTied{} (\emph{recreation}, both at
-\pqRecRetCritique{}\%), and \texttt{counter\_consideration} reverses more in
-\pqxPredOneCounterMore{}. It is nowhere the most reversing arm, in the original four
-domains or the five added ones.
-
-We had expected that supplying the opposing case would be the stronger intervention,
-because it does more of the work for the model. The data say the opposite: being asked to
-find fault with your own choice moves it more than being handed the argument against it.
-That is consistent with the rest of this section --- what the challenge asks the model to
-\emph{do} matters more than what it supplies --- and it is the one place where the
-design's expectations and its results come apart. One qualification, from
-Section~\ref{sec:crossmodel}: the ordering reverses on \texttt{gpt-5.4-nano}, where
-\texttt{counter\_consideration} \emph{is} the most reversing arm
-(\pqmNanoDiffCounter{} points against \pqmNanoDiffCritique{}), so what fails here is
-the prediction as a general claim about challenges rather than as a claim about this
-target, and the rank of the two adversarial arms is not a quantity to carry between
-models.
-
-\paragraph{Prediction 2: self-critique lowers confidence more than reason-elicitation at
-equal retention.} Not testable as written, and directionally supported. The precondition
-fails: retention is not equal between the two arms, and is not close --- they differ by
-\pqxPredTwoRetGap{} points pooled --- so an unconditional comparison would contrast
-different episodes rather than the same ones under different challenges. On the
-comparison itself the direction holds, with \texttt{self\_critique} at
-\pqxpConfCritique{} points against control and \texttt{reason\_elicitation} at
-\pqxpConfReason{}. The clean version of this prediction is the held-episode analysis
-above, which conditions on retention rather than assuming it: among choices that did not
-move, confidence falls under both challenge arms and rises under reason-elicitation.
-
-\paragraph{Prediction 3: higher-consistency pairs retain more.} Holds, in every domain
-set. The slope of per-pair retention on balance-pilot consistency is \pqxoSlope{}
-(\([\pqxoSlopeLo{}, \pqxoSlopeHi{}]\)) on the original four domains, \pqxpSlope{}
-(\([\pqxpSlopeLo{}, \pqxpSlopeHi{}]\)) pooled over \pqxNPooledDomains{}, and
-\pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)) on the extension domains alone; no
-interval reaches zero. This is the prediction the unfiltered pool was run to make
-estimable, and it is the least surprising of the three: a preference the model already
-wavered on without any challenge is one a challenge can move.
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{p{10.2cm}l}
+    \toprule
+    Prediction & Verdict \\
+    \midrule
+    1. \texttt{counter\_consideration} produces the most reversals, \texttt{control} the
+    fewest & Half holds \\
+    2. \texttt{self\_critique} lowers confidence more than \texttt{reason\_elicitation}
+    at equal retention & Not testable as written \\
+    3. Higher-consistency pairs retain more & Holds \\
+    \bottomrule
+  \end{tabular}
+  \caption{The three predictions recorded before the persistence run, scored against the
+  collected data. Appendix~\ref{app:predictions} gives the reasoning behind each verdict.}
+  \label{tab:predictions}
+\end{table}

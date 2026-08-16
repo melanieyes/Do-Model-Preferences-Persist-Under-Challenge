@@ -127,7 +127,7 @@ targets:
     # The roster's queued second persistence target. Unlike gemini-3.5-flash it
     # passes the order-gap gate (median 0.000) and refuses nothing, so its episodes
     # are not conditioned on willingness to answer.
-    workers: 8
+    workers: 16
 
   - key: gemini35
     client: gemini

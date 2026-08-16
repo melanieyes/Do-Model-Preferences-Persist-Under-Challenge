@@ -124,6 +124,9 @@ def _frame(ax):
 
 def fig_gap_vs_mean_models() -> Path:
     """The inverted V, on the continuous measure, for every target that exposes logprobs."""
+    import matplotlib.patheffects as pe
+    from matplotlib.lines import Line2D
+
     panels = [("deepseek-v4-pro", "continuous",
                [("balance_pilot_noreason.jsonl", C_OFF, "reasoning suppressed"),
                 ("balance_pilot.jsonl", C_ON, "reasoning enabled")]),
@@ -137,48 +140,66 @@ def fig_gap_vs_mean_models() -> Path:
               ("gemini-2.5-flash", "discrete",
                [("gemini_gemini-25-flash_off.jsonl", C_OFF, "reasoning suppressed"),
                 ("gemini_gemini-25-flash_on.jsonl", C_ON, "reasoning enabled")])]
-    fig, axes = plt.subplots(1, 3, figsize=(13.4, 4.1), sharey=True)
+    BAND_FILL, TRAP_FILL = "#f4f3ee", "#e7e5db"
+    fig, axes = plt.subplots(1, 3, figsize=(13.6, 4.3), sharey=True)
     for ax, (title, kind, cells) in zip(axes, panels):
+        ax.axvspan(*NAIVE_BAND, color=BAND_FILL, lw=0, zorder=0)
         ax.add_patch(plt.Rectangle((NAIVE_BAND[0], GAP_TRAP),
-                                   NAIVE_BAND[1] - NAIVE_BAND[0], 1 - GAP_TRAP,
-                                   facecolor=GRID, alpha=0.75, lw=0, zorder=1))
-        ax.axvspan(*NAIVE_BAND, color=GRID, alpha=0.30, lw=0, zorder=0)
-        notes = []
+                                   NAIVE_BAND[1] - NAIVE_BAND[0], 1.03 - GAP_TRAP,
+                                   facecolor=TRAP_FILL, lw=0, zorder=1))
+        ax.plot(NAIVE_BAND, [GAP_TRAP, GAP_TRAP], color=AXIS, lw=0.8,
+                linestyle=(0, (4, 3)), zorder=2)
+        notes, handles = [], []
         for fname, colour, lbl in cells:
             rows = load_continuous(fname) if kind == "continuous" else load(fname)
             if kind == "continuous":
                 ax.scatter([r["mean_p_a"] for r in rows], [r["gap"] for r in rows],
-                           s=30, color=colour, alpha=0.58, edgecolor=SURFACE,
-                           linewidth=1.0, zorder=3, label=lbl)
+                           s=30, color=colour, alpha=0.62, edgecolor=SURFACE,
+                           linewidth=0.9, zorder=3)
             else:
                 from collections import Counter
                 cnt = Counter((round(r["mean_p_a"], 4), round(r["gap"], 4)) for r in rows)
                 xs = [k[0] for k in cnt]; ys = [k[1] for k in cnt]
                 sizes = [14 + 7 * n for n in cnt.values()]
-                ax.scatter(xs, ys, s=sizes, color=colour, alpha=0.5,
-                           edgecolor=SURFACE, linewidth=1.0, zorder=3, label=lbl)
+                ax.scatter(xs, ys, s=sizes, color=colour, alpha=0.55,
+                           edgecolor=SURFACE, linewidth=0.9, zorder=3)
                 for (x, y), n in cnt.items():
                     if n >= 8:
                         ax.text(x, y, str(n), ha="center", va="center",
-                                fontsize=6.4, color=INK, zorder=5)
+                                fontsize=6.6, color=INK, zorder=5,
+                                path_effects=[pe.withStroke(linewidth=1.8,
+                                                            foreground=SURFACE)])
+            handles.append(Line2D([], [], marker="o", linestyle="none",
+                                  markerfacecolor=colour, markeredgecolor="none",
+                                  alpha=0.85, markersize=6, label=lbl))
             naive = [r for r in rows if NAIVE_BAND[0] <= r["mean_p_a"] <= NAIVE_BAND[1]]
             trap = [r for r in naive if r["gap"] > GAP_TRAP]
-            notes.append(f"   {lbl}: naive filter takes {len(naive)}, "
+            notes.append(f"{lbl}: naive filter takes {len(naive)}, "
                          f"{len(trap)} slot-driven")
         _frame(ax)
         ax.set_xlim(-0.03, 1.03); ax.set_ylim(-0.03, 1.03)
+        ax.tick_params(labelsize=8.2)
         ax.set_xlabel("order-averaged $P$(option a)"
-                      + ("" if kind == "continuous" else "  —  discrete $k$=5"), fontsize=9)
-        ax.set_title(title + "\n" + "\n".join(notes),
-                     fontsize=9.5, loc="left", color=INK, linespacing=1.5)
-        ax.legend(fontsize=8, frameon=False, loc="upper left")
+                      + ("" if kind == "continuous" else "  —  discrete $k$=5"),
+                      fontsize=9)
+        # Header block: model name on a fixed rule, stats lines anchored beneath it,
+        # so the three panel headers align regardless of how many note lines a panel
+        # has (the old titles sat at different heights).
+        ax.set_title(title, fontsize=10.5, loc="left", color=INK, pad=42)
+        ax.text(0.0, 1.15, "\n".join(notes), transform=ax.transAxes,
+                va="top", ha="left", fontsize=7.7, color=INK_2, linespacing=1.6)
+        ax.legend(handles=handles, fontsize=7.8, frameon=False, loc="upper left",
+                  borderaxespad=0.4, handletextpad=0.4, labelcolor=INK_2)
     axes[0].set_ylabel("order gap", fontsize=9)
-    fig.suptitle("Perfect balance and total position dependence are the same number — the "
-                 "apex sits at $P=0.5$.\ngemini-2.5-flash exposes no log-probabilities, so "
-                 "its panel uses the discrete $k$=5 estimate and marker area encodes how "
-                 "many pairs share each point; the measure is not the same as the other two.",
-                 fontsize=8.6, color=INK_2, y=1.08, x=0.008, ha="left")
     fig.tight_layout()
+    x0 = axes[0].get_position().x0
+    fig.text(x0, 1.115, "Perfect balance and total position dependence are the same "
+             "number — the apex sits at $P=0.5$.",
+             fontsize=10, color=INK, ha="left")
+    fig.text(x0, 1.065, "gemini-2.5-flash exposes no log-probabilities, so its panel "
+             "uses the discrete $k$=5 estimate and marker area encodes how many pairs "
+             "share each point; the measure is not the same as the other two.",
+             fontsize=8.2, color=MUTED, ha="left")
     out = FIGS / "gap_vs_mean_models.png"
     fig.savefig(out, bbox_inches="tight"); plt.close(fig)
     return out

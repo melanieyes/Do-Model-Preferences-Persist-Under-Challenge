@@ -10,12 +10,11 @@ Limitations.
 
 Macro prefix, one per target, so a number can never be quoted against the wrong model:
 
-    pqmNano*    gpt-5.4-nano, the second family. Full coverage, so every PQ
-                quantity is estimable and comparable to the deepseek-v4-pro
-                estimates in persist_stats.tex.
+    pqmNano*    gpt-5.4-nano, non-reasoning, second family. Full coverage.
+    pqmGtwo*    gemini-2.5-flash, third family. Full coverage.
     pqmGthree*  gemini-3.5-flash. OUTCOME-CONDITIONED and reported as such: only
                 the pairs it agreed to answer reach the estimator, so its
-                retention numbers are NOT comparable to the two above and are
+                retention numbers are NOT comparable to the three above and are
                 never plotted beside them. Coverage is the finding; the retention
                 figures exist so the appendix can state what the surviving
                 episodes look like, with the conditioning stated first.
@@ -23,6 +22,10 @@ Macro prefix, one per target, so a number can never be quoted against the wrong 
 deepseek-v4-pro is deliberately NOT re-emitted here. Its numbers already exist as
 \\pq* macros in persist_stats.tex, and a second macro for the same quantity is a
 second thing to drift.
+
+The rank of the two adversarial arms is COUNTED across the full-coverage targets
+rather than written into the prose, so the prediction-1 verdict cannot drift from
+the data when a target is added or removed.
 
     python analysis/persistence_models_stats.py [--check]
 """
@@ -46,7 +49,15 @@ DATA = ROOT / "data" / "persistence"
 OUT = ROOT / "paper" / "persist_models_stats.tex"
 
 NANO = DATA / "persistence_nano_k3.jsonl"
+GTWO = DATA / "persistence_gemini25_k3.jsonl"
 GTHREE = DATA / "persistence_gemini35_k3.jsonl"
+DEEPSEEK = DATA / "persistence_deepseek_k3.jsonl"
+
+# Every target that answered every episode. The order is the order the paper names
+# them in: the primary target first, then the two replications.
+FULL_COVERAGE = [("Ds", "deepseek-v4-pro", DEEPSEEK),
+                 ("Nano", "gpt-5.4-nano", NANO),
+                 ("Gtwo", "gemini-2.5-flash", GTWO)]
 
 SHORT = {"control": "Ctl", "reason_elicitation": "Reason",
          "self_critique": "Critique", "counter_consideration": "Counter"}
@@ -105,39 +116,55 @@ def main() -> None:
     m: dict[str, str] = {}
     chk: list[tuple[str, str]] = []
 
-    # ---------------- gpt-5.4-nano: full coverage, everything estimable -------
-    nano = load(NANO)
-    nano_scored = [r for r in nano if r.get("retained") is not None]
-    m["pqmNanoEps"] = str(len(nano))
-    m["pqmNanoScored"] = str(len(nano_scored))
-    m["pqmNanoPairs"] = str(len({r["pair_id"] for r in nano_scored}))
-    arm_block(m, "pqmNano", nano_scored, contrasts=True)
-    chk.append(("nano episodes scored", f"{len(nano_scored)} of {len(nano)}"))
-    chk.append(("nano retention: ctl / reason / critique / counter",
-                " / ".join(m[f"pqmNanoRet{SHORT[a]}"] for a in ARMS)))
-    chk.append(("nano contrast vs control: reason / critique / counter",
-                " / ".join(m[f"pqmNanoDiff{SHORT[a]}"] for a in ARMS[1:])))
+    # ---------------- the full-coverage targets -------------------------------
+    scored_by_tag: dict[str, list[dict]] = {}
+    for tag, name, path in FULL_COVERAGE:
+        rows = load(path)
+        rs = [r for r in rows if r.get("retained") is not None]
+        scored_by_tag[tag] = rs
+        if tag == "Ds":
+            continue          # deepseek's PQ macros live in persist_stats.tex
+        m[f"pqm{tag}Eps"] = str(len(rows))
+        m[f"pqm{tag}Scored"] = str(len(rs))
+        m[f"pqm{tag}Pairs"] = str(len({r["pair_id"] for r in rs}))
+        arm_block(m, f"pqm{tag}", rs, contrasts=True)
+        chk.append((f"{name} episodes scored", f"{len(rs)} of {len(rows)}"))
+        chk.append((f"{name} retention: ctl / reason / critique / counter",
+                    " / ".join(m[f"pqm{tag}Ret{SHORT[a]}"] for a in ARMS)))
+        chk.append((f"{name} contrast vs control: reason / critique / counter",
+                    " / ".join(m[f"pqm{tag}Diff{SHORT[a]}"] for a in ARMS[1:])))
 
-    # Which challenge arm moves the choice more, on each target. This is the rank
-    # swap the subsection turns on, so it is COMPUTED rather than read off a table.
-    ds = load(DATA / "persistence_deepseek_k3.jsonl")
-    ds_scored = [r for r in ds if r.get("retained") is not None]
-    for tag, rs in (("Ds", ds_scored), ("Nano", nano_scored)):
+    # Which adversarial arm moves the choice more, per target, and the tally across
+    # targets. The prediction-1 verdict quotes the tally, so it is COUNTED here
+    # rather than written into the prose and left to drift.
+    tally = {"self_critique": 0, "counter_consideration": 0}
+    for tag, name, _ in FULL_COVERAGE:
+        rs = scored_by_tag[tag]
         d = {}
         for arm in CHALLENGE_ARMS:
             p, *_ = paired_contrast(rs, arm, lambda r: r["retained"])
             d[arm] = p
         stronger = min(d, key=lambda a: d[a])          # most negative = moves most
+        tally[stronger] += 1
         m[f"pqm{tag}StrongerArm"] = ("self\\_critique" if stronger == "self_critique"
                                      else "counter\\_consideration")
         m[f"pqm{tag}ArmGap"] = num(abs(d["self_critique"] - d["counter_consideration"]) * 100)
-        chk.append((f"{tag}: arm that moves choices most / gap between the two",
+        chk.append((f"{name}: arm that moves choices most / gap between the two",
                     f"{stronger} / {m[f'pqm{tag}ArmGap']} points"))
+    m["pqmNTargets"] = str(len(FULL_COVERAGE))
+    m["pqmCritiqueWins"] = str(tally["self_critique"])
+    m["pqmCounterWins"] = str(tally["counter_consideration"])
+    chk.append(("full-coverage targets where self_critique / counter moves more",
+                f"{tally['self_critique']} / {tally['counter_consideration']} "
+                f"of {len(FULL_COVERAGE)}"))
 
-    # ---------------- the control baseline, deepseek against nano -------------
-    # Limitations says the zero-variance control is a property of the deepseek
-    # target rather than of the design; both halves of that claim are measured.
-    for tag, rs in (("Ds", ds_scored), ("Nano", nano_scored)):
+    # ---------------- the control baseline, on every full-coverage target -----
+    # Limitations says the zero-variance control is not a property of the design.
+    # That needs all three targets, not two: deepseek-v4-pro and gemini-2.5-flash
+    # both sit at near-zero and gpt-5.4-nano does not, so the claim is that the
+    # design does not force the degenerate baseline, not that only one target has it.
+    for tag, _, _ in FULL_COVERAGE:
+        rs = scored_by_tag[tag]
         ctl = [r for r in rs if r["arm"] == "control"]
         vals = [dconf(r) for r in ctl if dconf(r) is not None]
         m[f"pqm{tag}CtlScored"] = str(len(vals))
@@ -174,12 +201,13 @@ def main() -> None:
                 f"({m['pqmGthreeScoredPct']}%), {m['pqmGthreePairs']} of 130 pairs"))
 
     # ---------------- write ----------------
+    srcs = ", ".join(f"{p.name} ({len(scored_by_tag[t])} scored)"
+                     for t, _, p in FULL_COVERAGE)
     header = (
         "% GENERATED by analysis/persistence_models_stats.py — do not hand-edit.\n"
-        f"% Sources: {NANO.name} ({len(nano)} episodes), {GTHREE.name} "
-        f"({len(g3)} episodes),\n"
-        "%          persistence_deepseek_k3.jsonl (control-baseline comparison only).\n"
-        "% pqmNano* full coverage, estimable. pqmGthree* OUTCOME-CONDITIONED —\n"
+        f"% Full-coverage sources: {srcs}.\n"
+        f"% Conditioned source: {GTHREE.name} ({len(g3_scored)} of {len(g3)} scored).\n"
+        "% pqmNano*, pqmGtwo* full coverage, estimable. pqmGthree* OUTCOME-CONDITIONED —\n"
         "% coverage is the finding; its retention is never compared to the others.\n")
     body = "".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in sorted(m.items()))
     OUT.write_text(header + body)

@@ -20,9 +20,6 @@ gap on the model in use, not the presence of a reasoning toggle, and it passes t
 gate (median 0.000). See DEVIATIONS #7.
 
 Emits:
-    paper/figures/three_model.png    model-specificity + coverage (not referenced by
-                                     the paper; four_model.png from
-                                     model_comparison_figures.py is the placed figure)
     paper/figures/label_schemes.png  Fig 5: does the bias survive relabeling?
     paper/ext_stats.tex              every quoted number, as macros
     paper/ext_table1.tex             cross-model summary table
@@ -109,86 +106,9 @@ CELLS = [
     ("gemini-3.5-flash", "on", "gemini_gemini-35-flash_on.jsonl", False),
 ]
 
-# How each cell's reasoning setting is named, in the figure and in the table. The
-# nano cell is not "reasoning off" -- there is no reasoning stage to have turned off.
-FIG_LABEL = {"off": "reasoning off", "on": "reasoning on", "none": "non-reasoning"}
+# How each cell's reasoning setting is named in the table. The nano cell is not
+# "reasoning off" -- there is no reasoning stage to have turned off.
 TAB_LABEL = {"off": "off", "on": "on", "none": "non-reasoning"}
-SHORT_NAME = {"deepseek-v4-pro": "deepseek v4", "gemini-2.5-flash": "gemini 2.5",
-              "gemini-3.5-flash": "gemini 3.5", "gpt-5.4-nano": "gpt-5.4-nano"}
-
-
-def fig_three_model(stats: dict) -> Path:
-    fig, axes = plt.subplots(1, 2, figsize=(11.4, 4.5),
-                             gridspec_kw={"width_ratios": [1.72, 1.0], "wspace": 0.34})
-
-    # --- panel A: per-pair gap, only where the cell is estimable -----------
-    ax = axes[0]
-    labels, y = [], 0
-    yticks, ylabels = [], []
-    rng = np.random.default_rng(BOOT_SEED)
-    for model, setting, _, estimable in CELLS:
-        s = stats[(model, setting)]
-        yticks.append(y)
-        ylabels.append(f"{model}\n{FIG_LABEL[setting]}")
-        colour = C_OFF if setting == "off" else C_ON
-        if estimable:
-            g = s["gaps"]
-            jitter = (rng.random(len(g)) - 0.5) * 0.30
-            ax.scatter(g, y + jitter, s=15, color=colour, alpha=0.42,
-                       edgecolor="none", zorder=3)
-            ax.plot([s["median"], s["median"]], [y - 0.30, y + 0.30], color=INK,
-                    lw=2.6, zorder=5, solid_capstyle="butt")
-            ax.text(1.06, y, f"med {s['median']:.2f}   mean {s['mean']:.3f}\n"
-                            f"[{s['lo']:.3f}, {s['hi']:.3f}]   n={len(g)}",
-                    va="center", size=7.0, color=INK)
-        else:
-            ax.text(0.01, y, "not estimable — the model declines the task "
-                             f"({s['cov']['pct_refusal']:.0f}% refusals, "
-                             f"{s['cov']['scorable_pairs']}/130 pairs scorable)",
-                    va="center", size=7.2, color=MUTED, style="italic")
-        y += 1
-    ax.set_yticks(yticks)
-    ax.set_yticklabels(ylabels, size=7.4)
-    # room on the right for the per-cell statistics, without spilling into panel b
-    ax.set_xlim(-0.03, 1.72)
-    ax.set_ylim(len(CELLS) - 0.45, -0.55)
-    ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
-    ax.set_xlabel("order gap   (0 = choice follows content, 1 = follows slot)", size=8.2)
-    ax.set_title("a.  Same instrument, same 130 pairs — the magnitude is model-specific",
-                 size=9.2, color=INK, loc="left", pad=8)
-    for side in ("top", "right", "left"):
-        ax.spines[side].set_visible(False)
-    ax.tick_params(axis="y", length=0)
-    for gx in (0, 0.25, 0.5, 0.75, 1.0):
-        ax.axvline(gx, color=GRID, lw=0.8, zorder=0)
-    ax.set_axisbelow(True)
-
-    # --- panel B: coverage -------------------------------------------------
-    ax = axes[1]
-    ys = np.arange(len(CELLS))
-    vals = [stats[(m, s)]["cov"]["pct_choice"] for m, s, _, _ in CELLS]
-    cols = [C_OFF if s == "off" else C_ON for _, s, _, _ in CELLS]
-    ax.barh(ys, vals, height=0.60, color=cols, edgecolor=SURFACE, linewidth=2.0, zorder=3)
-    for yy, v, (m, s, _, est) in zip(ys, vals, CELLS):
-        ax.text(min(v + 2, 99), yy, f"{v:.0f}%", va="center", size=7.6, color=INK)
-    ax.set_yticks(ys)
-    ax.set_yticklabels([f"{SHORT_NAME[m]} · {TAB_LABEL[s]}" for m, s, _, _ in CELLS],
-                       size=7.2)
-    ax.invert_yaxis()
-    ax.set_xlim(0, 108)
-    ax.set_xlabel("responses that were a usable forced choice (%)", size=8.2)
-    ax.set_title("b.  …and on one model the question cannot be posed",
-                 size=9.2, color=INK, loc="left", pad=8)
-    for side in ("top", "right", "left"):
-        ax.spines[side].set_visible(False)
-    ax.tick_params(axis="y", length=0)
-    ax.grid(axis="x", color=GRID, lw=0.8, zorder=0)
-    ax.set_axisbelow(True)
-
-    out = FIGS / "three_model.png"
-    fig.savefig(out, bbox_inches="tight")
-    plt.close(fig)
-    return out
 
 
 def fig_labels(lab: dict) -> Path:
@@ -262,7 +182,6 @@ def main() -> None:
                        "median": float(np.median(g)), "n": len(g)}
         print(f"  label {scheme:9s} n={len(g)} mean {g.mean():.3f} [{lo:.3f}, {hi:.3f}]")
 
-    f1 = fig_three_model(stats)
     f2 = fig_labels(lab)
 
     ds_off, ds_on = stats[("deepseek-v4-pro", "off")], stats[("deepseek-v4-pro", "on")]
@@ -330,7 +249,7 @@ def main() -> None:
     tex += ["\\bottomrule", "\\end{tabular}"]
     (REPO / "paper" / "ext_table1.tex").write_text("\n".join(tex) + "\n")
 
-    print(f"\nwrote {f1.relative_to(REPO)}, {f2.relative_to(REPO)}, ext_stats.tex, ext_table1.tex")
+    print(f"\nwrote {f2.relative_to(REPO)}, ext_stats.tex, ext_table1.tex")
 
 
 if __name__ == "__main__":

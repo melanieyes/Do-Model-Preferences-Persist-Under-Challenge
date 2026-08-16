@@ -28,7 +28,7 @@ failure case the two quantities are deterministically opposed.
   what a naive $0.3$--$0.7$ split filter accepts; the darker block is the part of it that
   is position-driven. Perfect balance and total position dependence coincide at the apex,
   and the same structure appears on \texttt{gpt-5.4-nano}, which has no reasoning stage to
-  disable --- so the shape is not an artefact of suppressing reasoning.
+  disable, so the shape is not an artefact of suppressing reasoning.
   \texttt{gemini-2.5-flash} is absent because that API returns no log-probabilities and
   the discrete estimate at $k=\pairK{}$ is too coarse to resolve the shape; its order gap
   is in Appendix~\ref{app:posbias}.}
@@ -48,9 +48,9 @@ the discrete choice rather than on log-probabilities.
 
 \paragraph{The magnitude is model-specific, and one model refuses.} The same instrument on
 the same \pbN{} pairs gives a reasoning-suppressed mean order gap of \pbOffMean{} on
-\pairModel{} and \extGtwoOff{} on \texttt{gemini-2.5-flash} --- medians \extDsOffMed{} and
-\extGtwoOffMed{}, so on the first model the typical pair is decided entirely by position
-and on the second it is not affected at all --- while \texttt{gemini-3.5-flash} declines to
+\pairModel{} and \extGtwoOff{} on \texttt{gemini-2.5-flash}. The medians are
+\extDsOffMed{} and \extGtwoOffMed{}, so on the first model the typical pair is decided
+entirely by position and on the second it is not affected at all. \texttt{gemini-3.5-flash} declines to
 assign itself preferences in \extGthreeRefusalOn{}\% of trials and cannot be asked the
 question at all. Nothing about the three models announced which would be which, so the
 per-item order gap has to be measured on the model in use rather than inherited from a

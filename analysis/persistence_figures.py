@@ -94,8 +94,8 @@ def bars(ax, xs, pts, los, his, colors, *, pct):
 
 POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
 
-# Both targets ran the IDENTICAL 130-pair pool and answered every episode, so this is a
-# same-pool comparison rather than two different item sets placed side by side.
+# All three targets ran the IDENTICAL 130-pair pool and answered essentially every
+# episode, so this is a same-pool comparison rather than three item sets side by side.
 #
 # gemini-3.5-flash ran the same pool and is NOT here. It declines the forced choice in
 # most episodes, leaving 273 of 1,560 scorable, so bars for it would rest on the pairs
@@ -106,8 +106,9 @@ POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
 # failure in the appendix, conditioning stated first, and never plotted here.
 # See DEVIATIONS #7.
 MODELS = [
-    ("deepseek-v4-pro", "persistence_deepseek_k3.jsonl", "#2a78d6"),
-    ("gpt-5.4-nano",    "persistence_nano_k3.jsonl",     "#d1662b"),
+    ("deepseek-v4-pro",  "persistence_deepseek_k3.jsonl", "#2a78d6"),
+    ("gpt-5.4-nano",     "persistence_nano_k3.jsonl",     "#d1662b"),
+    ("gemini-2.5-flash", "persistence_gemini25_k3.jsonl", "#4a9c6d"),
 ]
 
 SCOPES = {
@@ -193,15 +194,15 @@ def build(scope: str) -> None:
 def build_models() -> None:
     """Retention by arm across targets, on the same 130 pairs.
 
-    Every bar here rests on full coverage: both targets returned a scoreable choice
-    at both elicitations in all 1,560 episodes, so the two sets of bars are over the
-    same pairs AND the same episodes. That is the condition for putting them beside
-    each other, and it is why gemini-3.5-flash is not in MODELS.
+    Every bar here rests on full coverage: each target returned a scoreable choice at
+    both elicitations in essentially all 1,560 episodes, so the three sets of bars are
+    over the same pairs AND the same episodes. That is the condition for putting them
+    beside each other, and it is why gemini-3.5-flash is not in MODELS.
     """
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
     fig, axes = plt.subplots(1, 2, figsize=(11.6, 3.9))
-    width = 0.34
+    width = 0.26
     for ax, metric, ylab, pct in ((axes[0], "ret", "retention (%)", True),
                                   (axes[1], "dconf", r"$\Delta$confidence, held", False)):
         for mi, (name, fname, colour) in enumerate(MODELS):
@@ -218,7 +219,7 @@ def build_models() -> None:
                 if pt is None:
                     continue
                 k = 100 if pct else 1
-                xs.append(ai + (mi - 0.5) * width)
+                xs.append(ai + (mi - (len(MODELS) - 1) / 2) * width)
                 pts.append(pt * k); los.append(lo * k); his.append(hi * k)
             ax.bar(xs, pts, width=width * 0.90, color=colour, edgecolor=AXIS,
                    linewidth=0.6, zorder=2, label=name)
@@ -235,15 +236,16 @@ def build_models() -> None:
     axes[0].set_ylim(0, 132)
     # Above the bars, not on them: the tallest bar in this panel is at ceiling, so a
     # legend anywhere inside the plotting area lands on data.
-    axes[0].legend(fontsize=7.6, frameon=False, loc="upper right", ncol=2,
-                   handlelength=1.2, columnspacing=1.2)
+    axes[0].legend(fontsize=7.4, frameon=False, loc="upper right", ncol=3,
+                   handlelength=1.1, columnspacing=1.0)
     axes[0].set_title("(a) Retention by arm", fontsize=9.5, loc="left", color=INK)
     axes[1].set_title("(b) \u0394confidence among preferences that held",
                       fontsize=9.5, loc="left", color=INK)
-    fig.suptitle("Same 130 pairs, two model families, full coverage on both. Control and "
-                 "reason-elicitation sit at ceiling and both challenge arms move the "
-                 "choice \u2014\nbut the two challenge arms swap rank: self-critique moves "
-                 "deepseek-v4-pro most, counter-consideration moves gpt-5.4-nano most.",
+    fig.suptitle("Same 130 pairs, three model families, full coverage on all three. "
+                 "Control and reason-elicitation sit at ceiling and both challenge arms "
+                 "move the choice.\nThe rank of the two challenge arms does not carry: "
+                 "self-critique moves deepseek-v4-pro and gemini-2.5-flash most, "
+                 "counter-consideration moves gpt-5.4-nano most.",
                  fontsize=8.4, color=INK_2, y=1.045, x=0.008, ha="left")
     fig.tight_layout()
     out = FIGS / "persistence_models.png"

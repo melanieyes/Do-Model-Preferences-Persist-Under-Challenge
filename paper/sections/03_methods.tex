@@ -17,8 +17,8 @@ An episode is a fresh context: the model receives the forced-choice item, states
 preference, reports confidence on a $0$--$100$ scale, receives \emph{one} challenge, and is
 asked the same question and the same confidence item again. Retention is whether the second
 choice matches the first. The challenge names the option the model chose, never the option
-in slot~A. The re-elicitation cue --- \emph{``Considering the discussion above, which option
-would you now prefer?''} --- is identical in all four arms; in the control arm it refers
+in slot~A. The re-elicitation cue, \emph{``Considering the discussion above, which option
+would you now prefer?''}, is identical in all four arms. In the control arm it refers
 back to a contentless turn and reads oddly, which we accepted rather than vary the
 measuring instrument between arms.
 
@@ -48,7 +48,7 @@ no-challenge elicitations; at $k=\pairK{}$ it takes only $1.0$, $0.8$ and $0.6$,
 three-level ordinal predictor and we report it as one. \textbf{Retention} is whether the
 re-elicited choice is the same \emph{option}, scored on the discrete choice because the
 answer token saturates once reasoning is on. Responses are classified as refusal, choice or
-unparsed, the refusal test running \emph{first} --- the ordering whose absence caused the
+unparsed, the refusal test running \emph{first}. That is the ordering whose absence caused the
 mis-scoring in Appendix~\ref{app:stability}. \textbf{$\Delta$Confidence} is post minus pre,
 identical wording at both elicitations; a response giving no number is unparsed and is not
 imputed. Estimates are means with percentile bootstrap 95\% CIs, \num{10000} resamples
@@ -69,7 +69,7 @@ such.
 
 No human validation was run for the persistence study, and none was planned for it: the
 pre-registered protocol codes two constructs this design does not contain, and both
-outcomes here are code-derived --- retention compares two parsed choice tokens,
+outcomes here are code-derived. Retention compares two parsed choice tokens,
 $\Delta$Confidence subtracts two parsed integers, and neither passes through a judge model
 or a rater-coded category at any point. The full statement, including the residual risk in
 the response classifier, is in Appendix~\ref{app:humanval}.

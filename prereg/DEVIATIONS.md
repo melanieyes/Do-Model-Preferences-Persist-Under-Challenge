@@ -407,12 +407,12 @@ analysis in `analysis/persistence_analysis.py` over the combined set.
 
 | Date | Change | Rationale | Data seen? | By |
 |---|---|---|---|---|
-| 2026-08-16 | The persistence protocol of entry #5 is run unchanged against two further targets: **C1 `gpt-5.4-nano`** and **C2 `gemini-3.5-flash`**. Same 130-pair original pool, same four arms, same k=3, same five instrument controls, same seed 20260815, same order schedule and pair×arm balance. Nothing about the design, the arms, the episode structure or the measures is altered; only the target changes. `deepseek-v4-pro` remains the primary target and is neither re-run nor pooled with either new target — every estimate is reported per model. | Entry #4a established that the *order gap* is model-specific and cannot be inherited. That argument applies with equal force to retention: a persistence result on one target says nothing about a second, and the paper's central claim (what the challenge asks for decides) is worth exactly as much as the number of families it has been checked on. | **YES** — both runs were commissioned after the k3 and extension results were inspected. Everything under this entry is exploratory, as is everything after prereg-v1. | Melanie, Haein |
+| 2026-08-16 | The persistence protocol of entry #5 is run unchanged against three further targets: **C1 `gpt-5.4-nano`**, **C2 `gemini-3.5-flash`** and **C3 `gemini-2.5-flash`**. Same 130-pair original pool, same four arms, same k=3, same five instrument controls, same seed 20260815, same order schedule and pair×arm balance. Nothing about the design, the arms, the episode structure or the measures is altered; only the target changes. `deepseek-v4-pro` remains the primary target and is neither re-run nor pooled with either new target — every estimate is reported per model. | Entry #4a established that the *order gap* is model-specific and cannot be inherited. That argument applies with equal force to retention: a persistence result on one target says nothing about a second, and the paper's central claim (what the challenge asks for decides) is worth exactly as much as the number of families it has been checked on. | **YES** — both runs were commissioned after the k3 and extension results were inspected. Everything under this entry is exploratory, as is everything after prereg-v1. | Melanie, Haein |
 
-**Numbering.** C1/C2 label the two cross-model runs in the order they are reported in
-the paper, not the order they were collected: C2 (`gemini-3.5-flash`) ran first, at
-commit `b97a0c6a`, and C1 (`gpt-5.4-nano`) second, at commit `9ec431c4`. Both under
-config hash `9320f14c0426`.
+**Numbering.** C1/C2/C3 label the cross-model runs in the order they are reported in the
+paper, not the order they were collected. C2 (`gemini-3.5-flash`) ran first, at commit
+`b97a0c6a`; C1 (`gpt-5.4-nano`) second, at commit `9ec431c4`; C3 (`gemini-2.5-flash`)
+last. All three under config hash `9320f14c0426`.
 
 ### C1 — `gpt-5.4-nano` (2026-08-16)
 
@@ -440,19 +440,25 @@ scoreable at both elicitations**, 130 pairs. Retention: control 97.9%, `reason_e
 99.5%, `self_critique` 36.9%, `counter_consideration` 23.3%. Paired against control:
 +1.5, −61.0, −74.6 points.
 
-**The result that does not transfer.** The arm *pattern* replicates — control and
-`reason_elicitation` at ceiling, both adversarial arms moving the choice — but the two
+**The result that does not transfer.** The arm *pattern* replicates: control and
+`reason_elicitation` at ceiling, both adversarial arms moving the choice. The two
 adversarial arms **swap rank**. `self_critique` is stronger on `deepseek-v4-pro` by 5.9
-points; `counter_consideration` is stronger on `gpt-5.4-nano` by 13.6. Reported as: the
-justify-vs-adversarial asymmetry is family-invariant, the ordering within it is a property
-of the model. This is also recorded against prediction 1, whose failure on
+points; `counter_consideration` is stronger on `gpt-5.4-nano` by 13.6. With C3 added the
+tally across the three full-coverage targets is 2–1 for `self_critique` (see C3). Reported
+as: the justify-vs-adversarial asymmetry is family-invariant, the ordering within it is a
+property of the model. This is also recorded against prediction 1, whose failure on
 `deepseek-v4-pro` is a failure of the general claim rather than of the target-specific one.
+The paper quotes the tally through macros (`\pqmCritiqueWins`, `\pqmCounterWins`,
+`\pqmNTargets`) computed by `analysis/persistence_models_stats.py`, so adding or removing a
+target cannot leave the verdict stale.
 
 **Second finding, on the instrument rather than the model.** The control arm's
 ΔConfidence is exactly zero in 371 of 372 scored episodes on `deepseek-v4-pro` but moves
-in 317 of 390 on `gpt-5.4-nano` (mean −2.60 [−3.26, −1.88]). The zero-variance control
-that entry #5's Limitations calls a useless baseline for the confidence channel is a
-property of the deepseek target, not of the design. Stated in Limitations.
+in 317 of 390 on `gpt-5.4-nano` (mean −2.60 [−3.26, −1.88]). C3 puts a third value on
+this: 11 of 390 on `gemini-2.5-flash`. So two of the three full-coverage targets sit at
+the degenerate baseline and one does not. The claim in Limitations is therefore that the
+zero-variance control is **not forced by the design**, not that only `deepseek-v4-pro` has
+it. The weaker claim is the one the data support and the one the paper makes.
 
 **Collection note.** A first attempt at 16 workers lost 1,337 of 1,560 episodes to HTTP
 429; retained out-of-tree as `FAILED_nano_k3_ratelimit.jsonl` and **not** analysed. The
@@ -489,17 +495,45 @@ is retained out-of-tree as `SUPERSEDED_gemini35_k3_thin_audit.jsonl`. The report
 the re-run with `refusal_evidence_pre` stored per episode, so the 949 refusals can be
 inspected rather than trusted. Only the re-run is analysed.
 
+### C3 — `gemini-2.5-flash` (2026-08-16)
+
+The third full-coverage target, and the one that turns a single replication into a tally.
+It clears the same gate: order gap 0.209, median 0.000, 100% usable over the same 130
+pairs (`balance_pilot_gemini25.jsonl`). PQ2 is estimable on it, because the consistency
+covariate is its own balance pilot on those pairs rather than another model's.
+
+**Measured output.** 1,560 episodes, 1,559 scoreable at both elicitations, 130 pairs,
+0 refusals. Retention: control 93.6%, `reason_elicitation` 95.4%, `self_critique` 60.3%,
+`counter_consideration` 72.5%. Paired against control: +1.8, −33.3, −21.0 points.
+
+**What it adds.** `self_critique` is the stronger adversarial arm here, by 12.3 points, so
+the rank tally across the three full-coverage targets is 2–1 for `self_critique` rather
+than 1–1. The invariant is unchanged and now rests on three families instead of two:
+control and `reason_elicitation` at ceiling, both adversarial arms moving the choice.
+
+**The ceiling is model-specific too.** Control retains 93.6% here against 99.7% on
+`deepseek-v4-pro` and 97.9% on `gpt-5.4-nano`. This is the least ceilinged control of the
+three, so its baseline is the furthest from degenerate, and the arm contrasts on it are
+the least compressed by the floor effect entry #5 flags as the main threat to the run.
+
+**Cost note, carried forward.** $12.08 against a $4.85 estimate. The price entry for this
+model in `configs/default.yaml` is the `-lite` proxy and is labelled unconfirmed; this
+model spends roughly 2,900 output tokens per episode on thinking. The proxy must be
+corrected before it is used to size another run. Not corrected under this entry, because
+correcting it is a config change and not a deviation.
+
 ### What this entry does not claim
 
-Two families with full coverage is enough to show that the rank of the two adversarial
-arms does not transfer between models. It is not enough to say what governs that rank,
-and no mechanism is proposed. `gpt-5.4-nano` is non-reasoning and `deepseek-v4-pro` runs
-with reasoning enabled, so family and reasoning stage are confounded across the two
-targets and this entry separates neither. Stated in the paper's Scope limitation.
+Three families with full coverage is enough to show that the rank of the two adversarial
+arms does not transfer between models. It is not enough to say what governs that rank, and
+no mechanism is proposed. `gpt-5.4-nano` is non-reasoning while `deepseek-v4-pro` and
+`gemini-2.5-flash` run with reasoning enabled, so family and reasoning stage are confounded
+across the three targets and this entry separates neither. Stated in the paper's Scope
+limitation.
 
-Provenance: `data/pairs/balance_pilot_nano.jsonl`;
-episodes in `data/persistence/persistence_nano_k3.jsonl` and
-`persistence_gemini35_k3.jsonl` (**both committed**);
+Provenance: `data/pairs/balance_pilot_nano.jsonl`, `balance_pilot_gemini25.jsonl`;
+episodes in `data/persistence/persistence_nano_k3.jsonl`,
+`persistence_gemini35_k3.jsonl` and `persistence_gemini25_k3.jsonl` (**all committed**);
 `analysis/persistence_models_stats.py` → `paper/persist_models_stats.tex`;
 figure from `analysis/persistence_figures.py --scope models`;
 cross-model table row from `analysis/extensions_figures.py`.
