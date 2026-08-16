@@ -9,26 +9,17 @@ confidence, is evidence about the elicitation; it is not evidence that anything 
 experienced. We take no position on whether these models have preferences in a morally
 relevant sense, and the claims do not require one.
 
-\paragraph{The confidence gain on flipped episodes cannot be interpreted.} Episodes in
-which the choice moved report \emph{higher} confidence afterwards --- within pair,
-\pqFlipGain{} points more than episodes that held. We do not report this as a finding,
-because we cannot separate it from regression toward the middle of the scale. Two things
-show why. It attenuates from \pqFlipGain{} to \pqFlipGainNoZero{} once the
-\pqZeroEps{} episodes that began at zero confidence are dropped. And it reverses
-outright in the high-confidence band: among episodes starting at $85$--$100$, flipped
-episodes move \pqBandFlip{} and held episodes \pqBandHeld{}. An effect that changes sign
-with the starting value is the scale returning to its middle, at least in part, and this
-design cannot say how much of it is anything else.
-
-\paragraph{The control arm cannot serve as a baseline for $\Delta$Confidence.} This is
-the reason the above cannot be cleaned up. Control's $\Delta$Confidence is exactly zero
-in \pqCtlZero{} of \pqCtlScored{} scored episodes: the contentless turn gives the model
-nothing to reconsider, so it repeats its previous number verbatim. That makes control a
-sound baseline for the \emph{choice} channel and a useless one for the confidence
-channel --- it has no regression-to-the-mean behaviour to subtract, because it has no
-variance at all. A future control should require the model to restate its confidence for
-a reason it must supply, so that the baseline moves for the same mechanical reasons the
-treatment arms do.
+\paragraph{The confidence gain on flipped episodes cannot be interpreted, because control
+has no variance to subtract.} Episodes in which the choice moved report \emph{higher}
+confidence afterwards --- within pair, \pqFlipGain{} points more than episodes that held ---
+and we do not report this as a finding. It attenuates to \pqFlipGainNoZero{} once the
+\pqZeroEps{} episodes that began at zero confidence are dropped, and reverses outright in
+the high-confidence band (\pqBandFlip{} flipped against \pqBandHeld{} held, among episodes
+starting at $85$--$100$); an effect that changes sign with the starting value is the scale
+returning to its middle. Control cannot clean this up: its $\Delta$Confidence is exactly
+zero in \pqCtlZero{} of \pqCtlScored{} scored episodes, which makes it a sound baseline for
+the \emph{choice} channel and a useless one for the confidence channel. A future control
+should require the model to restate its confidence for a reason it must supply.
 
 \paragraph{The confidence scale is used as a coarse ordinal.} Of \pqNEpisodes{} initial
 confidence reports, $100$ appears \pqConfPreHundred{} times, $70$ appears

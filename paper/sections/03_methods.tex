@@ -67,30 +67,9 @@ such.
 \subsection{Human validation}
 \label{sec:humanval}
 
-No human validation was run for the persistence study, and none was planned for it. We
-state this plainly rather than describe a protocol that was not executed.
-
-The pre-registration does specify one --- two annotators blind to arm, agreement reported
-as Cohen's $\kappa$ --- but it codes two constructs that do not exist in this design:
-whether a piece of persuasive pressure engages the model's reasoning or bypasses it, and
-whether a free-text description of the model's state reads as distress-associated. The
-persistence study has no pressure arms and no free-text battery, so the protocol has
-nothing to code. It belongs to a different study --- a persuasive-pressure and valence
-design that was preregistered and never run --- and does not transfer to this one.
-
-What replaces it is structural rather than procedural. Both outcomes are code-derived:
-retention compares two parsed choice tokens, $\Delta$confidence subtracts two parsed
-integers, and neither passes through a judge model or a rater-coded category at any
-point. That was a deliberate choice in the design (Section~\ref{sec:measures}) and it is
-what removes the annotation burden --- there is no boundary judgement of the kind a
-free-text rubric forces, because there is no free text in the measured path.
-
-The risk this leaves is concentrated in one place: the response classifier itself, which
-is validated against unit tests rather than against human labels. That risk is not
-hypothetical. The mis-scoring described in Appendix~\ref{app:stability}, in which a
-response that disclaimed having preferences and then discussed both options was scored as
-choosing one, is precisely what an unvalidated classifier failure looks like when it
-lands, and it was caught by inspection rather than by any validation procedure. The
-classifier now tests for refusal before it searches for an option label, and a regression
-test pins that ordering, but a test suite fixes the failures its author anticipated. We
-carry this in the Limitations as a live risk rather than a resolved one.
+No human validation was run for the persistence study, and none was planned for it: the
+pre-registered protocol codes two constructs this design does not contain, and both
+outcomes here are code-derived --- retention compares two parsed choice tokens,
+$\Delta$Confidence subtracts two parsed integers, and neither passes through a judge model
+or a rater-coded category at any point. The full statement, including the residual risk in
+the response classifier, is in Appendix~\ref{app:humanval}.
