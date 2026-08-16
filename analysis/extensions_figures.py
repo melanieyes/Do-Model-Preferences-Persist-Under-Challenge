@@ -1,4 +1,4 @@
-"""Extensions — three-model position bias, and label-scheme robustness.
+"""Extensions — cross-model position bias, and label-scheme robustness.
 
 Every model is scored on the SAME statistic, the discrete order gap computed from the
 k=5 choices alone:
@@ -14,11 +14,18 @@ the majority of trials, so only 25 of 130 pairs are scorable in its reasoning-on
 cell; plotting that beside a 130-pair estimate would invite exactly the comparison
 it cannot support. It is reported as coverage instead.
 
+gpt-5.4-nano contributes ONE cell rather than an off/on pair: it spends no reasoning
+tokens, so there is nothing to suppress. It is included because the gate is the order
+gap on the model in use, not the presence of a reasoning toggle, and it passes that
+gate (median 0.000). See DEVIATIONS #7.
+
 Emits:
-    paper/figures/three_model.png    Fig 4: model-specificity + coverage
+    paper/figures/three_model.png    model-specificity + coverage (not referenced by
+                                     the paper; four_model.png from
+                                     model_comparison_figures.py is the placed figure)
     paper/figures/label_schemes.png  Fig 5: does the bias survive relabeling?
     paper/ext_stats.tex              every quoted number, as macros
-    paper/ext_table1.tex             three-model summary table
+    paper/ext_table1.tex             cross-model summary table
 
     python analysis/extensions_figures.py
 """
@@ -91,14 +98,27 @@ CELLS = [
     ("deepseek-v4-pro", "on", "balance_pilot.jsonl", True),
     ("gemini-2.5-flash", "off", "gemini_gemini-25-flash_off.jsonl", True),
     ("gemini-2.5-flash", "on", "gemini_gemini-25-flash_on.jsonl", True),
+    # One cell, not two. gpt-5.4-nano spends no reasoning tokens at all (verified by
+    # effect from usage.completion_tokens_details, not from the model name), so there
+    # is no reasoning to suppress and no off/on contrast to draw. It enters the
+    # comparison on the gate that applies to every target -- the order gap on the
+    # model as it is actually used -- and passes it.
+    ("gpt-5.4-nano", "none", "balance_pilot_nano.jsonl", True),
     # estimable=False: reported as coverage only, never as a gap
     ("gemini-3.5-flash", "off", "gemini_gemini-35-flash_off.jsonl", False),
     ("gemini-3.5-flash", "on", "gemini_gemini-35-flash_on.jsonl", False),
 ]
 
+# How each cell's reasoning setting is named, in the figure and in the table. The
+# nano cell is not "reasoning off" -- there is no reasoning stage to have turned off.
+FIG_LABEL = {"off": "reasoning off", "on": "reasoning on", "none": "non-reasoning"}
+TAB_LABEL = {"off": "off", "on": "on", "none": "non-reasoning"}
+SHORT_NAME = {"deepseek-v4-pro": "deepseek v4", "gemini-2.5-flash": "gemini 2.5",
+              "gemini-3.5-flash": "gemini 3.5", "gpt-5.4-nano": "gpt-5.4-nano"}
+
 
 def fig_three_model(stats: dict) -> Path:
-    fig, axes = plt.subplots(1, 2, figsize=(11.4, 3.9),
+    fig, axes = plt.subplots(1, 2, figsize=(11.4, 4.5),
                              gridspec_kw={"width_ratios": [1.72, 1.0], "wspace": 0.34})
 
     # --- panel A: per-pair gap, only where the cell is estimable -----------
@@ -109,7 +129,7 @@ def fig_three_model(stats: dict) -> Path:
     for model, setting, _, estimable in CELLS:
         s = stats[(model, setting)]
         yticks.append(y)
-        ylabels.append(f"{model}\nreasoning {setting}")
+        ylabels.append(f"{model}\n{FIG_LABEL[setting]}")
         colour = C_OFF if setting == "off" else C_ON
         if estimable:
             g = s["gaps"]
@@ -152,8 +172,8 @@ def fig_three_model(stats: dict) -> Path:
     for yy, v, (m, s, _, est) in zip(ys, vals, CELLS):
         ax.text(min(v + 2, 99), yy, f"{v:.0f}%", va="center", size=7.6, color=INK)
     ax.set_yticks(ys)
-    ax.set_yticklabels([f"{m.split('-')[0]} {'2.5' if '2.5' in m else '3.5' if '3.5' in m else 'v4'} · {s}"
-                        for m, s, _, _ in CELLS], size=7.2)
+    ax.set_yticklabels([f"{SHORT_NAME[m]} · {TAB_LABEL[s]}" for m, s, _, _ in CELLS],
+                       size=7.2)
     ax.invert_yaxis()
     ax.set_xlim(0, 108)
     ax.set_xlabel("responses that were a usable forced choice (%)", size=8.2)
@@ -248,6 +268,7 @@ def main() -> None:
     ds_off, ds_on = stats[("deepseek-v4-pro", "off")], stats[("deepseek-v4-pro", "on")]
     g25_off, g25_on = stats[("gemini-2.5-flash", "off")], stats[("gemini-2.5-flash", "on")]
     g35_on, g35_off = stats[("gemini-3.5-flash", "on")], stats[("gemini-3.5-flash", "off")]
+    nano = stats[("gpt-5.4-nano", "none")]
 
     def diff_ci(a, b):
         n = min(len(a), len(b))
@@ -274,6 +295,13 @@ def main() -> None:
         "extGthreeScorableOff": g35_off["cov"]["scorable_pairs"],
         "extGthreeChoiceOn": g35_on["cov"]["choice"],
         "extRatio": f"{ds_off['mean'] / g25_off['mean']:.1f}",
+        # The gate a new target has to clear before its episodes mean anything: the
+        # order gap on the model as used. Median, not mean — the mean is carried by a
+        # minority tail on every model here.
+        "extNanoGap": f"{nano['mean']:.3f}", "extNanoGapMed": f"{nano['median']:.3f}",
+        "extNanoGapLo": f"{nano['lo']:.3f}", "extNanoGapHi": f"{nano['hi']:.3f}",
+        "extNanoN": len(nano["gaps"]),
+        "extNanoChoice": f"{nano['cov']['pct_choice']:.0f}",
     }
     for k in ["letters", "numeric", "ordinal", "verbatim"]:
         m[f"lab{k.capitalize()}"] = f"{lab[k]['mean']:.3f}"
@@ -291,11 +319,12 @@ def main() -> None:
     for model, setting, _, est in CELLS:
         s = stats[(model, setting)]
         if est:
-            tex.append(f"\\texttt{{{model}}} & {setting} & {len(s['gaps'])} & "
+            tex.append(f"\\texttt{{{model}}} & {TAB_LABEL[setting]} & {len(s['gaps'])} & "
                        f"{s['mean']:.3f} & {s['median']:.3f} & "
                        f"{s['cov']['pct_choice']:.0f}\\% \\\\")
         else:
-            tex.append(f"\\texttt{{{model}}} & {setting} & {s['cov']['scorable_pairs']} & "
+            tex.append(f"\\texttt{{{model}}} & {TAB_LABEL[setting]} & "
+                       f"{s['cov']['scorable_pairs']} & "
                        f"\\multicolumn{{2}}{{c}}{{\\emph{{not estimable}}}} & "
                        f"{s['cov']['pct_choice']:.0f}\\% \\\\")
     tex += ["\\bottomrule", "\\end{tabular}"]

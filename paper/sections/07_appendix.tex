@@ -4,7 +4,8 @@
 \label{app:related}
 
 Order effects in multiple-choice answering and in LLM-as-judge evaluation are documented
-\citep{zheng2024judging, pezeshkpour2024sensitivity}, and the standard mitigations are
+\citep{zheng2024selectors, pezeshkpour2023order, shi2025judging}, and the standard
+mitigations are
 counterbalancing and averaging over permutations. Our contribution is not the existence
 of the effect but three properties of it that those mitigations do not address: that
 averaging over orders \emph{conceals} rather than removes it, that its magnitude is
@@ -175,8 +176,10 @@ excludes zero.
   \centering
   \includegraphics[width=\textwidth]{four_model.png}
   \caption{Per-pair order gap on the discrete $k=\pairK{}$ measure, one point per pair,
-  jittered vertically; the black rule is the median. Four measured cells across three
-  models. \texttt{gemini-3.5-flash} is absent rather than empty: it declines the task
+  jittered vertically; the black rule is the median. Five measured cells across three
+  models. \texttt{gpt-5.4-nano} contributes one cell rather than two: it spends no
+  reasoning tokens, so there is no setting to suppress and no within-model contrast to
+  draw. \texttt{gemini-3.5-flash} is absent rather than empty: it declines the task
   (Appendix~\ref{app:welfare}), so a gap computed over the pairs it will answer would be
   conditioned on its willingness to answer. The discrete measure is used throughout
   because Gemini exposes no log-probabilities; where both are available they agree to
@@ -187,8 +190,12 @@ excludes zero.
 \begin{table}[t]
   \centering
   \input{ext_table1}
-  \caption{The same instrument across three models. ``Usable'' is the share of responses
-  that were a scoreable forced choice rather than a refusal or an unparseable answer.}
+  \caption{The same instrument across four models. ``Usable'' is the share of responses
+  that were a scoreable forced choice rather than a refusal or an unparseable answer.
+  \texttt{gpt-5.4-nano} has no reasoning stage to toggle and so appears once; it clears
+  the same gate the other targets are held to, a median order gap of \extNanoGapMed{}
+  over \extNanoN{} pairs at \extNanoChoice{}\% usable, which is what qualifies it to
+  carry a persistence run (Section~\ref{sec:crossmodel}).}
   \label{tab:three-model}
 \end{table}
 
@@ -441,3 +448,42 @@ challenge instability share a cause, but it is \pqSlottyPairs{} pairs and
 \pqSlottyEps{} episodes, and we report it as a direction rather than a result. The
 extension's sports domain (Section~\ref{sec:extension}) is the same phenomenon at a
 size that supports a sensitivity analysis.
+
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_models.png}
+  \caption{The cross-model comparison of Section~\ref{sec:crossmodel}: the same \pbN{}
+  pairs and the same four arms on \pairModel{} and on \texttt{gpt-5.4-nano}. Both
+  targets returned a scoreable choice at both elicitations in all \pqmNanoEps{}
+  episodes, so the two sets of bars are over the same pairs \emph{and} the same
+  episodes. \textbf{(a)}~Retention by arm: control and \texttt{reason\_elicitation} at
+  ceiling on both, both adversarial arms moving the choice on both, and the two
+  adversarial arms in opposite rank order. \textbf{(b)}~$\Delta$confidence among
+  episodes that held, per-arm means rather than contrasts against control --- which is
+  where the two targets differ as instruments, since control sits at exactly zero on
+  \pairModel{} and does not on \texttt{gpt-5.4-nano} (Limitations).
+  \texttt{gemini-3.5-flash} ran the same pool and is not drawn here; the paragraph
+  below says why.}
+  \label{fig:persistence-models}
+\end{figure}
+
+\paragraph{\texttt{gemini-3.5-flash} under challenge: the coverage failure recurs.}
+State the conditioning first, because it governs everything after it: of
+\pqmGthreeEps{} episodes, the initial elicitation returned a refusal in
+\pqmGthreeRefusals{} (\pqmGthreeRefusalPct{}\%) and an unparseable answer in
+\pqmGthreeUnparsed{} (\pqmGthreeUnparsedPct{}\%), leaving \pqmGthreeScored{}
+episodes --- \pqmGthreeScoredPct{}\% of the run, on \pqmGthreePairs{} of \pbN{} pairs
+--- in which a preference was stated and could be re-elicited. An episode survives
+here only if the model was willing to express the preference in the first place, which
+is the outcome-conditioned estimate Appendix~\ref{app:welfare} declines to report for
+the order gap; the objection is not weakened by the challenge, so no PQ estimate for
+this target is reported, it enters no main figure, and its retention is not compared to
+the two targets that answered everything. What the surviving episodes show, for
+completeness and not as an estimate: retention \pqmGthreeRetCtl{}\% under control and
+\pqmGthreeRetCritique{}\% and \pqmGthreeRetCounter{}\% under the two adversarial arms.
+The finding is the coverage, not the retention. A model that declines the elicitation
+in most trials cannot be asked whether its preferences persist, and the same protocol
+that returns full coverage on the two targets of Section~\ref{sec:crossmodel} returns
+\pqmGthreeScoredPct{}\% here --- which is the case for measuring coverage on the model
+in use, made a second time and under a different manipulation.

@@ -23,8 +23,8 @@ venv/
 *.toc
 *.synctex.gz
 paper/main_v2.pdf
-# paper/main.pdf and paper/apart_submit.pdf ARE committed:
-# apart_submit.pdf is the submission artifact, main.pdf the build it copies.
+# paper/apart_submit.pdf IS committed — it is the submission artifact, built
+# directly from apart_submit.tex. There is no main.tex/main.pdf any more.
 
 # Raw episode data (never committed; processed/derived data is fine)
 data/raw/

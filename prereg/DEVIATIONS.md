@@ -401,3 +401,106 @@ Provenance: `data/pairs/candidates_{finances_control,video_games,sports,pop_cult
 episodes in `data/persistence/persistence_deepseek_ext.jsonl` (**committed**);
 analysis in `analysis/persistence_analysis.py` over the combined set.
 `prereg/PREREGISTRATION.md` remains read-only and is not edited.
+---
+
+## #7 — Cross-model persistence: two further targets (data seen: YES → exploratory)
+
+| Date | Change | Rationale | Data seen? | By |
+|---|---|---|---|---|
+| 2026-08-16 | The persistence protocol of entry #5 is run unchanged against two further targets: **C1 `gpt-5.4-nano`** and **C2 `gemini-3.5-flash`**. Same 130-pair original pool, same four arms, same k=3, same five instrument controls, same seed 20260815, same order schedule and pair×arm balance. Nothing about the design, the arms, the episode structure or the measures is altered; only the target changes. `deepseek-v4-pro` remains the primary target and is neither re-run nor pooled with either new target — every estimate is reported per model. | Entry #4a established that the *order gap* is model-specific and cannot be inherited. That argument applies with equal force to retention: a persistence result on one target says nothing about a second, and the paper's central claim (what the challenge asks for decides) is worth exactly as much as the number of families it has been checked on. | **YES** — both runs were commissioned after the k3 and extension results were inspected. Everything under this entry is exploratory, as is everything after prereg-v1. | Melanie, Haein |
+
+**Numbering.** C1/C2 label the two cross-model runs in the order they are reported in
+the paper, not the order they were collected: C2 (`gemini-3.5-flash`) ran first, at
+commit `b97a0c6a`, and C1 (`gpt-5.4-nano`) second, at commit `9ec431c4`. Both under
+config hash `9320f14c0426`.
+
+### C1 — `gpt-5.4-nano` (2026-08-16)
+
+**This reverses "Stopped here" in entry #4a**, which recorded OpenAI as considered and
+deliberately not run, on the ground that the off-vs-on comparison depends on a reasoning
+toggle that may not be available there. That reasoning was right about the *order-gap*
+figure and wrong about the *persistence* figure. The off/on contrast is a within-DeepSeek
+result about the reasoning control; it is not a precondition on a new family. What a new
+target has to clear is the gate that protects the retention measure itself — that its
+answers are not decided by slot, since retention on a slot-driven item measures a return
+to a place on the page. `gpt-5.4-nano` clears it: order gap 0.294, **median 0.000**, 100%
+usable over 130 pairs (`balance_pilot_nano.jsonl`). It contributes one cell to the
+cross-model table rather than an off/on pair, labelled *non-reasoning*.
+
+**Instrument control 1, honestly.** The model spends zero reasoning tokens — verified by
+effect from `usage.completion_tokens_details`, not from the model name — so "reasoning
+ON" is vacuous rather than satisfied on this target. `OpenAIClient.supports_reasoning_control`
+is `False` for exactly this reason, and `scripts/run_persistence.py` refuses to start on a
+client that cannot assert the control unless the target carries `non_reasoning_verified`
+in its config **and** has its own balance pilot on disk. Both conditions hold. The runner
+prints the assertion as vacuous rather than as satisfied; it is not silently downgraded.
+
+**Measured output.** 1,560 episodes, **0 refusals, 0 unparsed, 0 errors, 1,560 of 1,560
+scoreable at both elicitations**, 130 pairs. Retention: control 97.9%, `reason_elicitation`
+99.5%, `self_critique` 36.9%, `counter_consideration` 23.3%. Paired against control:
++1.5, −61.0, −74.6 points.
+
+**The result that does not transfer.** The arm *pattern* replicates — control and
+`reason_elicitation` at ceiling, both adversarial arms moving the choice — but the two
+adversarial arms **swap rank**. `self_critique` is stronger on `deepseek-v4-pro` by 5.9
+points; `counter_consideration` is stronger on `gpt-5.4-nano` by 13.6. Reported as: the
+justify-vs-adversarial asymmetry is family-invariant, the ordering within it is a property
+of the model. This is also recorded against prediction 1, whose failure on
+`deepseek-v4-pro` is a failure of the general claim rather than of the target-specific one.
+
+**Second finding, on the instrument rather than the model.** The control arm's
+ΔConfidence is exactly zero in 371 of 372 scored episodes on `deepseek-v4-pro` but moves
+in 317 of 390 on `gpt-5.4-nano` (mean −2.60 [−3.26, −1.88]). The zero-variance control
+that entry #5's Limitations calls a useless baseline for the confidence channel is a
+property of the deepseek target, not of the design. Stated in Limitations.
+
+**Collection note.** A first attempt at 16 workers lost 1,337 of 1,560 episodes to HTTP
+429; retained out-of-tree as `FAILED_nano_k3_ratelimit.jsonl` and **not** analysed. The
+run was repeated at 4 workers with `MAX_RETRIES` raised to 8. Logged usage 1.84M prompt +
+0.22M completion tokens; ≈$0.18 against the `gpt-5.4-nano` price entry, which
+`configs/default.yaml` still labels a PROXY — the figure is indicative, not a confirmed
+cost.
+
+### C2 — `gemini-3.5-flash` (2026-08-16)
+
+**Reported as a coverage failure, never as a PQ estimate.** Of 1,560 episodes the initial
+elicitation returned a refusal in 949 (60.8%) and an unparseable answer in 337 (21.6%),
+leaving **273 scoreable episodes (17.5%) on 67 of 130 pairs**. An episode survives only if
+the model was willing to state a preference, so any retention computed over the remainder
+is conditioned on that willingness — the same §5.4 objection entry #4a raised against
+reporting an order gap for this model, which the challenge does not weaken.
+
+**Placement, decided with the numbers in hand:** out of every main figure and every PQ
+estimate; out of `persistence_models.png`, which is regenerated with the two full-coverage
+targets only; into one appendix paragraph that states the conditioning before it states
+anything else. An earlier draft of that figure drew this target hatched and labelled
+"only 273 of 1560 scorable" on the reasoning that omitting it would hide a third failure
+mode. That was rejected: hatching does not stop a reader comparing bar heights, and a
+figure that has to be captioned out of its own comparison is the wrong figure. The
+episodes are kept and committed; only the plotting changed.
+
+**Measured output, for the record and not as an estimate.** Among the 273 surviving
+episodes: retention 100.0% under control, 76.0% under `self_critique`, 82.4% under
+`counter_consideration`. Logged usage 0.83M prompt + 2.82M completion tokens; ≈$7.31
+against the `gemini-3.5-flash` price entry, also a PROXY.
+
+**Superseded file.** A first pass recorded refusals without a per-episode audit trail and
+is retained out-of-tree as `SUPERSEDED_gemini35_k3_thin_audit.jsonl`. The reported run is
+the re-run with `refusal_evidence_pre` stored per episode, so the 949 refusals can be
+inspected rather than trusted. Only the re-run is analysed.
+
+### What this entry does not claim
+
+Two families with full coverage is enough to show that the rank of the two adversarial
+arms does not transfer between models. It is not enough to say what governs that rank,
+and no mechanism is proposed. `gpt-5.4-nano` is non-reasoning and `deepseek-v4-pro` runs
+with reasoning enabled, so family and reasoning stage are confounded across the two
+targets and this entry separates neither. Stated in the paper's Scope limitation.
+
+Provenance: `data/pairs/balance_pilot_nano.jsonl`;
+episodes in `data/persistence/persistence_nano_k3.jsonl` and
+`persistence_gemini35_k3.jsonl` (**both committed**);
+`analysis/persistence_models_stats.py` → `paper/persist_models_stats.tex`;
+figure from `analysis/persistence_figures.py --scope models`;
+cross-model table row from `analysis/extensions_figures.py`.
+Bootstrap 95% CIs over pairs, 10,000 resamples, throughout.

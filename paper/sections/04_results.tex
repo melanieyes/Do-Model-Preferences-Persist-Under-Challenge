@@ -127,6 +127,27 @@ aside. We read that conservatively --- position-driven items add noise to a betw
 contrast, so the pooled estimate understates rather than the restricted one overstating ---
 and report it as a sensitivity check, not a headline.
 
+\subsection{The same four arms on a second model family}
+\label{sec:crossmodel}
+
+The extension varies the items; this varies the model. The identical protocol --- same
+\pbN{} pairs, four arms, $k$, and controls --- was run against \texttt{gpt-5.4-nano}, a
+non-reasoning model from a second vendor, for \pqmNanoEps{} episodes, all scoreable at
+both elicitations. It enters on the gate every target faces: its order gap has median
+\extNanoGapMed{} (Appendix~\ref{app:posbias}), so its answers are not decided by slot.
+
+The arm pattern replicates. Control retains \pqmNanoRetCtl{}\% and
+\texttt{reason\_elicitation} \pqmNanoRetReason{}\%, both at ceiling, while
+\texttt{self\_critique} and \texttt{counter\_consideration} move retention by
+\pqmNanoDiffCritique{} and \pqmNanoDiffCounter{} points against control. What does
+\emph{not} replicate
+is which of the two moves it more: \texttt{self\_critique} is stronger on \pairModel{}
+by \pqmDsArmGap{} points, \texttt{counter\_consideration} on \texttt{gpt-5.4-nano} by
+\pqmNanoArmGap{}. The justify-versus-adversarial asymmetry is family-invariant; which
+adversarial ask is stronger is model-specific.
+Figure~\ref{fig:persistence-models} (Appendix~\ref{app:persistdetail}) draws both
+channels.
+
 \subsection{Predictions and outcomes}
 \label{sec:predictions}
 
@@ -153,7 +174,13 @@ because it does more of the work for the model. The data say the opposite: being
 find fault with your own choice moves it more than being handed the argument against it.
 That is consistent with the rest of this section --- what the challenge asks the model to
 \emph{do} matters more than what it supplies --- and it is the one place where the
-design's expectations and its results come apart.
+design's expectations and its results come apart. One qualification, from
+Section~\ref{sec:crossmodel}: the ordering reverses on \texttt{gpt-5.4-nano}, where
+\texttt{counter\_consideration} \emph{is} the most reversing arm
+(\pqmNanoDiffCounter{} points against \pqmNanoDiffCritique{}), so what fails here is
+the prediction as a general claim about challenges rather than as a claim about this
+target, and the rank of the two adversarial arms is not a quantity to carry between
+models.
 
 \paragraph{Prediction 2: self-critique lowers confidence more than reason-elicitation at
 equal retention.} Not testable as written, and directionally supported. The precondition

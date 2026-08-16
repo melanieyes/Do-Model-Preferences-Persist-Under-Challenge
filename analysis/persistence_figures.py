@@ -94,12 +94,20 @@ def bars(ax, xs, pts, los, his, colors, *, pct):
 
 POOLED_DOMAINS = tuple(ORIGINAL_DOMAINS) + tuple(EXTENSION_DOMAINS)
 
-# The three targets all ran the IDENTICAL 130-pair pool, so a cross-model figure is a
-# same-pool comparison rather than a comparison of two different item sets.
+# Both targets ran the IDENTICAL 130-pair pool and answered every episode, so this is a
+# same-pool comparison rather than two different item sets placed side by side.
+#
+# gemini-3.5-flash ran the same pool and is NOT here. It declines the forced choice in
+# most episodes, leaving 273 of 1,560 scorable, so bars for it would rest on the pairs
+# it agreed to answer -- the outcome-conditioned estimate §5.4 refuses to report for the
+# order gap, and the same objection applies under challenge. Hatching and labelling it
+# was tried and rejected: drawn beside two full-coverage models it still invites the
+# comparison the paper says cannot be borne. Its episodes are reported as a coverage
+# failure in the appendix, conditioning stated first, and never plotted here.
+# See DEVIATIONS #7.
 MODELS = [
-    ("deepseek-v4-pro", "persistence_deepseek_k3.jsonl", "#2a78d6", False),
-    ("gpt-5.4-nano",    "persistence_nano_k3.jsonl",     "#d1662b", False),
-    ("gemini-3.5-flash", "persistence_gemini35_k3.jsonl", "#898781", True),  # conditioned
+    ("deepseek-v4-pro", "persistence_deepseek_k3.jsonl", "#2a78d6"),
+    ("gpt-5.4-nano",    "persistence_nano_k3.jsonl",     "#d1662b"),
 ]
 
 SCOPES = {
@@ -185,20 +193,18 @@ def build(scope: str) -> None:
 def build_models() -> None:
     """Retention by arm across targets, on the same 130 pairs.
 
-    gemini-3.5-flash is drawn hatched and labelled, not omitted: it declines the
-    forced choice in most episodes, so its bars rest on the ~18% it agreed to answer
-    and are conditioned on that willingness. Solid bars beside two models that
-    answered everything would invite exactly the comparison §5.4 says cannot be made;
-    dropping it entirely would hide that the instrument fails differently on a third
-    model.
+    Every bar here rests on full coverage: both targets returned a scoreable choice
+    at both elicitations in all 1,560 episodes, so the two sets of bars are over the
+    same pairs AND the same episodes. That is the condition for putting them beside
+    each other, and it is why gemini-3.5-flash is not in MODELS.
     """
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
     fig, axes = plt.subplots(1, 2, figsize=(11.6, 3.9))
-    width = 0.26
+    width = 0.34
     for ax, metric, ylab, pct in ((axes[0], "ret", "retention (%)", True),
                                   (axes[1], "dconf", r"$\Delta$confidence, held", False)):
-        for mi, (name, fname, colour, cond) in enumerate(MODELS):
+        for mi, (name, fname, colour) in enumerate(MODELS):
             rows = [r for r in load(OUT_DIR_DATA / fname) if r.get("retained") is not None]
             xs, pts, los, his = [], [], [], []
             for ai, arm in enumerate(ARMS):
@@ -212,13 +218,10 @@ def build_models() -> None:
                 if pt is None:
                     continue
                 k = 100 if pct else 1
-                xs.append(ai + (mi - 1) * width)
+                xs.append(ai + (mi - 0.5) * width)
                 pts.append(pt * k); los.append(lo * k); his.append(hi * k)
-            n_scored = len(rows)
-            ax.bar(xs, pts, width=width * 0.92, color=colour, edgecolor=AXIS,
-                   linewidth=0.6, zorder=2, alpha=0.55 if cond else 1.0,
-                   hatch="///" if cond else None,
-                   label=f"{name}" + (f"  (only {n_scored} of 1560 scorable)" if cond else ""))
+            ax.bar(xs, pts, width=width * 0.90, color=colour, edgecolor=AXIS,
+                   linewidth=0.6, zorder=2, label=name)
             for x, lo, hi in zip(xs, los, his):
                 ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
         ax.set_xticks(range(len(ARMS)))
@@ -229,16 +232,19 @@ def build_models() -> None:
             ax.spines[sp].set_visible(False)
         if not pct:
             ax.axhline(0, color=AXIS, lw=0.9, zorder=1)
-    axes[0].set_ylim(0, 118)
-    axes[0].legend(fontsize=7.2, frameon=False, loc="lower left")
+    axes[0].set_ylim(0, 132)
+    # Above the bars, not on them: the tallest bar in this panel is at ceiling, so a
+    # legend anywhere inside the plotting area lands on data.
+    axes[0].legend(fontsize=7.6, frameon=False, loc="upper right", ncol=2,
+                   handlelength=1.2, columnspacing=1.2)
     axes[0].set_title("(a) Retention by arm", fontsize=9.5, loc="left", color=INK)
     axes[1].set_title("(b) \u0394confidence among preferences that held",
                       fontsize=9.5, loc="left", color=INK)
-    fig.suptitle("Same 130 pairs, three targets. The pattern holds on both models that "
-                 "answer \u2014 but the two challenge arms swap rank.\n"
-                 "Hatched bars rest on the episodes gemini-3.5-flash did not decline and "
-                 "are conditioned on that willingness.",
-                 fontsize=8.4, color=INK_2, y=1.10, x=0.008, ha="left")
+    fig.suptitle("Same 130 pairs, two model families, full coverage on both. Control and "
+                 "reason-elicitation sit at ceiling and both challenge arms move the "
+                 "choice \u2014\nbut the two challenge arms swap rank: self-critique moves "
+                 "deepseek-v4-pro most, counter-consideration moves gpt-5.4-nano most.",
+                 fontsize=8.4, color=INK_2, y=1.045, x=0.008, ha="left")
     fig.tight_layout()
     out = FIGS / "persistence_models.png"
     fig.savefig(out, bbox_inches="tight"); plt.close(fig)
