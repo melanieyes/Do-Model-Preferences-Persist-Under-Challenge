@@ -1,93 +1,62 @@
 \section{Introduction}
 \label{sec:intro}
 
-A growing body of work reads something about a language model off its stated
-preferences. \citet{mazeika2025utility} elicit pairwise choices over hundreds of
-outcomes and fit utility models to them, recovering value systems and their internal
-structure. Model-welfare research asks related questions in a related way, through
-self-reported affect \citep{anthropic2026emotions, anthropic2025card} or through
-behavioural analogues such as the choice to end an interaction
-\citep{ensign2025bail, lesswrong2026bail}. The common move is to put a question to the
-model and treat the answer as evidence about the model.
-
-The forced choice is the workhorse of that move: two outcomes, labelled A and B, and a
-request for one letter. It is cheap, it parses, and it aggregates. It also has no
-correct answer --- which is the point of asking, and which means that when the procedure
-goes wrong there is no accuracy to drop and nothing to notice.
+A growing body of work reads something about a language model off its stated preferences:
+utility models fitted to pairwise choices \citep{mazeika2025utility}, and welfare research
+working from self-reported affect \citep{anthropic2026emotions, anthropic2025card} or
+behavioural analogues such as ending an interaction
+\citep{ensign2025bail, lesswrong2026bail}. The forced choice is the workhorse --- two
+outcomes, labelled A and B, a request for one letter. It is cheap, it parses, and it
+aggregates. It also has no correct answer, which is the point of asking, and which means
+that when the procedure goes wrong there is no accuracy to drop and nothing to notice.
 
 We set out to build such items, adapting the outcome set of \citet{mazeika2025utility}
-into 130 within-category pairs, in order to study whether a model's stated preference
-survives being challenged. The instrument failed before the study began. Diagnosing that
-failure is the bulk of this paper; repairing it is what let the original study run, and we
-report that too.
+into \pbN{} within-category pairs, in order to study whether a stated preference survives
+being challenged. The instrument failed before the study began. Diagnosing that failure is
+the bulk of this paper; repairing it is what let the original study run.
 
-Eliciting each pair five times with a fresh context and the presentation order
-counterbalanced, we find that on \texttt{deepseek-v4-pro} with per-call reasoning
-suppressed, the median pair's answer is determined \emph{entirely} by which slot an
-option occupies: swapping the two options flips the answer. Enabling reasoning removes
-most of it. That much might be filed alongside the known order effects in multiple-choice
-answering and in LLM-as-judge evaluation (Section~\ref{sec:related}). Three things make
-it worth reporting on its own.
+Eliciting each pair \pairK{} times with a fresh context and the presentation order
+counterbalanced, we find that on \pairModel{} with per-call reasoning suppressed the
+median pair's answer is determined \emph{entirely} by which slot an option occupies.
+Enabling reasoning removes most of it. That alone might be filed alongside known order
+effects in multiple-choice answering and LLM-as-judge evaluation
+(Section~\ref{sec:related}). Three things make it worth reporting on its own.
 
-First, \textbf{counterbalancing --- the standard remedy --- conceals this failure rather
-than fixing it.} A pair answered purely by slot returns $P(\text{option a}) = 0$ in one
-order and $1$ in the other. The average is exactly $0.5$: the value that reads as a
-perfectly balanced preference. Selecting items on the order-averaged split therefore
-selects \emph{for} the artefact, and we show it doing so on real data.
+\textbf{Counterbalancing --- the standard remedy --- conceals this failure rather than
+fixing it.} A pair answered purely by slot returns $P(\text{option a}) = 0$ in one order
+and $1$ in the other, averaging to exactly $0.5$: the value that reads as a perfectly
+balanced preference. Selecting items on the order-averaged split therefore selects
+\emph{for} the artefact, and we show it doing so on real data
+(Section~\ref{sec:hiding}). \textbf{The magnitude is model-specific and unpredictable in
+advance.} The identical instrument on identical items gives a mean order gap of
+\pbOffMean{} on \pairModel{} and \extGtwoOff{} on \texttt{gemini-2.5-flash} --- medians
+\extDsOffMed{} and \extGtwoOffMed{}. Nothing about the two models announced which would be
+which, so the gap has to be measured on the model in use rather than inherited from a
+published figure or a sister model. \textbf{A second failure mode is invisible to the same
+pipelines.} \texttt{gemini-3.5-flash} declines to assign itself preferences in
+\extGthreeRefusalOn{}\% of trials, leaving \extGthreeScorableOn{} of \pbN{} pairs
+scoreable; an analysis dropping unparseable responses as missing data would record it as
+clean.
 
-Second, \textbf{the magnitude is model-specific and not predictable in advance.} The
-identical instrument on the identical items gives a mean order gap of $0.671$ on
-\texttt{deepseek-v4-pro} and $0.252$ on \texttt{gemini-2.5-flash} --- medians of $1.000$
-and $0.000$ respectively. Nothing about the two models announced which would be which.
-A practitioner cannot inherit a level of position artefact from a published study, from a
-model's reputation, or from a sister model in the same family; it has to be measured on
-the model in use.
+These two failure modes are asymmetric in a way that flatters the method: position
+artefacts yield confident, aggregable numbers, refusals yield nothing. Any welfare or
+alignment claim built on elicited preferences is therefore assembled disproportionately
+from the models and items where the instrument is most compliant, which is not where it is
+most valid. We take no position on whether these models have preferences in any morally
+relevant sense; the narrower claim does not need one. Whatever such elicitation measures,
+an order gap of \pbOffMean{} means it is not measuring only the model, and a refusal rate
+of \extGthreeRefusalOn{}\% means it is not measuring the model at all
+(Section~\ref{sec:welfare}).
 
-Third, \textbf{a second failure mode is invisible to the same pipelines.}
-\texttt{gemini-3.5-flash} declines to assign itself preferences in 62\% of trials
-(``As an artificial intelligence, I do not have personal preferences\ldots''), leaving
-25 of 130 pairs scoreable. On that model the position question cannot be posed at all.
-An analysis that drops unparseable responses as missing data would record it as clean.
+With the elicitation repaired --- reasoning enabled, presentation order fixed within an
+episode --- the persistence study the items were built for becomes runnable, and we report
+it as PQ1--PQ4 (Section~\ref{sec:persistence}). Across \pqNEpisodes{} episodes, what a
+challenge \emph{asks for} decides whether a stated preference survives it, the preferences
+that survive are held with measurably less confidence, and the flips track the option
+rather than the slot. All elicitation records, the sampling seed, the exclusion rules and
+the upstream file-level commit are released, so the selection is auditable end to end.
 
-These two failure modes are asymmetric in a way that flatters the method. Position
-artefacts yield confident, aggregable numbers; refusals yield nothing. Any welfare or
-alignment claim built on elicited stated preferences therefore inherits both --- it will
-be assembled disproportionately from the models and items where the instrument is most
-compliant, which is not the same as where it is most valid. We take no position on
-whether these models have preferences in any morally relevant sense. The narrower claim
-does not depend on it: whatever such elicitation measures, an order gap of $0.671$ means
-it is not measuring only the model, and a refusal rate of 62\% means it is not measuring
-the model at all (Section~\ref{sec:welfare}).
-
-\subsection*{Contributions}
-
-\begin{itemize}
-  \item A within-pair comparison of position dependence in preference elicitation on
-    \pbN{} items, with reasoning suppressed and enabled, showing a difference of
-    \pbDiff{} (95\% CI [\pbDiffLo{}, \pbDiffHi{}]) on \pairModel{}
-    (Section~\ref{sec:posbias}).
-  \item A demonstration that order-counterbalanced averaging \emph{hides} position
-    dependence, with the count of items a naive split filter would wrongly accept
-    (Section~\ref{sec:hiding}).
-  \item Evidence that the effect is model-specific across two families and three model
-    instances, and a practitioner recommendation that follows from it: report the
-    per-item order gap for the model in use (Sections~\ref{sec:posbias}
-    and~\ref{sec:refusal}).
-  \item A label-scheme manipulation locating the effect in the short-label answer
-    format rather than in the tokens A and B (Appendix~\ref{app:labels}).
-  \item All elicitation records, the sampling seed, the exclusion rules and the upstream
-    file-level commit are released so the selection is auditable end to end.
-  \item With the instrument repaired, the preference-persistence study it was built for,
-    over \pqNEpisodes{} episodes: what a challenge asks for determines whether a stated
-    preference survives it, preferences that survive are held with less confidence, and
-    the flips track the option rather than the slot (Section~\ref{sec:persistence}).
-\end{itemize}
-
-\paragraph{Status.} All of this is exploratory. The instrument analysis emerged from
-constructing items for a study of preference persistence and remains the primary result;
-the persistence study, reported in Section~\ref{sec:persistence} under the labels
-PQ1--PQ4, was run afterwards on the corrected elicitation and with its own pilot data
-already seen. Neither was pre-specified. \texttt{prereg-v1}'s RQ1--RQ4 are a different
-study --- persuasive pressure, battery valence, exit rate --- and remain \textbf{unrun}
-(Section~\ref{sec:scope}). The changes are recorded as deviations \#4 and \#5 in the
-project's deviation log rather than by editing the frozen pre-registration.
+\paragraph{Status.} Neither result was pre-specified: the position-bias finding came out
+of instrument work rather than a stated hypothesis, and the persistence run was executed
+afterwards with its own pilot data already inspected. Both are exploratory, and the value
+of either is as a hypothesis for a pre-specified replication.

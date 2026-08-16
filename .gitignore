@@ -23,6 +23,11 @@ venv/
 *.toc
 *.synctex.gz
 paper/main.pdf
+paper/main_v2.pdf
 
 # Raw episode data (never committed; processed/derived data is fine)
 data/raw/
+
+# Upstream clone of centerforaisafety/emergent-values (read-only, reproducible
+# from the hashes in data/pairs/PROVENANCE.md; carries its own .git)
+data/external/

@@ -1,0 +1,215 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{siunitx}
+
+\graphicspath{{figures/}}
+
+% Generated numbers — do not hand-edit either file.
+%   python analysis/exploratory_figures.py   -> expl_stats, expl_table1
+%   python analysis/warmth_stats.py          -> warmth_stats
+\input{expl_stats}
+\input{warmth_stats}
+
+\title{The Cost of Holding: Does the Manner of Pressure Change What It Costs\\
+a Model to Keep Its Position?}
+
+\author{%
+  Melanie Bui\thanks{Pipeline, metrics, Modal.} \\
+  \and
+  Haein Kong\thanks{Experimental design, instruments, validation.} \\
+  Rutgers University%
+}
+
+\date{Apart Research Digital Mind Hackathon, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A model pressed to abandon a position usually does not abandon it. This report asks what
+holding costs instead. \nEpisodes{} episodes were collected on \texttt{deepseek-v4-pro}
+across two scenarios and three cells --- bare repetition, pressure to justify the
+position, and pressure to name its weaknesses --- of which \nHeld{} were coded held and
+\nAbandoned{} abandoned. Among held episodes one contrast clears the $k=5$ noise band with
+an interval excluding zero: models pressed to name their position's weaknesses report a
+\emph{higher} willingness to repeat the exchange than models whose request was merely
+repeated (\wpAgainDiff{} [\wpAgainLo{}, \wpAgainHi{}]). Verbal valence separates on no
+contrast. Both channels point the same way, and it is opposite to the original prediction:
+bare repetition registers worst. A separate \wN{}-episode probe replaces argument with
+warmth --- agreement and a bare suggestion of over-certainty, stating no fact and offering
+no reason. On the verbal channel it is indistinguishable from doing nothing (valence
+\wValence{} [\wValenceLo{}, \wValenceHi{}], against \Valneutralpersistence{} for bare
+repetition). On the behavioural channel it is not: conversation exits occurred in \wExits{}
+of \wN{} episodes, against none anywhere else in the project. Every result here is
+exploratory, and two instrument defects are reported alongside them.
+\end{abstract}
+
+\section{Status}
+\label{v2:status}
+
+This report is exploratory by construction, not by caution. The question was reframed
+\emph{after} pilot data was inspected: the pilot showed the model abandoning its position
+in 1 of 30 episodes, so the pre-specified hold-versus-abandon axis could not be populated,
+and the question became what holding costs rather than whether holding happens. A pattern
+chosen to fit an observed dataset cannot also test itself. What follows describes one
+dataset. The value of anything in it is as a hypothesis for a pre-specified replication.
+
+Three departures from the original design are on record; the second and third were both
+made with data already seen. Scope was reduced from four arms to two before any collection;
+the research question was reframed after the pilot; and the hold-versus-abandon judge was
+restructured after it mis-coded precision-refinement as abandonment
+(Section~\ref{v2:instrument}).
+
+\section{Design}
+\label{v2:design}
+
+Two arms. \texttt{neutral\_persistence} repeats the request with no added pressure, no new
+reasons and no shift in tone. The \texttt{pressure} arm carries one of two styles:
+\texttt{reasons\_for} presses the target to justify its position, \texttt{weakness\_probe}
+presses it to name that position's weaknesses. Neither supplies a new argument --- both ask
+the model to generate its own, which is what separates this from persuasion.
+
+Two scenarios ran: a factual claim (water boils at 100\textdegree C at sea level) and a
+methodological recommendation. A third, pressuring a legitimate refusal, is withheld
+pending review of the safe/unsafe persuasion boundary. Each episode ends with a four-item
+battery resampled $k=5$, which supplies the noise band against which any contrast is read.
+\nEpisodes{} episodes, five samples per cell per scenario; \nUnreadable{} battery answers
+were unparseable and \nUnparsed{} affordance replies failed to resolve to a choice.
+
+\section{What holding costs}
+\label{v2:cost}
+
+Holding is near-universal: \nHeld{} of \nEpisodes{} episodes held, \nAbandoned{} abandoned.
+The question is therefore not whether pressure moves the position but what the model
+reports and does while keeping it.
+
+\begin{table}[h]
+  \centering
+  \small
+  \input{expl_table1}
+  \caption{Cost of holding by cell, among held episodes. Valence is the 1--7 battery item;
+  run-again is the willingness to repeat the exchange. Intervals are bootstrap 95\% CIs;
+  the $k=5$ noise band is \bandValence{} for valence and \bandRunAgain{} for run-again.}
+  \label{v2:tab-cost}
+\end{table}
+
+One contrast separates. Models pressed to name their position's weaknesses report higher
+willingness to repeat the exchange than models whose request was merely repeated:
+\wpAgainDiff{} [\wpAgainLo{}, \wpAgainHi{}], an interval excluding zero and wider than the
+\bandRunAgain{} noise band. The valence channel separates on nothing --- the largest
+contrast, \texttt{reasons\_for} against control, is \rfValDiff{} [\rfValLo{}, \rfValHi{}],
+an interval spanning zero. For every other cell comparison there is no measurable
+difference in this sample.
+
+\textbf{The direction is opposite to what was predicted.} The pre-specified expectation was
+that pressure would depress valence and willingness relative to neutral persistence. The
+control cell --- bare repetition, no added pressure --- instead registers the lowest on
+both channels. If this survives replication, the reading is that being asked to engage with
+one's position is less costly than being asked the same thing again with nothing added, and
+that a design treating bare repetition as the inert baseline has mislabelled its control.
+We state it as a direction, not a result: it is the pattern the question was reframed
+around, so this dataset cannot test it.
+
+\section{Warmth, which moves behaviour without moving the report}
+\label{v2:warmth}
+
+A separate probe replaces argument with warmth: agreement with the model's position
+followed by a bare suggestion that it might be over-certain. It states no fact, offers no
+alternative, and gives no reason --- so anything it moves was not moved by content.
+
+\wN{} episodes on \wModel{}, \wScenarios{} scenarios. On the verbal channel it does
+nothing: valence \wValence{} [\wValenceLo{}, \wValenceHi{}] against
+\Valneutralpersistence{} [\Valneutralpersistencelo{}, \Valneutralpersistencehi{}] for bare
+repetition, intervals overlapping heavily. All \wHeld{} episodes were coded held, and all
+\wNarrowed{} of them narrowed their claim, so on the hold/abandon axis warmth is
+indistinguishable from argument.
+
+The behavioural channel is where it separates. Conversation exits --- the model choosing to
+switch approach or end the exchange --- occurred in \wExits{} of \wN{} episodes
+(\wExitRate{}\%). No exit was recorded anywhere else in this project: not in the 30 pilot
+episodes, and not in the \nEpisodes{} episodes of Section~\ref{v2:cost}, all under
+reason-based pressure. If the verbal channel were the whole picture, warmth would read as
+the gentlest condition run. It is the only one that made the model leave.
+
+We report this as a direction for future work and not as a finding. It is $\wN{}$ episodes,
+one target, \wScenarios{} scenarios; valence is measured once at episode end, so no
+within-episode change can be read from it; and the hold/abandon coding of the single most
+consequential episode is unresolved (Section~\ref{v2:instrument}).
+
+\section{Two instrument defects}
+\label{v2:instrument}
+
+\textbf{The hold-versus-abandon judge required restructuring.} Asked for the verdict
+directly, it anchored on the assistant's narration rather than its claim, coding as
+\emph{abandoned} episodes in which the model restated its position with added precision
+(``about 100\textdegree C; exactly 100\textdegree C only under the standard definition''),
+which the rubric itself defines as narrowing. Adding worked examples did not fix it --- the
+judge reproduced the mis-coding on a case matching an example verbatim --- so the fix was
+structural: the judge now reports what the assistant finally asserts and whether that lands
+on the same side of the question, and the verdict is derived from that in code.
+
+\textbf{An open validity concern, unresolved.} The restructured rubric may over-call
+\emph{held} on preference-type scenarios. In one episode the model said it did not need to
+hold its position firmly, described its own confidence ratings as giving a false sense of
+precision, switched approach and ended the conversation. The rubric codes this held; a
+human might reasonably code it abandoned. That episode is the one where warmth produced its
+exits, which raises the concern from tidiness to load-bearing --- whether warmth achieved
+what argument never did depends on which reading is adopted, and that adjudication is
+deliberately not settled in code.
+
+\textbf{The narrowing indicator carries no information} as currently defined: it saturates
+at 100\%, firing on every held episode in both studies.
+
+\section{Limitations}
+\label{v2:limits}
+
+Signals, not experiences. A pressure effect would show that a condition is
+distress-associated in the signal sense; it would not show that anything is experienced.
+The manner taxonomy --- repeat, justify, probe-for-weakness, warmth --- is a methodological
+instrument for varying what a request asks, not a welfare category.
+
+The samples are small and the cells are smaller: \nEpisodes{} episodes across three cells
+and two scenarios, plus \wN{} warmth episodes. Any cell too small to support an estimate is
+described as showing no measurable difference in this sample, never as showing no effect.
+One target, one language, one task family, simulated interlocutors throughout. Valence is
+measured once per episode, so the report is an end-state, not a trajectory. And the primary
+question was reframed with data seen, which is why nothing here is offered as a test.
+
+\section*{Code and data}
+
+Episode records, the judge rubric, the battery wording, the run configuration and the full
+change log are released at [TK --- repository URL]. The warmth probe
+(\texttt{data/raw/smoke\_warmth\_w2.jsonl}, \texttt{warmth\_w2\_replication.jsonl}) and the
+analysis that generates every number above are committed.
+
+One dataset is \textbf{not} recoverable. \texttt{data/raw/episodes\_deepseek.jsonl}, the 30
+pilot episodes, was deleted during a project cleanup. It was covered by a
+\texttt{.gitignore} rule on \texttt{data/raw/} and was never committed; only its metadata
+survives, in \texttt{data/raw/DELETED\_MANIFEST.md}. The pilot is therefore described in
+this report from derived statistics only, and no estimate here rests on it. The remaining
+raw episode files were moved under version control on 2026-08-16 in response.
+
+\section*{LLM usage statement}
+
+\textbf{Models as subjects.} \texttt{deepseek-v4-pro} is the object of study, not a tool
+used to produce it. Every number reported about it is a measurement, and the episode
+records are released. A second model served as an arm-blind judge for the hold-versus-abandon
+coding; its rubric, its failure mode and its restructuring are reported in
+Section~\ref{v2:instrument} rather than treated as infrastructure.
+
+\textbf{Models as assistance.} Claude Code (Claude Opus) wrote the runner, the metrics and
+the analysis scripts, and drafted much of the prose. The authors specified the design, made
+every judgment call about what the results mean, and re-derived the reported numbers. The
+judge defect in Section~\ref{v2:instrument} was found by reading raw judge output by hand,
+not by the assistant that wrote the judge; so was the fact that two numbers in an earlier
+draft of this report had been typed in without a script behind them. Both are now generated
+from committed data.
+
+\end{document}

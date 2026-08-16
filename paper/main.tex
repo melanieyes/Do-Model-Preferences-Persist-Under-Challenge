@@ -9,16 +9,6 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks]{hyperref}
 \usepackage{siunitx}
-\usepackage{fancyhdr}
-
-% Analysis status, on every page. This reframing is post-hoc: the position-bias
-% result came out of instrument work during pair construction, not from prereg-v1.
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\footnotesize\itshape Exploratory --- post-hoc, not pre-registered;
-  PQ1--PQ4 reported, prereg RQ1--RQ4 unrun}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0.2pt}
 
 \graphicspath{{figures/}}
 
@@ -45,7 +35,6 @@
 
 \begin{document}
 \maketitle
-\thispagestyle{fancy}   % \maketitle forces plain; the status label belongs on page 1 too
 
 \begin{abstract}
 Forced-choice preference elicitation underpins a growing body of work that reads values,
@@ -78,9 +67,7 @@ leaves it untouched (\pqDiffReason{} points against control), while asking it to
 that preference or argue the opposing case moves retention by \pqDiffCritique{} and
 \pqDiffCounter{} points. Among the choices that do survive, confidence falls
 (\pqHeldCritique{} and \pqHeldCounter{} points). Flips track the option rather than the
-slot, so the effect is content and not the position artefact returning. These questions are
-labelled PQ1--PQ4 throughout; the pre-registered RQ1--RQ4 are a different study and remain
-unrun.
+slot, so the effect is content and not the position artefact returning.
 \end{abstract}
 
 \input{sections/01_intro}
