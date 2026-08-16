@@ -19,7 +19,12 @@ from typing import Any
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+# override=True on purpose. CLAUDE.md puts the keys in .env, so .env is the source of
+# truth and must win over anything already exported in the shell. Without it a stale
+# placeholder in the environment silently shadows a correct key in .env and the failure
+# surfaces as a 401 from the provider, which reads like a bad key rather than a bad
+# precedence rule.
+load_dotenv(override=True)
 
 Messages = list[dict[str, str]]  # [{"role": "system"|"user"|"assistant", "content": str}]
 
@@ -132,15 +137,37 @@ class GemmaModalClient(_OpenAICompatClient):
 
 
 class GeminiClient(ChatClient):
-    """Judge A (all episodes) and persuader-ladder drafting. REST; no logprobs."""
+    """Gemini over REST. No logprobs on this API, so scoring is the discrete choice.
+
+    Per-call reasoning is controlled by `thinkingConfig.thinkingBudget`: -1 lets the
+    model think, 0 suppresses it. This is the same control
+    `scripts/run_gemini_replication.py` validated BY EFFECT, reading
+    `usageMetadata.thoughtsTokenCount` back rather than trusting that the parameter
+    was honoured. Some models reject a budget of 0 while spending no thought tokens
+    anyway; for those the config is omitted instead (OFF_BY_DEFAULT).
+    """
 
     ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+
+    # thinkingBudget is a genuine per-call reasoning control, so the persistence
+    # runner's control-1 assertion can be satisfied on this client.
+    supports_reasoning_control = True
+
+    # Reject `thinkingBudget: 0` but spend no thought tokens by default.
+    OFF_BY_DEFAULT = {"gemini-3.5-flash-lite"}
 
     def __init__(self, model: str = "gemini-2.0-flash", timeout: int = 120):
         self.model = model
         self.name = "gemini"
         self.timeout = timeout
         self._key = _require("GEMINI_API_KEY")
+
+    def _think_cfg(self, reasoning: bool) -> dict[str, Any]:
+        if reasoning:
+            return {"thinkingConfig": {"thinkingBudget": -1}}
+        if self.model in self.OFF_BY_DEFAULT:
+            return {}
+        return {"thinkingConfig": {"thinkingBudget": 0}}
 
     def chat(self, messages: Messages, temperature: float = 1.0, logprobs: bool = False,
              reasoning: bool = True) -> Reply:
@@ -150,7 +177,10 @@ class GeminiClient(ChatClient):
             for m in messages
             if m["role"] != "system"
         ]
-        body: dict[str, Any] = {"contents": contents, "generationConfig": {"temperature": temperature}}
+        body: dict[str, Any] = {
+            "contents": contents,
+            "generationConfig": {"temperature": temperature, **self._think_cfg(reasoning)},
+        }
         if system:
             body["systemInstruction"] = {"parts": [{"text": system}]}
         resp = requests.post(

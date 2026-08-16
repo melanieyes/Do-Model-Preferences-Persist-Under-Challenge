@@ -120,6 +120,17 @@ targets:
                             # VERIFIED 2026-08-14 on /chat/completions: top_logprobs returns
                             # 5 alternatives per token (scripts/test_logprobs.py). No Responses-API
                             # fallback needed; DeepSeekClient already sends top_logprobs=5.
+  - key: gemini35
+    client: gemini
+    model: gemini-3.5-flash
+    logprobs: false         # this API exposes none; scoring is the discrete choice
+    # EXCLUDED from the PQ estimates by the model roster: this model declines to
+    # assign itself preferences in ~96.5% of trials, so any surviving episode is
+    # selected by its willingness to answer (the outcome-conditioning §5.4 warns
+    # against). Run only as the future-work refusal-persistence probe, reported
+    # separately and never pooled with the DeepSeek estimates.
+    refusal_conditioned: true
+
   - key: gemma
     client: gemma
     model: google/gemma-2-9b-it
@@ -162,6 +173,10 @@ cost:
     deepseek-v4-pro:      {input: 0.435, output: 0.87}   # cache-miss in; cache-hit 0.003625
     gemini-2.5-flash-lite: {input: 0.10, output: 0.40}
     gemini-3.5-flash-lite: {input: 0.30, output: 2.50}
+    # PROXY, not a confirmed price: the -lite figures above, used only so the
+    # pre-run estimate has something to print. Actual spend for this model is
+    # taken from measured usage after the run, not from this line.
+    gemini-3.5-flash:     {input: 0.30, output: 2.50}
     # retired — last-known prices, for reference only
     deepseek-chat:        {input: 0.27, output: 1.10}
     gemini-2.0-flash:     {input: 0.10, output: 0.40}

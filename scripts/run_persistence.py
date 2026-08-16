@@ -74,7 +74,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.choice_scoring import classify, parse_confidence  # noqa: E402
-from src.clients import DeepSeekClient  # noqa: E402
+from src.clients import REGISTRY, DeepSeekClient, GeminiClient  # noqa: E402
 from src.schema import validate_persistence_record  # noqa: E402
 
 PAIRS_DIR = ROOT / "data" / "pairs"
@@ -223,12 +223,19 @@ def main() -> None:
     ap.add_argument("--out", default=None, help="override the output path")
     ap.add_argument("--ext", action="store_true",
                     help="run the five-domain extension pool (deviation #6)")
+    ap.add_argument("--target", default="deepseek",
+                    help="target key from configs/default.yaml (deepseek, gemini35, ...)")
     args = ap.parse_args()
     pool_path = POOL_EXT if args.ext else POOL
     balance_path = BALANCE_EXT if args.ext else BALANCE
 
     cfg = yaml.safe_load((ROOT / "configs" / "default.yaml").read_text())
-    target = next(t for t in cfg["targets"] if t["key"] == "deepseek")
+    try:
+        target = next(t for t in cfg["targets"] if t["key"] == args.target)
+    except StopIteration:
+        keys = ", ".join(t["key"] for t in cfg["targets"])
+        raise SystemExit(f"unknown --target {args.target!r}; configured: {keys}")
+    client_cls = REGISTRY[target["client"]]
     temperature = cfg["sampling"]["battery_temperature"]
 
     # --- CONTROL 1: reasoning must be ON. Fail loudly, before any call. ----------
@@ -239,14 +246,25 @@ def main() -> None:
             "comparison template by SLOT (order gap 0.670, DEVIATIONS #4), so retention "
             "would measure slot persistence, not preference stability. Refusing to run."
         )
-    if not DeepSeekClient.supports_reasoning_control:
+    if not client_cls.supports_reasoning_control:
         raise SystemExit(
-            "Client does not expose per-call reasoning control, so 'reasoning ON' "
-            "cannot be asserted. Refusing to run."
+            f"{client_cls.__name__} does not expose per-call reasoning control, so "
+            "'reasoning ON' cannot be asserted. Refusing to run."
         )
 
     pool = [json.loads(x) for x in pool_path.read_text().splitlines() if '"pair_id"' in x]
     cov = load_covariate(balance_path)
+    # The balance pilots were run on deepseek-v4-pro, so pilot_consistency is a
+    # property of THAT model. Carrying it into a run on a different target does not
+    # make PQ2 estimable there -- it would regress this model's retention on another
+    # model's settledness. Recorded in _meta and warned about; PQ1/PQ3 are unaffected.
+    cov_foreign = target["key"] != "deepseek"
+    if cov_foreign:
+        print(f"\n  ** PQ2 COVARIATE IS FOREIGN: pilot_consistency comes from the "
+              f"deepseek balance pilot, not from {target['model']}.")
+        print("     PQ1 and PQ3 are unaffected. Do NOT report PQ2 for this target "
+              "without a balance pilot on the same pool and model.\n")
+
     missing = [p["pair_id"] for p in pool if p["pair_id"] not in cov]
     if missing:
         raise SystemExit(f"{len(missing)} pairs have no balance-pilot covariate: {missing[:3]}")
@@ -263,9 +281,9 @@ def main() -> None:
         grid = [g for a in ARMS for g in rng.sample(by_arm[a], per_arm)]
 
     out_path = Path(args.out) if args.out else (
-        OUT_DIR / ((f"smoke_ext_{args.smoke}.jsonl" if args.smoke
+        OUT_DIR / ((f"smoke_{target['key']}_ext_{args.smoke}.jsonl" if args.smoke
                     else f"persistence_{target['key']}_ext.jsonl") if args.ext
-                   else (f"smoke_{args.smoke}.jsonl" if args.smoke
+                   else (f"smoke_{target['key']}_{args.smoke}.jsonl" if args.smoke
                          else f"persistence_{target['key']}_k{args.k}.jsonl"))
     )
     if out_path.exists() and not args.smoke:
@@ -306,7 +324,7 @@ def main() -> None:
     if target["model"] in cfg["cost"].get("retired_models", {}):
         raise SystemExit(f"MODEL ID RETIRED: {target['model']}")
 
-    client = DeepSeekClient(model=target["model"])
+    client = client_cls(model=target["model"])
     git_commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
                                 capture_output=True, text=True).stdout.strip()
     config_hash = sha256((ROOT / "configs" / "default.yaml").read_bytes()).hexdigest()[:12]
@@ -328,6 +346,10 @@ def main() -> None:
         "covariate": (f"pilot_consistency and pilot_position_bias from {balance_path.name}"
                       if args.ext else
                       "pilot_consistency from balance_pilot.jsonl (reasoning-on cell)"),
+        "covariate_source_model": "deepseek-v4-pro",
+        "covariate_is_foreign": cov_foreign,
+        "pq2_estimable": not cov_foreign,
+        "refusal_conditioned": bool(target.get("refusal_conditioned")),
         "prompt_template": "upstream comparison_prompt_template_default, verbatim",
         "order": "fixed within episode; balanced within each pair x arm cell",
         "scoring": "discrete choice; refusal/disclaimer tested before any label search",
@@ -344,11 +366,25 @@ def main() -> None:
         """One turn. Reasoning always on; logprobs off (control 4)."""
         reply = client.chat(messages, temperature=temperature, logprobs=False,
                             reasoning=True)
-        usage = (reply.raw or {}).get("usage", {}) or {}
-        return reply.text or "", {
-            "prompt_tokens": usage.get("prompt_tokens"),
-            "completion_tokens": usage.get("completion_tokens"),
-        }
+        raw = reply.raw or {}
+        # OpenAI-compatible providers return `usage`; Gemini returns `usageMetadata`
+        # with different field names, and thought tokens are billed as output but are
+        # NOT included in candidatesTokenCount, so they are added explicitly. Without
+        # this the cost guard reads zero on Gemini and cannot measure a run.
+        usage = raw.get("usage") or {}
+        if usage:
+            return reply.text or "", {
+                "prompt_tokens": usage.get("prompt_tokens"),
+                "completion_tokens": usage.get("completion_tokens"),
+            }
+        um = raw.get("usageMetadata") or {}
+        if um:
+            return reply.text or "", {
+                "prompt_tokens": um.get("promptTokenCount"),
+                "completion_tokens": (um.get("candidatesTokenCount") or 0)
+                                     + (um.get("thoughtsTokenCount") or 0),
+            }
+        return reply.text or "", {"prompt_tokens": None, "completion_tokens": None}
 
     def run_episode(g: dict) -> dict:
         pair, arm, flip = g["pair"], g["arm"], g["flip"]
