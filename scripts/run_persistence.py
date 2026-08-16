@@ -80,6 +80,10 @@ from src.schema import validate_persistence_record  # noqa: E402
 PAIRS_DIR = ROOT / "data" / "pairs"
 POOL = PAIRS_DIR / "pilot_pool.jsonl"
 BALANCE = PAIRS_DIR / "balance_pilot.jsonl"      # reasoning-ON cell; the covariate source
+# Extension pools (deviation #6). Separate files throughout: the k3 run's episodes
+# are collected data and an extension run never reads or rewrites them.
+POOL_EXT = PAIRS_DIR / "pilot_pool_ext.jsonl"
+BALANCE_EXT = PAIRS_DIR / "balance_pilot_ext.jsonl"
 OUT_DIR = ROOT / "data" / "persistence"
 
 SEED = 20260815          # same seed family as the pair build; fixed before any episode
@@ -170,10 +174,17 @@ def order_schedule(k: int, pair_id: str, arm: str) -> list[bool]:
     return sched
 
 
-def load_covariate() -> dict[str, dict]:
-    """Per-pair balance-pilot statistics, carried in as covariates. Not re-elicited."""
+def load_covariate(balance_path: Path = BALANCE) -> dict[str, dict]:
+    """Per-pair balance-pilot statistics, carried in as covariates. Not re-elicited.
+
+    `pilot_position_bias` matters as much as `pilot_consistency` on the extension
+    set: sports returned a mean of 0.600 with reasoning on (DEVIATIONS #6), so
+    the extension estimates are reported with and without pairs at bias >= 0.5.
+    Carrying it per pair is what makes that split possible without dropping any
+    pair from collection, which would be outcome-dependent selection.
+    """
     cov = {}
-    for line in BALANCE.read_text().splitlines():
+    for line in balance_path.read_text().splitlines():
         r = json.loads(line)
         if "pair_id" not in r:
             continue
@@ -210,7 +221,11 @@ def main() -> None:
     ap.add_argument("--confirm", action="store_true",
                     help="required for any run over 20 episodes (CLAUDE.md cost guard)")
     ap.add_argument("--out", default=None, help="override the output path")
+    ap.add_argument("--ext", action="store_true",
+                    help="run the five-domain extension pool (deviation #6)")
     args = ap.parse_args()
+    pool_path = POOL_EXT if args.ext else POOL
+    balance_path = BALANCE_EXT if args.ext else BALANCE
 
     cfg = yaml.safe_load((ROOT / "configs" / "default.yaml").read_text())
     target = next(t for t in cfg["targets"] if t["key"] == "deepseek")
@@ -230,8 +245,8 @@ def main() -> None:
             "cannot be asserted. Refusing to run."
         )
 
-    pool = [json.loads(x) for x in POOL.read_text().splitlines() if '"pair_id"' in x]
-    cov = load_covariate()
+    pool = [json.loads(x) for x in pool_path.read_text().splitlines() if '"pair_id"' in x]
+    cov = load_covariate(balance_path)
     missing = [p["pair_id"] for p in pool if p["pair_id"] not in cov]
     if missing:
         raise SystemExit(f"{len(missing)} pairs have no balance-pilot covariate: {missing[:3]}")
@@ -248,9 +263,16 @@ def main() -> None:
         grid = [g for a in ARMS for g in rng.sample(by_arm[a], per_arm)]
 
     out_path = Path(args.out) if args.out else (
-        OUT_DIR / (f"smoke_{args.smoke}.jsonl" if args.smoke
-                   else f"persistence_{target['key']}_k{args.k}.jsonl")
+        OUT_DIR / ((f"smoke_ext_{args.smoke}.jsonl" if args.smoke
+                    else f"persistence_{target['key']}_ext.jsonl") if args.ext
+                   else (f"smoke_{args.smoke}.jsonl" if args.smoke
+                         else f"persistence_{target['key']}_k{args.k}.jsonl"))
     )
+    if out_path.exists() and not args.smoke:
+        raise SystemExit(
+            f"{out_path.relative_to(ROOT)} already exists. Collected episodes are never "
+            "overwritten — move it aside or pass --out if this is genuinely a new run."
+        )
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     # --- cost guard (CLAUDE.md) --------------------------------------------------
@@ -293,12 +315,19 @@ def main() -> None:
     out_f = out_path.open("w")
     out_f.write(json.dumps({
         "_meta": "preference persistence — forced choice, one challenge, re-elicitation",
-        "deviation": "#5 — run after pilot data seen; pool unfiltered; EXPLORATORY vs prereg-v1",
+        "deviation": ("#6 — five-domain extension; controls of #5 unchanged; EXPLORATORY"
+                      if args.ext else
+                      "#5 — run after pilot data seen; pool unfiltered; EXPLORATORY vs prereg-v1"),
+        "extension": args.ext,
         "target": target["key"], "model": target["model"], "temperature": temperature,
         "reasoning": True, "k": args.k, "seed": SEED, "arms": list(ARMS),
         "n_pairs": len(pool), "n_episodes": n_ep,
-        "pool": "all 130 pilot-pool pairs, unfiltered",
-        "covariate": "pilot_consistency from balance_pilot.jsonl (reasoning-on cell)",
+        "pool": (f"all {len(pool)} extension pairs, unfiltered (5 domains, "
+                 "finances_control is a POSITIVE CONTROL — report separately, never pool)"
+                 if args.ext else "all 130 pilot-pool pairs, unfiltered"),
+        "covariate": (f"pilot_consistency and pilot_position_bias from {balance_path.name}"
+                      if args.ext else
+                      "pilot_consistency from balance_pilot.jsonl (reasoning-on cell)"),
         "prompt_template": "upstream comparison_prompt_template_default, verbatim",
         "order": "fixed within episode; balanced within each pair x arm cell",
         "scoring": "discrete choice; refusal/disclaimer tested before any label search",
@@ -468,6 +497,42 @@ def main() -> None:
     print(f"  sec/episode     {el / len(rows) * WORKERS:.1f} serial, "
           f"{el / len(rows):.2f} wall at {WORKERS} workers")
     print(f"  no_pre_choice   {counters['no_pre_choice']}   errors {counters['errors']}")
+    print("-" * 68)
+
+    # --- parse rates, per elicitation point --------------------------------------
+    # Four separate items, four separate failure rates. A post-choice that did not
+    # parse is not a retention of 0, and an unparsed confidence is not a 0 — both
+    # are recorded as such and neither is imputed anywhere downstream.
+    print("PARSE RATES")
+    print("| item | choice/value | refusal | unparsed | n |")
+    print("|---|---|---|---|---|")
+    for label, field, ok in (("pre-choice", "kind_pre", "choice"),
+                             ("pre-confidence", "conf_pre_kind", "value"),
+                             ("post-choice", "kind_post", "choice"),
+                             ("post-confidence", "conf_post_kind", "value")):
+        # Episodes that ended at no_pre_choice have no post item to score, so the
+        # post rows are over the episodes that actually reached them.
+        vals = [r.get(field) for r in rows if r.get(field) is not None]
+        n = len(vals)
+        good = sum(1 for v in vals if v == ok)
+        ref = sum(1 for v in vals if v == "refusal")
+        unp = sum(1 for v in vals if v == "unparsed")
+        pct = f"{good / n:.1%}" if n else "n/a"
+        print(f"| {label} | {good} ({pct}) | {ref} | {unp} | {n} |")
+    by_arm_unp: dict[str, tuple[int, int]] = {}
+    for a in ARMS:
+        ar = [r for r in rows if r.get("arm") == a and r.get("conf_post_kind") is not None]
+        by_arm_unp[a] = (sum(1 for r in ar if r["conf_post_kind"] == "unparsed"), len(ar))
+    spread = [u / t for u, t in by_arm_unp.values() if t]
+    print("\npost-confidence missingness by arm "
+          f"(differential is a known #5 defect; flagged if spread > 2 points):")
+    for a, (u, t) in by_arm_unp.items():
+        print(f"  {a:24s} {u}/{t}" + (f"  {u / t:.1%}" if t else ""))
+    if spread and (max(spread) - min(spread)) > 0.02:
+        print(f"  ** DIFFERENTIAL: spread {max(spread) - min(spread):.1%} across arms — "
+              "record it, do not impute (DEVIATIONS #5)")
+    sch = sum(1 for r in rows if r.get("_schema_problems"))
+    print(f"\nschema problems: {sch}/{len(rows)}")
     print("-" * 68)
 
 
