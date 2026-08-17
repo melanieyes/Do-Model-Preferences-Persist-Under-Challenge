@@ -617,3 +617,12 @@ validity were asserted at merge, and each merged file's `_meta` names its source
 identically from the merged files. The batch files are removed from the working tree and
 remain in the repository history at commits `7390a0c`, `e916126` and the entry-#10 data
 commits.
+
+**Verification note under #6/#9 (2026-08-17).** At the first author's request, the
+primary target's `finances_control` cells were independently re-collected as a
+verification run: 240 fresh episodes, same protocol, written to
+`data/persistence/verify_deepseek_finance_rerun.jsonl` and **never merged into the
+reported episode file** (merging would raise the check item's k above the design's
+k=3 per cell). The rerun reproduces the original exactly: 100.0% retention in all
+four arms, 0 flips, 0 errors, 240/240 scoreable. The reported finance estimates are
+unchanged; the file is committed as a same-day replication record.
