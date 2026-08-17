@@ -1,8 +1,8 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[10pt,a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=1in,bottom=0.88in]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{amsmath}
@@ -10,6 +10,9 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{siunitx}
 \usepackage{fancyhdr}
+\usepackage[font=small]{caption}
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=2pt}
 
 \graphicspath{{figures/}}
 
@@ -31,9 +34,10 @@
 \title{Do Model Preferences Persist Under Challenge?}
 
 % Affiliations sit under the names; the \thanks footnotes carry contributions only.
-% Melanie's affiliation line is intentionally left empty until she supplies one.
+% Affiliations match the ones stated on the project page (index.html).
 \author{%
   Melanie Bui\thanks{Pipeline, metrics, Modal.} \\
+  Fulbright University Vietnam
   \and
   Haein Kong\thanks{Experimental design, instruments, validation.} \\
   Rutgers University%
@@ -46,26 +50,25 @@
 
 \begin{abstract}
 Large language models express preferences across many outcomes, and a growing body of
-work reads values --- and increasingly welfare --- off those expressed preferences. It
-remains unclear whether they are stable when challenged. We test whether expressed model
-preferences persist under different forms of challenge and across preference domains. In
-each independent episode a model chooses between two outcomes, reports confidence,
-receives exactly one of four challenges --- control, reason elicitation, self-critique,
-or counter-consideration, none of which instructs a change or supplies an argument ---
-and then re-evaluates the same pair. We measure retention, reversal, and confidence
-change over five approved domains (video games, sports, pop culture, science and
-technology, and a personal-finances positive control), \pqxNEpisodes{} episodes per
-model, on \texttt{deepseek-v4-pro}, \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash}.
-\emph{What the challenge asks for} decides: on the primary target, retention is
-\pqxeRetCtl{}\% under control and \pqxeRetReason{}\% under reason elicitation, but falls
-to \pqxeRetCritique{}\% under self-critique and \pqxeRetCounter{}\% under
-counter-consideration, and the asymmetry reproduces on both further models. Among
-preferences that survive, stated confidence still falls (\pqxeHeldCritique{} and
-\pqxeHeldCounter{} points against control). The arithmetic positive control separates
-preference movement from generic answer-switching --- and itself proves model-specific.
-Expressed model preferences are not uniformly stable; they are systematically sensitive
-to how they are challenged, so persistence under interaction carries information that
-one-shot elicitation does not. All results are exploratory.
+work reads values, and increasingly welfare, off those expressed preferences. Whether
+such preferences are stable when challenged is unclear. We test whether expressed model
+preferences persist under different forms of challenge and across preference domains.
+In each independent episode a model chooses between two outcomes, reports confidence,
+receives exactly one of four challenges (control, reason elicitation, self-critique, or
+counter-consideration, none of which instructs a change or supplies an argument), and
+then re-evaluates the same pair. We run \pqxNEpisodes{} episodes per model over five
+domains (video games, sports, pop culture, science and technology, and a
+personal-finances positive control) on \texttt{deepseek-v4-pro}, \texttt{gpt-5.4-nano}
+and \texttt{gemini-2.5-flash}. What the challenge asks for decides the outcome: on the
+primary target, retention is \pqxeRetCtl{}\% under control and \pqxeRetReason{}\% under
+reason elicitation, but falls to \pqxeRetCritique{}\% under self-critique and
+\pqxeRetCounter{}\% under counter-consideration, and the asymmetry reproduces on both
+further models. Among preferences that survive, stated confidence still falls
+(\pqxeHeldCritique{} and \pqxeHeldCounter{} points against control). The arithmetic
+positive control separates preference movement from generic answer-switching, and
+itself proves model-specific. Expressed model preferences are not uniformly stable but
+systematically sensitive to how they are challenged, so persistence under interaction
+carries information that one-shot elicitation does not. All results are exploratory.
 \end{abstract}
 
 \input{sections/01_intro}

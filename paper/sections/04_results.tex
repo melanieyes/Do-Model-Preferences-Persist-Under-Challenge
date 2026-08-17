@@ -2,15 +2,15 @@
 \label{sec:results}
 \label{sec:persistence}
 
-The reported persistence set is the five approved domains only: video games, sports, pop
-culture, science and technology, and personal finances as a separate manipulation check.
-Each model contributes \pqxNEpisodes{} episodes on \pqxNPairs{} pairs, four arms, three
-episodes per pair $\times$ arm cell. Coverage: every episode reached both elicitations on
-\pairModel{} and \texttt{gpt-5.4-nano} (no refusals, no unparsed choices, no errors);
-on \texttt{gemini-2.5-flash}, \xmGtwoErrors{} episodes were lost to provider
-read-timeouts, are logged as errors and are neither imputed nor silently dropped, leaving
-\xmGtwoPrefEps{} of \pqxeEps{} preference episodes scored. Every estimate carries a
-bootstrap 95\% CI over pairs, \num{10000} resamples; everything is exploratory.
+Each model contributes \pqxNEpisodes{} episodes on \pqxNPairs{} pairs, four arms,
+three episodes per pair $\times$ arm cell, over the five approved domains, with
+personal finances analysed as a separate manipulation check. Every episode reached
+both elicitations on \pairModel{} and \texttt{gpt-5.4-nano} (no refusals, no unparsed
+choices, no errors); on \texttt{gemini-2.5-flash}, \xmGtwoErrors{} episodes were lost
+to provider read-timeouts, logged as errors and neither imputed nor silently dropped,
+leaving \xmGtwoPrefEps{} of \pqxeEps{} preference episodes scored. Every estimate
+carries a bootstrap 95\% CI over pairs, \num{10000} resamples; everything is
+exploratory.
 
 \subsection{Preference stability depends on what the challenge asks for}
 \label{sec:pq1}
@@ -18,18 +18,14 @@ bootstrap 95\% CI over pairs, \num{10000} resamples; everything is exploratory.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_models_ext.png}
-  \caption{\textbf{Figure 1: Retention by challenge type across models, all five
-  approved domains.} Bars are means with bootstrap 95\% CIs over pairs; the printed
-  number is the retention point estimate. \textbf{(a)}~The four preference domains
-  (same \pqxePairs{} pairs, same arms, same instrument controls on all three targets):
-  control and reason-elicitation sit at or near
-  ceiling on two of three targets while both adversarial arms cut retention deeply on
-  all three, and the \emph{rank} of the two adversarial arms differs by model.
-  \textbf{(b)}~Personal finances, the check item, in the same layout and never pooled
-  into~(a): a choice between two money amounts is arithmetic, so ceiling retention is
-  the expected result --- it holds on \pairModel{} and nearly holds on
-  \texttt{gemini-2.5-flash}, and fails on \texttt{gpt-5.4-nano}, which bounds how that
-  target's panel-(a) bars may be read.}
+  \caption{\textbf{Retention by challenge type across models.} Means with bootstrap
+  95\% CIs over pairs. \textbf{(a)}~The four preference domains, same \pqxePairs{}
+  pairs, arms and instrument controls on all three targets: both adversarial arms cut
+  retention deeply on all three, and the rank of the adversarial arms differs by
+  model. \textbf{(b)}~Personal finances, the check item, never pooled into~(a): a
+  choice between two money amounts is arithmetic, so ceiling retention is the expected
+  result. It holds on \pairModel{}, nearly holds on \texttt{gemini-2.5-flash}, and
+  fails on \texttt{gpt-5.4-nano}.}
   \label{fig:models}
 \end{figure}
 
@@ -40,7 +36,7 @@ bootstrap 95\% CI over pairs, \num{10000} resamples; everything is exploratory.
     \toprule
     Arm & Retention & vs.\ control \\
     \midrule
-    \texttt{control}               & \pqxeRetCtl{}\%     [\pqxeRetCtlLo{}, \pqxeRetCtlHi{}]         & --- \\
+    \texttt{control}               & \pqxeRetCtl{}\%     [\pqxeRetCtlLo{}, \pqxeRetCtlHi{}]         & \\
     \texttt{reason\_elicitation}   & \pqxeRetReason{}\%  [\pqxeRetReasonLo{}, \pqxeRetReasonHi{}]   & \pqxeDiffReason{}   [\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}] \\
     \texttt{self\_critique}        & \pqxeRetCritique{}\%[\pqxeRetCritiqueLo{}, \pqxeRetCritiqueHi{}] & \pqxeDiffCritique{} [\pqxeDiffCritiqueLo{}, \pqxeDiffCritiqueHi{}] \\
     \texttt{counter\_consideration}& \pqxeRetCounter{}\% [\pqxeRetCounterLo{}, \pqxeRetCounterHi{}] & \pqxeDiffCounter{}  [\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}] \\
@@ -52,173 +48,96 @@ points, bootstrap 95\% CIs over \pqxePairs{} pairs, \num{10000} resamples.}
   \label{tab:pq1}
 \end{table}
 
-On the primary target, control retains \pqxeRetCtl{}\%. Absent a challenge this procedure
-returns the same answer essentially every time, which is what licenses reading the rest as
-the challenge rather than instrument noise. Against that baseline
-\texttt{reason\_elicitation} is indistinguishable from doing nothing (\pqxeDiffReason{}
-points, \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\)). \texttt{self\_critique} moves
-retention by \pqxeDiffCritique{} points and \texttt{counter\_consideration} by
-\pqxeDiffCounter{}. The direction of the request matters; its mere presence does not.
+On the primary target, control retains \pqxeRetCtl{}\%: absent a challenge the
+procedure returns the same answer essentially every time, which licenses reading the
+rest as the challenge rather than instrument noise. Against that baseline,
+\texttt{reason\_elicitation} is indistinguishable from doing nothing
+(\pqxeDiffReason{} points, \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\)), while
+\texttt{self\_critique} moves retention by \pqxeDiffCritique{} points and
+\texttt{counter\_consideration} by \pqxeDiffCounter{}. The direction of the request
+matters; its mere presence does not.
 
-The asymmetry reproduces on both further targets (Figure~\ref{fig:models}): on
-\texttt{gpt-5.4-nano} the adversarial arms move retention by \xmNanoDiffCritique{} and
-\xmNanoDiffCounter{} points against its own control, and on \texttt{gemini-2.5-flash} by
-\xmGtwoDiffCritique{} and \xmGtwoDiffCounter{}. Two qualifications, stated rather than
-smoothed over. First, the \emph{rank} of the two adversarial arms is not a property of
-the challenges: \texttt{self\_critique} is the stronger arm on \pairModel{} and
-\texttt{gemini-2.5-flash}, \texttt{counter\_consideration} on \texttt{gpt-5.4-nano} ---
-the tally across \xmNTargets{} families is \xmCritiqueWins{}--\xmCounterWins{}. Second,
-``justifying changes nothing'' holds on two of the three: on \texttt{gemini-2.5-flash},
-\texttt{reason\_elicitation} retains \xmGtwoRetReason{}\%
-(\([\xmGtwoRetReasonLo{}, \xmGtwoRetReasonHi{}]\)), \emph{below} its own control
-(\xmGtwoRetCtl{}\%), so that invariant too is a property of the model, not of the design.
+The asymmetry reproduces on both further targets (Figure~\ref{fig:models}): the
+adversarial arms move retention by \xmNanoDiffCritique{} and \xmNanoDiffCounter{}
+points on \texttt{gpt-5.4-nano} and by \xmGtwoDiffCritique{} and \xmGtwoDiffCounter{}
+on \texttt{gemini-2.5-flash}, each against its own control. Two qualifications.
+First, the rank of the adversarial arms is not a property of the challenges:
+\texttt{self\_critique} is the stronger arm on \pairModel{} and
+\texttt{gemini-2.5-flash}, \texttt{counter\_consideration} on \texttt{gpt-5.4-nano}.
+Second, on \texttt{gemini-2.5-flash}, \texttt{reason\_elicitation} retains
+\xmGtwoRetReason{}\% (\([\xmGtwoRetReasonLo{}, \xmGtwoRetReasonHi{}]\)), below its own
+control (\xmGtwoRetCtl{}\%), so that invariant too is a property of the model.
+Retention also rises with how settled the preference already was (PQ2): the slope of
+per-pair retention on the balance-pilot consistency covariate is \pqxeSlope{}
+(\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)); the level-by-level split is in
+Appendix~\ref{app:persistdetail}.
 
-Retention also rises with how settled the preference already was (\textbf{PQ2}): on the
-primary target, the slope of per-pair retention on the balance-pilot consistency
-covariate is \pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)); the level-by-level
-split is in Appendix~\ref{app:persistdetail}.
-
-\subsection{Challenge effects appear across preference domains, and the control does not
-move}
+\subsection{Challenge effects appear across preference domains, and the control does
+not move}
 \label{sec:extension}
 \label{sec:pq4}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_domains_deepseek_v4_pro.png}
-  \caption{\textbf{Figure 2: Retention by domain and arm} on the primary target,
-  \pairModel{}, all five approved domains. Personal finances is the check item ---
-  a choice between two money amounts is arithmetic, so ceiling retention there is the
-  expected result --- and its row is shown in full but never pooled into a
-  preference-domain estimate. Bars are means with bootstrap 95\% CIs over pairs. The
-  same arm ordering appears in every preference domain; personal finances stays at
-  ceiling in every arm. The same split for the two further targets is in
-  Appendix~\ref{app:othermodels}.}
+  \caption{\textbf{Retention by domain and arm} on the primary target, \pairModel{}.
+  Means with bootstrap 95\% CIs over pairs. The same arm ordering appears in every
+  preference domain; personal finances, the check item, stays at ceiling in every arm
+  and is never pooled into a preference-domain estimate. The same split for the
+  further targets is in Appendix~\ref{app:othermodels}.}
   \label{fig:persistence-domains-main}
 \end{figure}
 
-The domain split (Figure~\ref{fig:persistence-domains-main}) shows the same arm ordering
-in all four preference domains on the primary target, with magnitude varying by domain;
-the corresponding figures for \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash} are in
-Appendix~\ref{app:othermodels} and show the same broad pattern under each model's
-qualifications above.
+The domain split (Figure~\ref{fig:persistence-domains-main}) shows the same arm
+ordering in all four preference domains, with magnitude varying by domain; the further
+targets show the same broad pattern under each model's qualifications above
+(Appendix~\ref{app:othermodels}).
 
 \paragraph{Discriminant validity: the control that does not move.}
-Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes. A forced
-choice between two rungs is arithmetic rather than preference, so ceiling retention is the
-\emph{expected} result; wavering there would indicate an unstable elicitation rather than
-an unstable preference. It is analysed separately and never pooled. On \pairModel{} the
-check passes with force: retention is \pqxfRet{}\% (\([\pqxfRetLo{}, \pqxfRetHi{}]\))
+Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes. A
+forced choice between two rungs is arithmetic rather than preference, so ceiling
+retention is the \emph{expected} result; wavering there would indicate an unstable
+elicitation. On \pairModel{} the check passes with force: retention is \pqxfRet{}\%
 across all \pqxfEps{} episodes, and the two arms that flip \numrange{40}{50}\% of
 preference pairs move the money ladder not once (\pqxfFlips{} flips in
-\pqxfChallengeEps{} challenge episodes). That rules out the reading that these challenges
-induce answer-switching regardless of content --- on this target. The check itself proves
-model-specific: \texttt{gemini-2.5-flash} nearly holds it (\xmGtwoFinRet{}\%,
-\xmGtwoFinFlips{} flips), while \texttt{gpt-5.4-nano} flips arithmetic under the same
-arms (\xmNanoFinRet{}\%, \xmNanoFinFlips{} flips), so its preference-domain movement is
-read with that caveat attached. The cross-model check is Appendix~\ref{app:fincheck}.
+\pqxfChallengeEps{} challenge episodes), ruling out generic answer-switching on this
+target. The check itself proves model-specific: \texttt{gemini-2.5-flash} nearly holds
+it (\xmGtwoFinRet{}\%, \xmGtwoFinFlips{} flips), while \texttt{gpt-5.4-nano} flips
+arithmetic under the same arms (\xmNanoFinRet{}\%, \xmNanoFinFlips{} flips), so its
+preference-domain movement carries that caveat (Appendix~\ref{app:fincheck}).
 
 \paragraph{Bias-aware sensitivity check.}
-The sports domain is the item type most exposed to the position effect
-(Section~\ref{sec:controls}): mean per-pair pilot order gap \pqxSportsBias{} with
-reasoning \emph{on}, against \pqxOtherBiasLo{}--\pqxOtherBiasHi{} elsewhere, and the
-lowest retention under challenge (\pqxSportsRet{}\% pooled over arms). An item answered
-by slot looks like an item whose preference is easily moved, so no pair is dropped ---
-selecting on a seen pilot would be outcome-dependent --- and the pilot order gap is
-carried as a covariate instead. Excluding the \pqxBiasDropPairs{} pairs at gap
-$\ge \pqxBiasCut{}$ moves \texttt{self\_critique} from \pqxeDiffCritique{} to
-\pqxlDiffCritique{} points and \texttt{counter\_consideration} from \pqxeDiffCounter{}
-to \pqxlDiffCounter{}: part of the apparent excess movement in the position-exposed
-items was the layout. The restriction works the other way on $\Delta$confidence, which
-is why both are reported: the \texttt{self\_critique} all-episode confidence contrast is
-\pqxeConfCritique{} points across all pairs, an interval spanning zero
-(\([\pqxeConfCritiqueLo{}, \pqxeConfCritiqueHi{}]\)) and so no measurable difference in
-this sample; it is \pqxlConfCritique{}
-(\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once the position-driven items are
-set aside. We report that as a sensitivity check, not a headline.
+Sports is the item type most exposed to the position effect (pilot order gap
+\pqxSportsBias{} against \pqxOtherBiasLo{} to \pqxOtherBiasHi{} elsewhere) and has the
+lowest retention under challenge, and an item answered by slot looks like an item
+easily moved. No pair is dropped; the gap is carried as a covariate. Excluding the
+\pqxBiasDropPairs{} pairs at gap $\ge \pqxBiasCut{}$ moves \texttt{self\_critique}
+from \pqxeDiffCritique{} to \pqxlDiffCritique{} points and
+\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}: part of
+the apparent excess movement in position-exposed items was the layout. The detail,
+including the opposite effect of the restriction on $\Delta$confidence, is in
+Appendix~\ref{app:persistdetail}.
 
 \subsection{Confidence falls even when the preference is retained}
 \label{sec:pq3}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{persistence_confidence_models.png}
-  \caption{\textbf{Figure 3: Confidence change among retained preferences, by model,
-  all five approved domains.} Per-arm mean $\Delta$Confidence among episodes whose
-  choice did \emph{not} move, with bootstrap 95\% CIs over pairs.
-  \textbf{(a)}~The four preference domains: on \pairModel{} and
-  \texttt{gemini-2.5-flash} the two adversarial arms cost the surviving preferences
-  confidence while control sits at or near zero; on \texttt{gpt-5.4-nano} the control
-  arm itself moves, so its held-episode contrasts are not interpreted
-  (Section~\ref{sec:discussion}). \textbf{(b)}~Personal finances, never pooled
-  into~(a): on \pairModel{} and \texttt{gemini-2.5-flash} the surviving arithmetic
-  answers keep their confidence to within about a point, while \texttt{gpt-5.4-nano}
-  loses confidence even on arithmetic --- including under its moving control.}
-  \label{fig:confidence-models}
-\end{figure}
-
 Among episodes where the choice did \emph{not} move on the primary target, confidence
-still falls relative to control: \pqxeHeldCritique{} points under \texttt{self\_critique}
-(\([\pqxeHeldCritiqueLo{}, \pqxeHeldCritiqueHi{}]\), \pqxeHeldCritiquePairs{} pairs) and
+still falls relative to control: \pqxeHeldCritique{} points under
+\texttt{self\_critique} (\([\pqxeHeldCritiqueLo{}, \pqxeHeldCritiqueHi{}]\)) and
 \pqxeHeldCounter{} under \texttt{counter\_consideration}
-(\([\pqxeHeldCounterLo{}, \pqxeHeldCounterHi{}]\), \pqxeHeldCounterPairs{} pairs);
-dropping episodes that began at zero confidence leaves the direction unchanged
-(\pqxeHeldCritiqueNoZero{}, \pqxeHeldCounterNoZero{}). This is retention with reduced
-confidence: the model keeps its answer and reports itself less sure of it --- what the
-design was built to detect, and what a choice-only measure records as nothing happening.
-The direction replicates on \texttt{gemini-2.5-flash} (\xmGtwoHeldCritique{} and
-\xmGtwoHeldCounter{} points against its control). On \texttt{gpt-5.4-nano} the
-held-episode contrasts are near zero (\xmNanoHeldCritique{}, \xmNanoHeldCounter{})
-against a control arm whose own confidence moves (Figure~\ref{fig:confidence-models});
-we do not interpret contrasts against a moving baseline.
+(\([\pqxeHeldCounterLo{}, \pqxeHeldCounterHi{}]\)); dropping episodes that began at
+zero confidence leaves the direction unchanged (\pqxeHeldCritiqueNoZero{},
+\pqxeHeldCounterNoZero{}). This is retention with reduced confidence: the model keeps
+its answer and reports itself less sure of it. The direction replicates on
+\texttt{gemini-2.5-flash}
+(\xmGtwoHeldCritique{} and \xmGtwoHeldCounter{} points against its control); on
+\texttt{gpt-5.4-nano} the held contrasts are near zero against a control arm whose own
+confidence moves (Figure~\ref{fig:confidence-models}), and we do not interpret
+contrasts against a moving baseline. An episode-level view, in which the preference
+control column is exactly zero in \pqxCtlZero{} of \pqxCtlScored{} scored episodes,
+is in Appendix~\ref{app:persistdetail} (Figure~\ref{fig:held-confidence}).
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{persistence_confidence.png}
-  \caption{\textbf{Figure 4: the held episodes behind Figure 3's primary-target bars},
-  one jittered point per episode, all five approved domains in one panel. Per arm, the
-  blue cluster is the four preference domains and the pink cluster beside it is
-  personal finances --- side-by-side separate estimates, never pooled. The dark rule is
-  each
-  cluster's mean, the whisker its bootstrap 95\% CI over pairs; the annotated episode is
-  selected in code, not by hand. The preference control column is exactly zero in
-  \pqxCtlZero{} of \pqxCtlScored{} scored episodes (Section~\ref{sec:discussion}), and
-  on personal finances the same two challenge arms move held-episode confidence by about
-  a point --- an order of magnitude less than in the preference domains.}
-  \label{fig:held-confidence}
-\end{figure}
-
-Figure~\ref{fig:held-confidence} shows the same channel episode by episode on the
-primary target: the control column is a flat line at exactly zero, and the two
-adversarial columns scatter downward --- including episodes that keep the choice while
-dropping thirty points of confidence. Averaged over \emph{all} episodes the contrasts
-are \pqxeConfReason{}, \pqxeConfCritique{} and \pqxeConfCounter{} points vs.\ control,
-because held and flipped episodes move in opposite directions; we do not interpret the
-flipped half, for the reason given in the Limitations.
-
-\subsection{Predictions and outcomes}
-\label{sec:predictions}
-
-Three predictions were written into the study design before the persistence run; they were
-never tagged as a pre-registration, so Table~\ref{tab:predictions} is a record of what we
-expected, not a confirmatory test. The reasoning behind each verdict is in
+Three predictions were written into the study design before the run, never tagged as a
+pre-registration. One holds (higher-consistency pairs retain more), one half holds,
+one is not testable as written; the table and reasoning are in
 Appendix~\ref{app:predictions}.
-
-\begin{table}[h]
-  \centering
-  \small
-  \begin{tabular}{p{10.2cm}l}
-    \toprule
-    Prediction & Verdict \\
-    \midrule
-    1. \texttt{counter\_consideration} produces the most reversals, \texttt{control} the
-    fewest & Half holds \\
-    2. \texttt{self\_critique} lowers confidence more than \texttt{reason\_elicitation}
-    at equal retention & Not testable as written \\
-    3. Higher-consistency pairs retain more & Holds \\
-    \bottomrule
-  \end{tabular}
-  \caption{The three predictions recorded before the persistence run, scored against the
-  collected data. Appendix~\ref{app:predictions} gives the reasoning behind each verdict.}
-  \label{tab:predictions}
-\end{table}

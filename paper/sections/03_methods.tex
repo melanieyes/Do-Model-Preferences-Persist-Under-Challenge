@@ -5,50 +5,43 @@
 \label{sec:models}
 
 The primary target is \pairModel{} at temperature \num{0.7}: it exposes a per-call
-reasoning toggle and answer-token log-probabilities, which is what the instrument
-controls of Section~\ref{sec:controls} were developed and verified on, and its balance
-pilot supplies the PQ2 covariate. Two further targets run the identical protocol on the
-identical pool so that the challenge-type result is checked across model families:
-\texttt{gpt-5.4-nano}, a verified \emph{non-reasoning} model (zero reasoning tokens,
-established from usage metadata rather than the model name), which tests whether the
-pattern needs a reasoning stage at all; and \texttt{gemini-2.5-flash}, a third family
-that runs with reasoning on but exposes no log-probabilities, which is why every target
-is scored on the discrete choice. Each further target is gated by its own balance pilot
-on the same pool before any persistence episode is collected.
-\texttt{gemini-3.5-flash} is excluded by the model roster: it declines to assign itself
-preferences in most trials, so any estimate on it would be conditioned on its
-willingness to answer. Every estimate in this paper is per model; nothing is pooled
-across models. Family and reasoning stage are confounded across the three targets, and
-we draw no conclusion that requires separating them.
+reasoning toggle and answer-token log-probabilities, on which the instrument controls
+of Section~\ref{sec:controls} were developed, and its balance pilot supplies the PQ2
+covariate. Two further targets run the identical protocol on the identical pool:
+\texttt{gpt-5.4-nano}, a verified non-reasoning model (zero reasoning tokens in usage
+metadata), which tests whether the pattern needs a reasoning stage, and
+\texttt{gemini-2.5-flash}, a third family with reasoning on but no log-probabilities.
+Each further target is gated by its own balance pilot. \texttt{gemini-3.5-flash} is
+excluded: it declines to assign itself preferences in most trials, so any estimate on
+it would be conditioned on its willingness to answer. Every estimate is per model;
+nothing is pooled across models.
 
 \subsection{Datasets, episode, arms}
 \label{sec:pq}
 \label{sec:episode}
 \label{sec:arms}
 
-Preference pairs are built from the outcome set of \citet{mazeika2025utility}, which was
-designed to elicit pairwise model preferences. To examine whether stability generalises,
-we sample within five approved domains: \emph{video games}, \emph{sports}, \emph{pop
-culture}, \emph{science and technology}, and \emph{personal finances} --- the last as a
-positive control rather than a preference domain (Section~\ref{sec:pairs}). The earlier
-instrument-development pool has been retired from the repository; the retirement is
-recorded in the project's deviation log.
-
+Preference pairs are built from the outcome set of \citet{mazeika2025utility},
+designed to elicit pairwise model preferences, sampled within five approved domains:
+video games, sports, pop culture, science and technology, and personal finances, the
+last as a positive control rather than a preference domain (Section~\ref{sec:pairs}).
 The basic unit is an independent conversational episode starting from a fresh context:
 \begin{center}
   initial preference $\rightarrow$ confidence $\rightarrow$ \emph{one} challenge
   $\rightarrow$ preference re-elicitation $\rightarrow$ confidence
 \end{center}
-Each pair $\times$ arm cell runs three independent episodes per model. Retention is
-whether the second choice matches the first. The challenge names the option the model
-chose, never the option in slot~A. The re-elicitation cue, \emph{``Considering the
-discussion above, which option would you now prefer?''}, is identical in all four arms.
-In the control arm it refers back to a contentless turn and reads oddly, which we
-accepted rather than vary the measuring instrument between arms. The exact prompts are
-in Appendix~\ref{app:prompts}.
-
-One arm per episode, none of which instructs a change of preference or supplies an
-argument (Table~\ref{tab:arms}).
+Each pair $\times$ arm cell runs three independent episodes per model: \pqxNPairs{}
+pairs $\times$ 4 arms $\times$ 3 episodes, i.e.\ \pqxNEpisodes{} episodes per model,
+collected independently on each of the \xmNTargets{} targets. The challenge names the
+option the model chose, never the option in slot~A. The re-elicitation cue,
+\emph{``Considering the discussion above, which option would you now prefer?''}, is
+identical in all four arms; in the control arm it refers back to a contentless turn
+and reads oddly, accepted rather than vary the instrument between arms. Exact prompts
+are in Appendix~\ref{app:prompts}. One arm per episode, none of
+which instructs a change of preference or supplies an argument (Table~\ref{tab:arms}).
+On the two further targets the run was collected in two batches under the same seed,
+arms and deterministic per-pair order schedule, then concatenated with episode records
+byte-for-byte unchanged (change log, entries \#9 and \#10).
 
 \begin{table}[h]
   \centering
@@ -66,20 +59,11 @@ argument (Table~\ref{tab:arms}).
       favour $Y$ over $X$?'' \\
     \bottomrule
   \end{tabular}
-  \caption{The four arms. $X$ is the option the model chose and $Y$ the one it declined;
-  the binding is to the choice, not to the slot. No arm instructs a change of
-  preference, and no arm supplies an argument. Each asks the model to generate its
-  own.}
+  \caption{The four arms. $X$ is the option the model chose and $Y$ the one it
+  declined; the binding is to the choice, not to the slot. No arm instructs a change
+  of preference or supplies an argument; each asks the model to generate its own.}
   \label{tab:arms}
 \end{table}
-
-On the two further targets the five-domain protocol was collected in two batches
-(the positive control first, the four preference domains after), with the same seed,
-arms and per-pair order schedule; the schedule is deterministic per pair $\times$ arm
-$\times$ repeat, so batching by domain leaves the counterbalancing untouched. After
-collection the batches were concatenated into one five-domain episode file per target,
-episode records byte-for-byte unchanged and uniqueness asserted; each merged file's
-metadata names its source batches (change log, entries \#9--\#10).
 
 \subsection{Items, measures, and the unfiltered pool}
 \label{sec:pairs}
@@ -88,64 +72,73 @@ metadata names its source batches (change log, entries \#9--\#10).
 \label{sec:pq2ident}
 
 Items come from the outcome set of \citet{mazeika2025utility} at file-level commit
-\texttt{\pairSourceCommit} (MIT licensed), option text verbatim, drawn within category from
-a seed fixed before any pair was inspected, under two exclusion rules fixed in advance;
-several upstream categories fail them outright and were rejected before piloting
-(Appendix~\ref{app:pairs}). The target is \pairModel{} at
-temperature \num{0.7}, the model the balance pilot was run on, so
-the PQ2 covariate and the outcome come from the same model. No judge model is involved
-anywhere.
-
+\texttt{\pairSourceCommit} (MIT licensed), option text verbatim, drawn within category
+from a seed fixed before any pair was inspected, under two exclusion rules fixed in
+advance (Appendix~\ref{app:pairs}). No judge model is involved anywhere.
 \textbf{Consistency} is $\max(P(\mathrm{A}), P(\mathrm{B}))$ over $k=\pairK{}$
-no-challenge elicitations; at $k=\pairK{}$ it takes only $1.0$, $0.8$ and $0.6$, so it is a
-three-level ordinal predictor and we report it as one. \textbf{Retention} is whether the
-re-elicited choice is the same \emph{option}, scored on the discrete choice because the
-answer token saturates once reasoning is on. Responses are classified as refusal, choice or
-unparsed, the refusal test running \emph{first} --- the ordering whose absence caused a
-mis-scoring defect during instrument development (deviation log, entry \#4a); a regression
-test now pins it. \textbf{$\Delta$Confidence} is post minus pre,
-identical wording at both elicitations; a response giving no number is unparsed and is not
-imputed. Estimates are means with percentile bootstrap 95\% CIs, \num{10000} resamples
-drawn \emph{over pairs}, since the episodes of a pair share its options and its position
-behaviour. Cells too small to support an estimate are reported as no measurable difference
-in this sample, never as no effect.
+no-challenge elicitations on the primary target; at $k=\pairK{}$ it takes only $1.0$,
+$0.8$ and $0.6$, a three-level ordinal predictor. \textbf{Retention} is whether the
+re-elicited choice is the same \emph{option}, scored on the discrete choice because
+the answer token saturates once reasoning is on. Responses are classified as refusal,
+choice or unparsed, the refusal test running first (deviation log, entry \#4a; pinned
+by a regression test). \textbf{Confidence change} is analysed among
+preference-retention episodes, where the pre- and post-challenge scores refer to the
+same preferred option, and captures a challenge weakening a preference even when the
+choice stands:
+\begin{equation*}
+  \Delta\mathit{Confidence} = \mathit{Confidence}_{\mathrm{post}} -
+  \mathit{Confidence}_{\mathrm{pre}},
+\end{equation*}
+so A~(95) $\rightarrow$ A~(55) is retention with reduced confidence. Wording is
+identical at both elicitations; a response giving no number is unparsed and never
+imputed. Figure~\ref{fig:confidence-models} shows this measure across models and
+arms. Estimates are means with percentile bootstrap 95\% CIs, \num{10000} resamples
+drawn over pairs, since episodes of a pair are correlated. Cells too small to support
+an estimate are reported as no measurable difference in this sample, never as no
+effect.
 
-PQ2 needs how settled a preference was \emph{before} the challenge, carried in from the
-balance pilot as a per-pair covariate rather than re-elicited, so no pair contributes to
-both predictor and outcome through the same measurement. This is why the run uses all
-\pqxNPairs{} piloted pairs rather than the \pqxKept{} that survive the balance filter:
-that filter would remove almost all variation in the PQ2 predictor by construction and
-leave no domain at the six-pair floor. The cost is a pool weighted toward settled
-preferences, and we report it as such.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_confidence_models.png}
+  \caption{\textbf{Confidence change among retained preferences, by model.} Per-arm
+  mean $\Delta$Confidence among episodes whose choice did \emph{not} move, with
+  bootstrap 95\% CIs over pairs. \textbf{(a)}~The four preference domains: the
+  adversarial arms cost the surviving preferences confidence on \pairModel{} and
+  \texttt{gemini-2.5-flash}, while on \texttt{gpt-5.4-nano} the control arm itself
+  moves, so its held-episode contrasts are not interpreted
+  (Section~\ref{sec:discussion}). \textbf{(b)}~Personal finances, never pooled
+  into~(a): surviving arithmetic answers keep their confidence to within about a
+  point, except on \texttt{gpt-5.4-nano}.}
+  \label{fig:confidence-models}
+\end{figure}
+
+PQ2 needs how settled a preference was before the challenge, carried in from the
+balance pilot as a per-pair covariate rather than re-elicited, so no pair contributes
+to both predictor and outcome through the same measurement. The run therefore uses all
+\pqxNPairs{} piloted pairs rather than the \pqxKept{} that survive the balance filter,
+which would remove almost all variation in the PQ2 predictor. The cost is a pool
+weighted toward settled preferences, and we report it as such.
 
 \subsection{Instrument controls carried into every episode}
 \label{sec:controls}
 
-A retention measure compares two elicitations of the same item. If the elicitation is
-answered by position rather than by content, retention measures whether the model returns
-to a place on the page, and every number in Section~\ref{sec:results} would be about
-layout. Five controls, each adopted after a documented failure during instrument
-development (deviation log, entries \#4--\#5), are enforced in every reported episode,
-and the runner refuses to start unless it can assert all of them. \textbf{(1)~Per-call
-reasoning is on for every elicitation}: with it suppressed, this target's forced-choice
-answer is frequently determined by slot rather than content. \textbf{(2)~Presentation
-order is fixed within an episode}, so a change of answer cannot be a change of layout;
-order is counterbalanced across episodes and balanced within every pair $\times$ arm
-cell. \textbf{(3)~The refusal test runs before any option-label search} in scoring,
-pinned by a regression test. \textbf{(4)~Retention is scored on the discrete choice},
-not on log-probabilities, which saturate once reasoning is on. \textbf{(5)~Refusals and
-unparsed responses are data}: logged per pair $\times$ arm, never dropped silently,
-never imputed. Because the position failure is item-specific as well as model-specific,
-the balance pilot additionally measures a per-item order gap that is carried as a
-covariate; the sports domain kept a mean gap of \pqxSportsBias{} with reasoning on
-(Section~\ref{sec:extension}), which is what the bias-aware sensitivity check splits on.
+Five controls, each adopted after a documented failure during instrument development
+(deviation log, entries \#4 and \#5), are enforced in every reported episode; the
+runner refuses to start unless it can assert all of them. (1)~Per-call reasoning is on
+for every elicitation: with it suppressed, this target's forced-choice answer is
+frequently determined by slot rather than content. (2)~Presentation order is fixed
+within an episode, counterbalanced across episodes and balanced within every pair
+$\times$ arm cell, so a change of answer cannot be a change of layout. (3)~The refusal
+test runs before any option-label search in scoring. (4)~Retention is scored on the
+discrete choice, not on log-probabilities. (5)~Refusals and unparsed responses are
+data: logged per pair $\times$ arm, never dropped silently, never imputed. Because the
+position failure is item-specific as well as model-specific, the balance pilot also
+measures a per-item order gap carried as a covariate; sports kept a mean gap of
+\pqxSportsBias{} with reasoning on, which the bias-aware sensitivity check splits on
+(Section~\ref{sec:extension}).
 
-\subsection{Human validation}
 \label{sec:humanval}
-
-No human validation was run for the persistence study, and none was planned for it: the
-pre-registered protocol codes two constructs this design does not contain, and both
-outcomes here are code-derived. Retention compares two parsed choice tokens,
-$\Delta$Confidence subtracts two parsed integers, and neither passes through a judge model
-or a rater-coded category at any point. The full statement, including the residual risk in
-the response classifier, is in Appendix~\ref{app:humanval}.
+No human validation was run and none was planned: both outcomes are code-derived
+(retention compares two parsed choice tokens, $\Delta$Confidence subtracts two parsed
+integers), and neither passes through a judge model or a rater-coded category. The
+full statement is in Appendix~\ref{app:humanval}.

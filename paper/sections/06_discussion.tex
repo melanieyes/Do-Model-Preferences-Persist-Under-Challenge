@@ -1,69 +1,50 @@
 \section{Discussion and limitations}
 \label{sec:discussion}
 
-\subsection*{Limitations}
-
 \paragraph{Signals, not experiences.} Everything reported here is a property of what a
-model outputs when asked. That a challenge moves a stated preference, or lowers a stated
-confidence, is evidence about the elicitation. It is not evidence that anything is
-experienced. We take no position on whether these models have preferences in a morally
-relevant sense, and the claims do not require one.
+model outputs when asked: evidence about the elicitation, not evidence that anything is
+experienced. These measures are behavioural proxies and may not reflect any internal
+state; we take no position on whether these models have preferences in a morally
+relevant sense, and no claim here requires one.
 
-\paragraph{The confidence gain on flipped episodes cannot be interpreted, because control
-has no variance to subtract.} Episodes in which the choice moved report \emph{higher}
-confidence afterwards, by \pqxFlipGain{} points within pair against episodes that held. We
-do not report this as a finding. It attenuates to \pqxFlipGainNoZero{} once the
-\pqxZeroEps{} episodes that began at zero confidence are dropped. It reverses outright in
-the high-confidence band (\pqxBandFlip{} flipped against \pqxBandHeld{} held, among episodes
-starting at $85$--$100$). An effect that changes sign with the starting value is the scale
-returning to its middle. Control cannot clean this up. Its $\Delta$Confidence is exactly
-zero in \pqxCtlZero{} of \pqxCtlScored{} scored episodes on the primary target, which
-makes it a sound baseline for
-the \emph{choice} channel and a useless one for the confidence channel. That degenerate
-baseline is not forced by the design: the same control arm's confidence moves on
-\texttt{gpt-5.4-nano} and sits near zero on \texttt{gemini-2.5-flash}
-(Figure~\ref{fig:confidence-models}), so it is a property of the target. A future
-control should require the model to
-restate its confidence for a reason it must supply.
+\paragraph{The confidence gain on flipped episodes is not interpretable.} Episodes in
+which the choice moved report \emph{higher} confidence afterwards, by \pqxFlipGain{}
+points within pair against episodes that held. We do not report this as a finding: it
+attenuates to \pqxFlipGainNoZero{} without the \pqxZeroEps{} episodes that began at
+zero confidence and reverses in the high-confidence band (\pqxBandFlip{} against
+\pqxBandHeld{}, episodes starting at $85$ to $100$); an effect that changes sign with
+the starting value is the scale returning to its middle. Control cannot clean it up:
+its $\Delta$Confidence is exactly zero in \pqxCtlZero{} of \pqxCtlScored{} scored
+episodes, a sound baseline for the choice channel only.
 
-\paragraph{The confidence scale is used as a coarse ordinal.} Of \pqxNConfPre{} initial
-confidence reports, $100$ appears \pqxConfPreHundred{} times, $70$ appears
-\pqxConfPreSeventy{} and $0$ appears \pqxConfPreZero{}. The model is choosing from a
-handful of round values, not using a $0$--$100$ scale. Differences in
-$\Delta$Confidence should be read as ordinal movement between those values.
+\paragraph{The confidence scale is a coarse ordinal, with arm-dependent missingness.}
+Of \pqxNConfPre{} initial confidence reports, $100$ appears \pqxConfPreHundred{}
+times, $70$ appears \pqxConfPreSeventy{} and $0$ appears \pqxConfPreZero{}, so
+$\Delta$Confidence is ordinal movement between round values. The item also returned no
+number in \pqxNACtl{}\% of control episodes against \pqxNAReason{}\% under
+\texttt{reason\_elicitation}, a cost of wording the re-elicitation cue identically
+across arms; those values are unparsed and are not imputed.
 
-\paragraph{Missingness on the confidence item depends on arm.} The item failed to return
-a number in \pqxNACtl{}\% of control episodes against \pqxNAReason{}\% under
-\texttt{reason\_elicitation}. In every case the model answered with a bare option letter.
-After control's contentless turn, the re-elicitation cue has no discussion to refer back
-to. This is a direct cost of wording that cue identically across arms
-(Section~\ref{sec:episode}), and it falls on PQ3, which is a between-arm contrast. The
-values are recorded as unparsed and are not imputed.
+\paragraph{The positive control is model-specific.} \texttt{gpt-5.4-nano} flips
+arithmetic under the two adversarial arms (\xmNanoFinRet{}\% retention on the money
+ladder; Appendix~\ref{app:fincheck}), so on that target answer-switching is not
+content-specific and its preference-domain retention is an upper bound. This is the case
+for running the control per target rather than inheriting it.
 
-\paragraph{The positive control is model-specific, which bounds one target's cells.}
-\texttt{gpt-5.4-nano} flips arithmetic under the two adversarial arms
-(\xmNanoFinRet{}\% retention on the money ladder, \xmNanoFinFlips{} flips;
-Appendix~\ref{app:fincheck}), and it wavers on money-ladder pairs in the no-challenge
-pilot. On that target, challenge-induced answer-switching is therefore not
-content-specific, and its preference-domain retention is read as an upper bound on
-preference-specific movement rather than a clean estimate of it. This is the strongest
-available argument for running the positive control per target rather than inheriting
-it: on the primary target the same check passes with force.
-
-\paragraph{Scope.} Three targets with near-full coverage, one item type built from a
-single outcome set, one challenge per episode, English only. Three families are enough
-to show that the rank of the two adversarial arms does not transfer, and that two
-further invariants (a reason-elicitation arm indistinguishable from control; an
-immovable arithmetic control) are properties of particular targets. They are not enough
-to say what governs any of this, and family and reasoning stage are confounded across
-the three. The pool is weighted
-toward settled preferences by construction (Section~\ref{sec:pq2ident}), so the retention
-rates are not estimates of how often these models change their minds in general. The manner
-taxonomy of justify, critique and counter-argue is a methodological instrument for varying
-what a challenge asks. It is not a welfare category. While we observe changes in
-expressed preference stability, these measures are behavioural proxies and may not
-reflect corresponding changes in any internal state; we take no position on that.
-
-\paragraph{Future work.} More diverse models and preference domains; a control that
-forces a re-stated confidence; and white-box methods to test whether preference changes
-correspond to changes in internal representations.
+\paragraph{Scope and future work.} Three targets, one item type from a single outcome
+set, one challenge per episode, English only; family and reasoning stage are
+confounded across the targets. The pool is weighted toward settled preferences by
+construction (Section~\ref{sec:pq2ident}), so the retention rates are not estimates of
+how often these models change their minds in general, and the taxonomy of justify,
+critique and counter-argue is a methodological instrument, not a welfare category.
+Future work: more diverse models and preference domains, and a control that forces a
+re-stated confidence. Two further directions need a setup this one cannot supply. The
+study is black-box by construction --- the targets are closed-weight, and the
+instrument controls that keep the choice measure valid (per-call reasoning on,
+discrete choice rather than log-probabilities) rule out even token-level access --- so
+asking whether a retained preference corresponds to an unchanged internal state
+requires an open-weight target run locally. Separately, our arms vary what a challenge
+\emph{asks for} while holding its manner fixed; a warmth-styled challenge would test
+whether manner moves a stated preference the way content does, and writing one that
+changes the social framing without smuggling in new argument is the design problem it
+poses.

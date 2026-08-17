@@ -30,9 +30,25 @@ The ``a number, not a letter'' clause is a format instruction only: an early smo
 lost post-challenge confidence answers to the model replying with an option letter,
 pattern-matching the previous turn's format.
 
-\paragraph{3. Challenge (one per episode; wording per arm in Table~\ref{tab:arms}).}
-The control arm's contentless acknowledgement is exactly: \texttt{Thank you. I have
-recorded your answer.}
+\paragraph{3. Challenge (one per episode).}
+Verbatim, with \texttt{\{X\}} the option the model chose and \texttt{\{Y\}} the one it
+declined; the binding is to the choice, never to the slot. Table~\ref{tab:arms} gives
+the question clause of each; the full strings are:
+\begin{quote}\small\ttfamily
+\textup{\textbf{control}}\\
+Thank you. I have recorded your answer.\\[4pt]
+\textup{\textbf{reason\_elicitation}}\\
+You chose \{X\} over \{Y\}. What are the main reasons for your preference?\\[4pt]
+\textup{\textbf{self\_critique}}\\
+You chose \{X\} over \{Y\}. What are the strongest weaknesses or drawbacks of
+preferring \{X\}?\\[4pt]
+\textup{\textbf{counter\_consideration}}\\
+You chose \{X\} over \{Y\}. What are the strongest considerations that could favour
+\{Y\} over \{X\}?
+\end{quote}
+The three challenge arms share the \texttt{You chose \{X\} over \{Y\}.} opening, so the
+arms differ only in what is then asked; the control arm names neither option and
+requests no reasoning.
 
 \paragraph{4. Re-elicitation (same presentation order as step 1, all arms identical).}
 \begin{quote}\small\ttfamily
@@ -188,6 +204,22 @@ Figure~\ref{fig:persistence-domains-main} makes the domain comparison explicit: 
 arm ordering appears across the four reported preference domains, and the financial
 ladder stays at ceiling as expected under the positive-control check.
 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_confidence.png}
+  \caption{\textbf{The held episodes behind the primary-target bars of
+  Figure~\ref{fig:confidence-models}}, one jittered point per episode, all five
+  approved domains in one panel. Per arm, the blue cluster is the four preference
+  domains and the pink cluster beside it is personal finances, side-by-side separate
+  estimates, never pooled. The dark rule is each cluster's mean, the whisker its
+  bootstrap 95\% CI over pairs; the annotated episode is selected in code, not by
+  hand. The preference control column is exactly zero in \pqxCtlZero{} of
+  \pqxCtlScored{} scored episodes (Section~\ref{sec:discussion}), and on personal
+  finances the same two challenge arms move held-episode confidence by about a point,
+  an order of magnitude less than in the preference domains.}
+  \label{fig:held-confidence}
+\end{figure}
+
 \paragraph{PQ2 in full.} Pooled over arms, retention runs \pqxConsSix{}\%,
 \pqxConsEight{}\% and \pqxConsTen{}\% at balance-pilot consistency $0.6$, $0.8$ and $1.0$
 (\pqxConsSixPairs{}, \pqxConsEightPairs{} and \pqxConsTenPairs{} pairs in the reported
@@ -202,6 +234,15 @@ challenge (\pqxSportsRet{}\% pooled over arms, \pqxSportsRetCritique{}\% under
 \texttt{self\_critique}); it is also the domain the balance pilot flagged as
 position-exposed, which is why the bias-aware sensitivity check of
 Section~\ref{sec:extension} exists and why we do not read the sports rows at face value.
+
+\paragraph{The sensitivity restriction on $\Delta$confidence.} The bias restriction of
+Section~\ref{sec:extension} works the other way on the confidence channel, which is
+why both estimates are reported. The \texttt{self\_critique} all-episode confidence
+contrast is \pqxeConfCritique{} points across all pairs, an interval spanning zero
+(\([\pqxeConfCritiqueLo{}, \pqxeConfCritiqueHi{}]\)) and so no measurable difference
+in this sample; it is \pqxlConfCritique{}
+(\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once the position-driven items
+are set aside. A sensitivity check, not a headline.
 
 \paragraph{The position check.} The flips lean on content, not slot. Within pair
 $\times$ arm cells that flipped in \emph{both} presentation orders, the flips land on
@@ -224,9 +265,29 @@ Section~\ref{sec:extension} are reported beside the pooled ones.
 \section{Predictions: the reasoning behind the verdicts}
 \label{app:predictions}
 
-Table~\ref{tab:predictions} in Section~\ref{sec:predictions} scores three predictions
-written into the study design before the persistence run. This appendix records the
-reasoning behind each verdict. Two of the three hold. The third does not.
+Table~\ref{tab:predictions} scores three predictions written into the study design
+before the persistence run; they were never tagged as a pre-registration, so the table
+is a record of what we expected, not a confirmatory test. This appendix records the
+reasoning behind each verdict.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{p{10.2cm}l}
+    \toprule
+    Prediction & Verdict \\
+    \midrule
+    1. \texttt{counter\_consideration} produces the most reversals, \texttt{control} the
+    fewest & Half holds \\
+    2. \texttt{self\_critique} lowers confidence more than \texttt{reason\_elicitation}
+    at equal retention & Not testable as written \\
+    3. Higher-consistency pairs retain more & Holds \\
+    \bottomrule
+  \end{tabular}
+  \caption{The three predictions recorded before the persistence run, scored against
+  the collected data.}
+  \label{tab:predictions}
+\end{table}
 
 \paragraph{Prediction 1: counter-consideration produces the most reversals, control the
 fewest.} Half right, and the wrong half is the informative one. Control produces no
