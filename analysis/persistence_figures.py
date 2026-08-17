@@ -20,7 +20,7 @@ Every bar carries its bootstrap 95% CI over pairs, per the house rule that no
 figure ships without one.
 
 Emits:
-    paper/figures/persistence_domains.png       (--scope domains, + per further target)
+    paper/figures/persistence_domains_<target>.png  (--scope models, one per target)
     paper/figures/persistence_confidence.png    (--scope confidence)
     paper/figures/persistence_models_ext.png    (--scope models)
     paper/figures/persistence_confidence_models.png (--scope models)
@@ -198,7 +198,8 @@ def build_confidence_models() -> None:
     print(f"  wrote {out.relative_to(REPO)}")
 
 
-def build_domains(rows=None, out_name: str = "persistence_domains.png",
+def build_domains(rows=None,
+                  out_name: str = "persistence_domains_deepseek_v4_pro.png",
                   model_label: str | None = None) -> None:
     """Retention by arm across the four preference domains plus the positive control."""
     if rows is None:
@@ -372,10 +373,8 @@ if __name__ == "__main__":
         if sc == "models":
             build_models_ext()
             build_confidence_models()
-            # appendix versions of the domain split for the two further targets
+            # one domain-split figure per target, uniformly named
             for name, rows in _targets():
-                if name == "deepseek-v4-pro":
-                    continue
                 tag = name.replace(".", "").replace("-", "_")
                 build_domains(rows, f"persistence_domains_{tag}.png", name)
 
