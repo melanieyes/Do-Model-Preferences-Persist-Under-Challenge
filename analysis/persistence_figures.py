@@ -236,8 +236,8 @@ def build_domains(rows=None, out_name: str = "persistence_domains.png",
                        ha="right", fontsize=8)
     ax.set_ylim(0, 110)
     ax.set_ylabel("retention (%)", fontsize=9)
-    ax.set_title("Retention by domain and arm for the approved persistence set"
-                 + (f" — {model_label}" if model_label else ""),
+    ax.set_title("Retention by domain and arm"
+                 + (f" — {model_label}" if model_label else " — deepseek-v4-pro"),
                  fontsize=9.5, loc="left", color=INK)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
     ax.set_axisbelow(True)
@@ -245,7 +245,7 @@ def build_domains(rows=None, out_name: str = "persistence_domains.png",
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
     ax.legend(frameon=False, fontsize=7.5, ncol=4, columnspacing=1.0,
-              handlelength=1.1, loc="upper center", bbox_to_anchor=(0.5, 1.08))
+              handlelength=1.1, loc="lower right", bbox_to_anchor=(1.0, 1.02))
     fig.tight_layout()
     out = FIGS / out_name
     fig.savefig(out, bbox_inches="tight")
