@@ -4,8 +4,7 @@
 
 The reported persistence set is the five approved domains only: video games, sports, pop
 culture, science and technology, and personal finances as a separate manipulation check.
-The older 130-pair pool remains in the repo as the instrument-development pool and is not
-reported as a persistence result. The extension run contributes \pqxNEpisodes{} episodes on
+The run contributes \pqxNEpisodes{} episodes on
 \pqxNPairs{} pairs, four arms, three episodes per pair $\times$ arm cell, \pairModel{}.
 Every episode reached both elicitations; no refusals, no unparsed choices and no errors in
 the reported run.
@@ -49,34 +48,27 @@ sensitivity check are in Appendix~\ref{app:persistdetail}.
 \label{sec:pq3}
 
 Among episodes where the choice did \emph{not} move, confidence still falls relative to
-control: \pqHeldCritique{} points under \texttt{self\_critique}
-(\([\pqHeldCritiqueLo{}, \pqHeldCritiqueHi{}]\), \pqHeldCritiquePairs{} pairs) and
-\pqHeldCounter{} under \texttt{counter\_consideration}
-(\([\pqHeldCounterLo{}, \pqHeldCounterHi{}]\), \pqHeldCounterPairs{} pairs); dropping
-episodes that began at zero confidence leaves both unchanged (\pqHeldCritiqueNoZero{},
-\pqHeldCounterNoZero{}). This is retention with reduced confidence. The model keeps its
+control: \pqxeHeldCritique{} points under \texttt{self\_critique}
+(\([\pqxeHeldCritiqueLo{}, \pqxeHeldCritiqueHi{}]\), \pqxeHeldCritiquePairs{} pairs) and
+\pqxeHeldCounter{} under \texttt{counter\_consideration}
+(\([\pqxeHeldCounterLo{}, \pqxeHeldCounterHi{}]\), \pqxeHeldCounterPairs{} pairs); dropping
+episodes that began at zero confidence leaves the direction unchanged
+(\pqxeHeldCritiqueNoZero{}, \pqxeHeldCounterNoZero{}). This is retention with reduced
+confidence. The model keeps its
 answer and reports itself less sure of it. That is what the design was built to detect, and
 what a choice-only measure records as nothing happening. Averaged over \emph{all} episodes
-the changes are small and positive (\pqConfReason{}, \pqConfCritique{}, \pqConfCounter{}
-points vs.\ control), because held and flipped episodes move in opposite directions. We do
+the contrasts are \pqxeConfReason{}, \pqxeConfCritique{} and \pqxeConfCounter{}
+points vs.\ control, because held and flipped episodes move in opposite directions. We do
 not interpret the flipped half, for the reason given in the Limitations.
 Figure~\ref{fig:persistence} in Appendix~\ref{app:persistdetail} shows all three channels.
 
-\subsection{Approved five-domain persistence and the manipulation check}
+\subsection{The domain split and the manipulation check}
 \label{sec:extension}
 
-The reported persistence set is built from the five approved domains: video games, sports,
-pop culture, science and technology, and personal finances as a separate manipulation
-check. The original four domains are not reported as persistence results and remain in the
-repo as the instrument-development pool only. The extension run therefore uses
-\pqxNEpisodes{} episodes on \pqxNPairs{} pairs with the same four-arm protocol and the same
-balance-pilot covariate.
-
-The pattern replicates without qualification. On the four preference domains alone,
-\texttt{reason\_elicitation} differs from control by \pqxeDiffReason{} points with an
-interval of exactly \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\). \texttt{self\_critique}
-moves retention by \pqxeDiffCritique{} (\([\pqxeDiffCritiqueLo{}, \pqxeDiffCritiqueHi{}]\))
-and \texttt{counter\_consideration} by \pqxeDiffCounter{} (\([\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}]\)). Personal finances is a monotonic arithmetic ladder and is reported separately as the fifth approved domain: it is the manipulation check, not a pooled PQ estimate.
+The four preference domains carry the PQ estimates; personal finances is a monotonic
+arithmetic ladder and is reported separately as the fifth approved domain: it is the
+manipulation check, not a pooled PQ estimate. All \pqxNPairs{} piloted pairs enter with
+the same four-arm protocol and the same balance-pilot covariate.
 
 \begin{figure}[t]
   \centering
@@ -121,12 +113,12 @@ preferences and leave arithmetic alone. This is the discriminant half of the PQ1
 the half a preference-only design cannot supply.
 
 \paragraph{Position dependence is item-specific, not only model-specific.}
-Section~\ref{sec:validity} established that the order effect varies by model and that
-enabling reasoning suppresses it on \pairModel{}. The suppression is not uniform across
-items of that same model. In the balance pilot the sports pairs refused nothing, so the
+The instrument-development work that forced the reasoning control
+(Section~\ref{sec:controls}) also showed the suppression is not uniform across items.
+In the balance pilot the sports pairs refused nothing, so the
 failure mode flagged for them in advance did not occur. They returned a mean per-pair order
 gap of \pqxSportsBias{} with reasoning \emph{on}, against \pqxOtherBiasLo{}--%
-\pqxOtherBiasHi{} for the other extension domains. Half of them chose the same slot on four
+\pqxOtherBiasHi{} for the other preference domains. Half of them chose the same slot on four
 or five of five counterbalanced resamples. Sports is also the domain with the lowest
 retention under challenge (\pqxSportsRet{}\% pooled over arms, \pqxSportsRetCritique{}\%
 under \texttt{self\_critique}). That is exactly the confound, since an item answered by
@@ -134,30 +126,20 @@ slot looks like an item whose preference is easily moved.
 
 No pair was dropped for this. Selecting on a pilot result after seeing it would make the
 selection outcome-dependent, so the pilot order gap is carried as a per-pair covariate and
-the split is made at analysis time. Excluding the \pqxBiasDropPairs{} extension pairs at an
+the split is made at analysis time. Excluding the \pqxBiasDropPairs{} pairs at an
 order gap of \pqxBiasCut{} or above and keeping the remaining \pqxBiasKeepPairs{} moves
 \texttt{self\_critique} from \pqxeDiffCritique{} to \pqxlDiffCritique{} points and
-\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}. Both land
-back on the original domains' \pqxoDiffCritique{} and \pqxoDiffCounter{}. Part of the
-extension's apparent excess movement was the layout. Once it is removed the two independent
-samples agree. The restriction works the other way on $\Delta$confidence, which is why both
-are reported. The \texttt{self\_critique} confidence cost is \pqxeConfCritique{} points
-across all extension pairs, an interval spanning zero
-(\([\pqxeConfCritiqueLo{}, \pqxeConfCritiqueHi{}]\)) and so no measurable difference in this
-sample. It is \pqxlConfCritique{} (\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once
+\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}. Part of the
+apparent excess movement in the position-exposed items was the layout.
+The restriction works the other way on $\Delta$confidence, which is why both
+are reported. The \texttt{self\_critique} all-episode confidence contrast is
+\pqxeConfCritique{} points
+across all pairs, an interval spanning zero
+(\([\pqxeConfCritiqueLo{}, \pqxeConfCritiqueHi{}]\)) and so no measurable difference in
+this sample. It is \pqxlConfCritique{} (\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once
 the position-driven items are set aside. We read that conservatively and report it as a
 sensitivity check, not a headline. Position-driven items add noise to a between-arm
 contrast, so the pooled estimate understates rather than the restricted one overstating.
-
-\subsection{Cross-model replication in the appendix}
-\label{sec:crossmodel}
-
-The same arm pattern reproduces on a separate item pool across two further model families:
-\texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash}. The cross-model comparison is
-reported in Appendix~\ref{app:persistdetail}; the main text keeps this to a single pointer
-sentence because the persistence claim is the five-domain extension on \pairModel{}, and the
-arm pattern is checked elsewhere by model family rather than treated as a separate main-text
-result.
 
 \subsection{Predictions and outcomes}
 \label{sec:predictions}

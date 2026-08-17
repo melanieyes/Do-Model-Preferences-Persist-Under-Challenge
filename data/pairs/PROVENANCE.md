@@ -270,3 +270,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+## Retirement of the original pool (deviation #8, 2026-08-17)
+
+The original four domains and every file measured on their pool were removed
+from the repository under prereg/DEVIATIONS.md entry #8, on co-author
+direction: `candidates_{task_work,wellbeing,recreation,possessions}.jsonl`,
+`pilot_pool.jsonl`, `pairs_frozen.jsonl`, `balance_pilot.jsonl`,
+`balance_pilot_noreason.jsonl`, `balance_pilot_nano.jsonl`,
+`balance_pilot_gemini25.jsonl`, the four `gemini_*_{on,off}.jsonl` replication
+files, `label_schemes.jsonl`, `position_bias_diagnostic.json`, and
+`excluded_outcomes.jsonl`. No count or decision recorded in the sections above
+is revised by this; the files remain reachable in the git history (last commit
+containing all of them: `5739a5c`). The live pool is the five-category
+extension of deviation #6 only: `pilot_pool_ext.jsonl`,
+`balance_pilot_ext.jsonl`, `excluded_outcomes_ext.jsonl`, and the five
+extension `candidates_*.jsonl` files.

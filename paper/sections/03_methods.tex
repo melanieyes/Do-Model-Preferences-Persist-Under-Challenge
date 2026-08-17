@@ -12,8 +12,9 @@ predicted by how consistently the model held the preference beforehand (\textbf{
 whether stated confidence moves with the choice or independently of it (\textbf{PQ3});
 and whether either differs by domain (\textbf{PQ4}). They are lettered PQ to keep them
 distinct from the pre-registered questions of a different, unrun study. The reported
-persistence set is the five approved domains only; the older 130-pair pool remains in the
-repo as the separate instrument-development pool.
+persistence set is the five approved domains only; the earlier instrument-development
+pool has been retired from the repository, and the retirement is recorded in the
+project's deviation log.
 
 An episode is a fresh context: the model receives the forced-choice item, states a
 preference, reports confidence on a $0$--$100$ scale, receives \emph{one} challenge, and is
@@ -39,9 +40,10 @@ No arm instructs a change and none supplies an argument (Appendix~\ref{app:arms}
 
 Items come from the outcome set of \citet{mazeika2025utility} at file-level commit
 \texttt{\pairSourceCommit} (MIT licensed), option text verbatim, drawn within category from
-a seed fixed before any pair was inspected, with \pairExcluded{} outcomes removed first
-under two rules fixed in advance (Appendix~\ref{app:pairs}). The target is \pairModel{} at
-temperature \num{0.7}, the model the balance pilot and instrument analysis were run on, so
+a seed fixed before any pair was inspected, under two exclusion rules fixed in advance;
+several upstream categories fail them outright and were rejected before piloting
+(Appendix~\ref{app:pairs}). The target is \pairModel{} at
+temperature \num{0.7}, the model the balance pilot was run on, so
 the PQ2 covariate and the outcome come from the same model. No judge model is involved
 anywhere.
 
@@ -50,8 +52,9 @@ no-challenge elicitations; at $k=\pairK{}$ it takes only $1.0$, $0.8$ and $0.6$,
 three-level ordinal predictor and we report it as one. \textbf{Retention} is whether the
 re-elicited choice is the same \emph{option}, scored on the discrete choice because the
 answer token saturates once reasoning is on. Responses are classified as refusal, choice or
-unparsed, the refusal test running \emph{first}. That is the ordering whose absence caused the
-mis-scoring in Appendix~\ref{app:stability}. \textbf{$\Delta$Confidence} is post minus pre,
+unparsed, the refusal test running \emph{first} --- the ordering whose absence caused a
+mis-scoring defect during instrument development (deviation log, entry \#4a); a regression
+test now pins it. \textbf{$\Delta$Confidence} is post minus pre,
 identical wording at both elicitations; a response giving no number is unparsed and is not
 imputed. Estimates are means with percentile bootstrap 95\% CIs, \num{10000} resamples
 drawn \emph{over pairs}, since the episodes of a pair share its options and its position
@@ -61,10 +64,32 @@ in this sample, never as no effect.
 PQ2 needs how settled a preference was \emph{before} the challenge, carried in from the
 balance pilot as a per-pair covariate rather than re-elicited, so no pair contributes to
 both predictor and outcome through the same measurement. This is why the run uses all
-\pbN{} pairs rather than the \pairKept{} that survive the balance filter: that filter would
-remove almost all variation in the PQ2 predictor by construction and leave one domain
-viable of four. The cost is a pool weighted toward settled preferences, and we report it as
-such.
+\pqxNPairs{} piloted pairs rather than the \pqxKept{} that survive the balance filter:
+that filter would remove almost all variation in the PQ2 predictor by construction and
+leave no domain at the six-pair floor. The cost is a pool weighted toward settled
+preferences, and we report it as such.
+
+\subsection{Instrument controls carried into every episode}
+\label{sec:controls}
+
+A retention measure compares two elicitations of the same item. If the elicitation is
+answered by position rather than by content, retention measures whether the model returns
+to a place on the page, and every number in Section~\ref{sec:results} would be about
+layout. Five controls, each adopted after a documented failure during instrument
+development (deviation log, entries \#4--\#5), are enforced in every reported episode,
+and the runner refuses to start unless it can assert all of them. \textbf{(1)~Per-call
+reasoning is on for every elicitation}: with it suppressed, this target's forced-choice
+answer is frequently determined by slot rather than content. \textbf{(2)~Presentation
+order is fixed within an episode}, so a change of answer cannot be a change of layout;
+order is counterbalanced across episodes and balanced within every pair $\times$ arm
+cell. \textbf{(3)~The refusal test runs before any option-label search} in scoring,
+pinned by a regression test. \textbf{(4)~Retention is scored on the discrete choice},
+not on log-probabilities, which saturate once reasoning is on. \textbf{(5)~Refusals and
+unparsed responses are data}: logged per pair $\times$ arm, never dropped silently,
+never imputed. Because the position failure is item-specific as well as model-specific,
+the balance pilot additionally measures a per-item order gap that is carried as a
+covariate; the sports domain kept a mean gap of \pqxSportsBias{} with reasoning on
+(Section~\ref{sec:extension}), which is what the bias-aware sensitivity check splits on.
 
 \subsection{Human validation}
 \label{sec:humanval}

@@ -22,19 +22,9 @@
 \fancypagestyle{plain}{\fancyhf{}\fancyhead[R]{\small\thepage}%
   \renewcommand{\headrulewidth}{0pt}}
 
-% Generated numbers — do not hand-edit any of these files.
-%   python analysis/pair_balance_figures.py        -> pair_stats
-%   python analysis/position_bias_analysis.py      -> posbias_stats
-%   python analysis/extensions_figures.py          -> ext_stats
-%   python analysis/persistence_paper_stats.py     -> persist_stats
+% Generated numbers — do not hand-edit this file.
 %   python analysis/persistence_ext_stats.py       -> persist_ext_stats
-%   python analysis/persistence_models_stats.py    -> persist_models_stats
-\input{pair_stats}
-\input{posbias_stats}
-\input{ext_stats}
-\input{persist_stats}
 \input{persist_ext_stats}
-\input{persist_models_stats}
 
 \title{Do Model Preferences Persist Under Challenge?}
 
@@ -63,24 +53,25 @@ just stated leaves it untouched (\pqxeDiffReason{} points against a no-challenge
 CI [\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]). Asking it to find fault with that
 preference or to argue the opposing case moves retention by \pqxeDiffCritique{} and
 \pqxeDiffCounter{} points. No arm instructs a change or supplies an argument. Among the
-preferences that survive, confidence falls (\pqxeConfCritique{} and \pqxeConfCounter{}
-points) and the arm pattern is reproduced with a bias-aware sensitivity check. The positive
-control on personal finances does not move in \pqxfChallengeEps{} challenge episodes, so the
-five-domain persistence result is not being driven by the arithmetic ladder. All results are
-exploratory.
+preferences that survive, confidence falls (\pqxeHeldCritique{} and \pqxeHeldCounter{}
+points against control) and the arm pattern is reproduced with a bias-aware sensitivity
+check. The positive control on personal finances does not move in \pqxfChallengeEps{}
+challenge episodes, so the five-domain persistence result is not being driven by the
+arithmetic ladder. All results are exploratory.
 
-None of this was measurable as the items were first built. With reasoning suppressed the
-median item's answer is decided entirely by which slot an option occupies. Counterbalancing
-conceals that rather than fixing it. A purely position-driven item averages across orders to
-exactly $0.5$, the value that reads as perfect balance, so selecting on the averaged split
-selects \emph{for} the artefact. The run therefore holds reasoning on and order fixed within
-an episode. The effect is model-specific and item-specific, and the instrument-development
-pool is kept separate from the reported persistence set. The full cross-model check lives in
-Appendix~\ref{app:crossmodel}.
+None of this was measurable as the items were first built. Instrument-development work,
+recorded in the project's public deviation log, found that with per-call reasoning
+suppressed a forced-choice answer on this target is often decided by which slot an option
+occupies, and that counterbalancing conceals the failure rather than fixing it: a purely
+position-driven item averages across orders to exactly $0.5$, the value that reads as
+perfect balance. Every reported episode therefore holds reasoning on and presentation
+order fixed, and every item carries a piloted per-item order-gap covariate. The check
+earns its keep in the reported set itself: the sports domain kept a mean order gap of
+\pqxSportsBias{} \emph{with} the reasoning control in force, and the sensitivity analysis
+splits on exactly that covariate.
 \end{abstract}
 
 \input{sections/01_intro}
-\input{sections/02_validity}
 \input{sections/03_methods}
 \input{sections/04_results}
 \input{sections/06_discussion}

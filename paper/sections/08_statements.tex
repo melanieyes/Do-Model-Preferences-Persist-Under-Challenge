@@ -2,10 +2,12 @@
 \label{sec:code}
 
 Code, elicitation records, the sampling seed, the exclusion rules, the upstream file-level
-commit, and the full change log are released at [TK: repository URL]. Both persistence
-runs (\pqNEpisodes{} and \pqxNEpisodes{} episodes), the balance pilots and the
-position-bias records are committed in full, as are the analysis scripts that generate
-every number in this paper.
+commit, and the full change log are released at [TK: repository URL]. The persistence
+run (\pqxNEpisodes{} episodes) and its balance pilot are committed in full, as are the
+analysis scripts that generate every number in this paper. The earlier
+instrument-development pool and the runs on it were retired from the repository under
+deviation \#8 of the change log; the log entries recording what they showed remain, and
+the files themselves remain reachable in the repository history.
 
 One dataset is \textbf{not} recoverable. \texttt{data/raw/episodes\_deepseek.jsonl}, the
 30 episodes of an earlier pressure pilot, was deleted during a project cleanup before this
@@ -17,9 +19,9 @@ outside \texttt{data/raw/} for this reason.
 \section*{LLM usage statement}
 \label{sec:llmusage}
 
-\textbf{Models as subjects.} \pairModel{}, \texttt{gemini-2.5-flash} and
-\texttt{gemini-3.5-flash} are the objects of study, not tools used to produce it. Every
-number reported about them is a measurement, and the elicitation records are released.
+\textbf{Models as subjects.} \pairModel{} is the object of study, not a tool used to
+produce it. Every number reported about it is a measurement, and the elicitation records
+are released.
 
 \textbf{Models as assistance.} Claude Code (Claude Opus) wrote the persistence runner, the
 response-scoring module and its unit tests, the analysis and statistics scripts, and
@@ -30,12 +32,13 @@ the positive control. The authors made every judgment call about what the result
 what may not be claimed from them, and re-derived the reported numbers independently of the
 drafting.
 
-\textbf{One consequence worth recording.} The scoring defect described in
-Appendix~\ref{app:stability}, a label search running before the refusal check which
-mis-scored 290 of 626 responses on one model, was written by the assistant and was
+\textbf{One consequence worth recording.} A scoring defect found during instrument
+development --- a label search running before the refusal check, recorded in entry \#4a of
+the project's deviation log --- was written by the assistant and was
 \emph{not} caught by the assistant. It was found by manual inspection of raw model output,
-after which both affected models were re-run under the corrected classifier and only
-corrected numbers are reported. The defect is invisible on a model that answers with a bare
+after which the corrected classifier was adopted, a regression test now pins the ordering,
+and every number in this paper was scored under it. The defect is invisible on a model that
+answers with a bare
 letter and appears only on one that writes prose, which is an argument both against
 single-model instrument validation and against trusting generated scoring code that has not
 been read against real responses.

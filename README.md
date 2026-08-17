@@ -3,13 +3,15 @@
 Apart Research Digital Minds Sprint 2026 · Melanie Bui, Haein Kong
 
 Forced-choice preference elicitation is widely used to read values — and
-increasingly welfare — off language models. We show the instrument itself can
-answer by **position rather than content** when per-call reasoning is
-suppressed, that the size of this effect is **model-specific and not
-predictable in advance**, that **counterbalancing conceals it rather than
-fixing it**, and that one model declines the question entirely. With the
-elicitation repaired — reasoning enabled, presentation order held fixed
-within an episode — we run the persistence study the items were built for:
+increasingly welfare — off language models. Instrument-development work on an
+earlier item pool (recorded in `prereg/DEVIATIONS.md`; the pool itself is
+retired under deviation #8) found the instrument can answer by **position
+rather than content** when per-call reasoning is suppressed, and that
+**counterbalancing conceals it rather than fixing it**. With the elicitation
+repaired — reasoning enabled, presentation order held fixed within an
+episode, a per-item order-gap covariate carried from the pilot — we run the
+persistence study on five approved domains (video games, sports, pop
+culture, science & technology, plus a personal-finances positive control):
 **what a challenge asks for decides whether a stated preference survives
 it**. Asking the model to justify its choice is indistinguishable from not
 challenging it; asking it to critique that choice, or to argue the other
@@ -32,9 +34,9 @@ by the analysis scripts; none are hand-written anywhere in this repo.
 ## Reproduce
 
 ```bash
-python scripts/build_pairs.py
-python scripts/run_balance_pilot.py --target deepseek
-python scripts/run_persistence.py --k 3 --confirm
+python scripts/build_pairs.py --ext
+python scripts/run_balance_pilot.py --target deepseek --ext
+python scripts/run_persistence.py --ext --k 3 --confirm
 python analysis/persistence_analysis.py
 ```
 

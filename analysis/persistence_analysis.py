@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Preference-persistence analysis — PQ1-PQ4 (DEVIATIONS #5, EXPLORATORY).
+"""Preference-persistence analysis — PQ1-PQ4 (DEVIATIONS #6/#8, EXPLORATORY).
 
     PQ1  retention rate by arm
     PQ2  retention against the pilot consistency covariate
@@ -22,21 +22,22 @@ as "no effect" (CLAUDE.md).
 Refusals and unparsed responses are reported as rates, never dropped silently and
 never imputed — a missing Delta-confidence is a missing value, not a zero.
 
-    python analysis/persistence_analysis.py data/persistence/persistence_deepseek_k3.jsonl
-    python analysis/persistence_analysis.py --combined     # original + extension, side by side
+    python analysis/persistence_analysis.py data/persistence/persistence_deepseek_ext.jsonl
+    python analysis/persistence_analysis.py --sets     # preference domains beside the bias split
 
---combined (DEVIATIONS #6) reads the original k3 run and the extension run together and
-reports PQ1-PQ4 for the original four domains beside the pooled set. Two rules govern it:
+The reported study is the five-domain set of DEVIATIONS #6/#8: four preference domains
+plus `finances_control`. The original four domains and their pool were retired from the
+repository under DEVIATIONS #8 and are not analysed here. Two rules govern --sets:
 
   * `finances_control` is a POSITIVE CONTROL, not a domain. It is a monotonic money
     ladder, so ceiling retention there is the expected and correct result. It is
     reported in its own block as a manipulation check and is NEVER pooled into a PQ
-    estimate. The pooled column is therefore EIGHT preference domains, not nine.
-  * Extension estimates are reported twice, with and without pairs whose pilot
-    position bias is >= 0.5. Sports returned a mean of 0.600 with reasoning on, so
-    part of its apparent wavering is slot-driven. No pair is dropped from collection
-    for this - dropping after seeing the pilot would be outcome-dependent selection -
-    so the split is made here, at analysis time, and both columns are shown.
+    estimate. The preference-domain column is therefore FOUR domains, not five.
+  * Estimates are reported twice, with and without pairs whose pilot position bias
+    is >= 0.5. Sports returned a mean of 0.600 with reasoning on, so part of its
+    apparent wavering is slot-driven. No pair is dropped from collection for this -
+    dropping after seeing the pilot would be outcome-dependent selection - so the
+    split is made here, at analysis time, and both columns are shown.
 """
 
 from __future__ import annotations
@@ -60,15 +61,13 @@ MIN_CELL = 15          # below this a cell is reported as underpowered, per CLAU
 
 UNDERPOWERED = "no measurable difference in this sample"
 
-# --- domain sets for --combined (DEVIATIONS #6) ------------------------------
-ORIGINAL_DOMAINS = ("task_work", "wellbeing", "recreation", "possessions")
+# --- domain sets (DEVIATIONS #6, scope fixed by #8) ---------------------------
 EXTENSION_DOMAINS = ("video_games", "sports", "pop_culture", "sci_tech")
 # Not a domain. A monotonic money ladder used as a manipulation check; ceiling
 # retention here is the expected, correct result. Never enters a PQ estimate.
 POSITIVE_CONTROL = "finances_control"
 BIAS_CUTOFF = 0.5      # pilot position bias at or above this is slot-driven enough to split on
 
-K3_FILE = "data/persistence/persistence_deepseek_k3.jsonl"
 EXT_FILE = "data/persistence/persistence_deepseek_ext.jsonl"
 
 
@@ -155,15 +154,13 @@ def load_run(path: Path) -> tuple[list[dict], dict]:
     return rows, meta
 
 
-def combined_main() -> None:
-    """PQ1-PQ4 over the original four domains and the pooled set, side by side."""
-    k3_path, ext_path = (ROOT / K3_FILE), (ROOT / EXT_FILE)
-    for p in (k3_path, ext_path):
-        if not p.exists():
-            raise SystemExit(f"missing run file: {p.relative_to(ROOT)}")
-    k3_rows, k3_meta = load_run(k3_path)
+def sets_main() -> None:
+    """PQ1-PQ4 over the four preference domains, beside the bias-restricted set."""
+    ext_path = ROOT / EXT_FILE
+    if not ext_path.exists():
+        raise SystemExit(f"missing run file: {ext_path.relative_to(ROOT)}")
     ext_rows, ext_meta = load_run(ext_path)
-    rows = k3_rows + ext_rows
+    rows = ext_rows
     scored = [r for r in rows if r.get("retained") is not None]
 
     def in_set(r, doms):
@@ -174,20 +171,14 @@ def combined_main() -> None:
         return b is not None and b < BIAS_CUTOFF
 
     # Column definitions. finances_control appears in NO pooled column.
-    POOLED = ORIGINAL_DOMAINS + EXTENSION_DOMAINS
     COLS = [
-        ("original 4", lambda r: in_set(r, ORIGINAL_DOMAINS)),
-        ("all 8 pooled", lambda r: in_set(r, POOLED)),
-        ("extension 4", lambda r: in_set(r, EXTENSION_DOMAINS)),
-        ("ext bias<0.5", lambda r: in_set(r, EXTENSION_DOMAINS) and low_bias(r)),
+        ("preference 4", lambda r: in_set(r, EXTENSION_DOMAINS)),
+        ("bias<0.5", lambda r: in_set(r, EXTENSION_DOMAINS) and low_bias(r)),
     ]
 
     print("=" * 110)
-    print("PREFERENCE PERSISTENCE — COMBINED, EXPLORATORY (DEVIATIONS #5 + #6)")
-    print(f"  original run    {k3_path.relative_to(ROOT)}")
-    print(f"                  {len(k3_rows)} episodes, schema-valid {k3_meta['_n_valid']}, "
-          f"model {k3_meta.get('model')}, reasoning {k3_meta.get('reasoning')}")
-    print(f"  extension run   {ext_path.relative_to(ROOT)}")
+    print("PREFERENCE PERSISTENCE — EXPLORATORY (DEVIATIONS #6 + #8)")
+    print(f"  run             {ext_path.relative_to(ROOT)}")
     print(f"                  {len(ext_rows)} episodes, schema-valid {ext_meta['_n_valid']}, "
           f"model {ext_meta.get('model')}, reasoning {ext_meta.get('reasoning')}")
     print(f"  bootstrap       {N_BOOT:,} resamples over PAIRS (cluster), seed {SEED}")
@@ -195,19 +186,17 @@ def combined_main() -> None:
     print("=" * 110)
 
     print("\nDOMAIN SETS")
-    print(f"  original 4     {', '.join(ORIGINAL_DOMAINS)}")
-    print(f"  extension 4    {', '.join(EXTENSION_DOMAINS)}")
-    print(f"  all 8 pooled   the two above; this is EIGHT preference domains, not nine —")
+    print(f"  preference 4   {', '.join(EXTENSION_DOMAINS)}")
     print(f"                 {POSITIVE_CONTROL} is a positive control and is held out of")
     print(f"                 every pooled estimate, reported separately below.")
-    print(f"  ext bias<0.5   extension 4, excluding pairs with pilot position bias >= "
+    print(f"  bias<0.5       preference 4, excluding pairs with pilot position bias >= "
           f"{BIAS_CUTOFF}")
     ctrl_rows = [r for r in scored if r["domain"] == POSITIVE_CONTROL]
     nb = sum(1 for r in scored if in_set(r, EXTENSION_DOMAINS)
              and r.get("pilot_position_bias") is None)
     drop = {p for r in scored if in_set(r, EXTENSION_DOMAINS) and not low_bias(r)
             for p in [r["pair_id"]]}
-    print(f"\n  extension pairs excluded at bias >= {BIAS_CUTOFF}: {len(drop)}"
+    print(f"\n  pairs excluded at bias >= {BIAS_CUTOFF}: {len(drop)}"
           f"   (pairs with no bias recorded: {nb} episodes)")
     print(f"  {POSITIVE_CONTROL} episodes held out of all pooled columns: {len(ctrl_rows)}")
 
@@ -302,19 +291,18 @@ def combined_main() -> None:
 
     # --- PQ4 ------------------------------------------------------------------
     section("PQ4 — retention and Delta-confidence by domain (all arms pooled)")
-    print(f"  {'domain':<18} {'set':<11} {'retention %':<26} {'Delta-confidence':<26} "
+    print(f"  {'domain':<18} {'retention %':<26} {'Delta-confidence':<26} "
           f"{'mean pilot pos.bias':>19}")
-    for dom in list(ORIGINAL_DOMAINS) + list(EXTENSION_DOMAINS):
+    for dom in EXTENSION_DOMAINS:
         sel = lambda r, d=dom: r["domain"] == d
         ret = cluster_bootstrap(group(scored, sel, lambda r: r["retained"]))
         dc = cluster_bootstrap(group(scored, sel, dconf_of))
         bs = [r["pilot_position_bias"] for r in scored
               if r["domain"] == dom and r.get("pilot_position_bias") is not None]
-        tag = "original" if dom in ORIGINAL_DOMAINS else "extension"
         mb = f"{np.mean(bs):.3f}" if bs else "--"
-        print(f"  {dom:<18} {tag:<11} {short(*ret, pct=True):<26} {short(*dc):<26} {mb:>19}")
+        print(f"  {dom:<18} {short(*ret, pct=True):<26} {short(*dc):<26} {mb:>19}")
 
-    section("PQ4 — retention by arm, extension domains only")
+    section("PQ4 — retention by arm, preference domains")
     print(f"  {'domain':<32}" + "".join(f"{a[:18]:<20}" for a in ARMS))
     for dom in EXTENSION_DOMAINS:
         line = f"  {dom:<32}"
@@ -351,7 +339,7 @@ def combined_main() -> None:
     section("COVERAGE — refusals and unparsed are data, never dropped, never imputed")
     print(f"  {'run':<12} {'arm':<24} {'N':>5} {'refuse_pre':>11} {'refuse_post':>12} "
           f"{'conf_post_NA':>13}")
-    for name, rs in (("original", k3_rows), ("extension", ext_rows)):
+    for name, rs in (("extension", ext_rows),):
         for arm in ARMS:
             s = [r for r in rs if r["arm"] == arm]
             if not s:
@@ -372,8 +360,8 @@ def combined_main() -> None:
 
     print()
     print("=" * 110)
-    print("EXPLORATORY (DEVIATIONS #5 and #6). Both runs were executed after pilot data")
-    print("was seen and both pools are unfiltered. Nothing here may be reported as")
+    print("EXPLORATORY (DEVIATIONS #6 and #8). The run was executed after pilot data")
+    print("was seen and the pool is unfiltered. Nothing here may be reported as")
     print(f'confirmatory. Cells marked * have n < {MIN_CELL}: "{UNDERPOWERED}" — never')
     print(f'"no effect". {POSITIVE_CONTROL} is a manipulation check and is excluded from')
     print("every pooled PQ estimate above.")
@@ -381,17 +369,17 @@ def combined_main() -> None:
 
 
 def main() -> None:
-    if "--combined" in sys.argv:
-        return combined_main()
+    if "--sets" in sys.argv:
+        return sets_main()
     path = Path(sys.argv[1] if len(sys.argv) > 1
-                else ROOT / "data/persistence/persistence_deepseek_k3.jsonl").resolve()
+                else ROOT / EXT_FILE).resolve()
     rel = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
     n_valid = validate_persistence_file(path)      # hard fail before anything is read
     rows = [json.loads(x) for x in path.read_text().splitlines() if '"episode_id"' in x]
     meta = json.loads(path.read_text().splitlines()[0])
 
     print("=" * 78)
-    print("PREFERENCE PERSISTENCE — EXPLORATORY (DEVIATIONS #5)")
+    print("PREFERENCE PERSISTENCE — EXPLORATORY (DEVIATIONS #6)")
     print(f"  file            {rel}")
     print(f"  model           {meta.get('model')}   reasoning {meta.get('reasoning')}")
     print(f"  episodes        {len(rows)}   schema-valid {n_valid}")
@@ -560,7 +548,7 @@ def main() -> None:
 
     print()
     print("=" * 78)
-    print("All estimates above are EXPLORATORY (DEVIATIONS #5): the run was executed")
+    print("All estimates above are EXPLORATORY (DEVIATIONS #6): the run was executed")
     print("after pilot data was seen and the pool is unfiltered. Nothing here may be")
     print("reported as confirmatory. Cells marked UNDERPOWERED are described as")
     print(f'"{UNDERPOWERED}" — never as "no effect".')

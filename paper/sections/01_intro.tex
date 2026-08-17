@@ -9,15 +9,17 @@ behavioural analogues such as ending an interaction
 reading of something the model has. We ask a prior question. Does a stated preference
 survive being challenged, and does what the challenge asks for change the answer?
 
-The question was not measurable as the items were first built. With per-call reasoning
-suppressed, the median pair's answer on \pairModel{} is decided entirely by which slot an
-option occupies. Counterbalancing conceals the failure rather than fixing it. A pair
-answered purely by slot averages across orders to exactly $0.5$, the value that reads as
-perfect balance, so selecting items on the order-averaged split selects \emph{for} the
-artefact. The repair is two controls enforced in every episode. Per-call reasoning stays
-on, and presentation order is fixed within an episode. The failure is model-specific and
-item-specific, so the check has to be run per model and per item. We keep this
-instrument-development pool separate from the reported persistence set.
+The question was not measurable as the items were first built. Instrument-development
+work on an earlier item pool, recorded in the project's public deviation log, found that
+with per-call reasoning suppressed a forced-choice answer on \pairModel{} is often decided
+by which slot an option occupies, and that counterbalancing conceals the failure rather
+than fixing it: a pair answered purely by slot averages across orders to exactly $0.5$,
+the value that reads as perfect balance, so selecting items on the order-averaged split
+selects \emph{for} the artefact. The repair is two controls enforced in every reported
+episode --- per-call reasoning stays on, and presentation order is fixed within an episode
+--- plus a piloted per-item order-gap covariate, because the failure is item-specific as
+well as model-specific (Section~\ref{sec:controls}). The instrument-development pool
+itself is retired and is not part of the reported persistence set.
 
 With the instrument repaired, what the challenge asks for decides. Across
 \pqxNEpisodes{} episodes on \pqxNPairs{} pairs from the five approved persistence domains,
@@ -28,8 +30,7 @@ case moves it by \pqxeDiffCounter{}. No arm instructs a change and none supplies
 argument. Among the preferences that survive, confidence falls and the bias-aware
 sensitivity check remains the relevant estimate. Personal finances is a separate
 manipulation check, not a pooled preference domain, and it does not move in
-\pqxfChallengeEps{} challenge episodes. The arm pattern reproduces on separate item pools
-across two additional model families; the cross-model check is in Appendix~\ref{app:crossmodel}.
+\pqxfChallengeEps{} challenge episodes.
 
 Nothing here was pre-specified. Everything is exploratory, and its value is as a
 hypothesis for a pre-specified replication. All elicitation records, the seed, the

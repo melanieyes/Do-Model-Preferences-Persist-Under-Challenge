@@ -233,8 +233,12 @@ def main() -> None:
     ap.add_argument("--target", default="deepseek",
                     help="target key from configs/default.yaml (deepseek, gemini35, ...)")
     args = ap.parse_args()
-    pool_path = POOL_EXT if args.ext else POOL
-    balance_path = BALANCE_EXT if args.ext else BALANCE
+    if not args.ext:
+        raise SystemExit(
+            "The original pool was retired from the repository under DEVIATIONS #8; "
+            "only the five-domain extension pool remains. Run with --ext.")
+    pool_path = POOL_EXT
+    balance_path = BALANCE_EXT
 
     cfg = yaml.safe_load((ROOT / "configs" / "default.yaml").read_text())
     try:
