@@ -1,61 +1,43 @@
 \section{Introduction}
 \label{sec:intro}
 
-A growing body of work reads something about a language model off its stated preferences:
-utility models fitted to pairwise choices \citep{mazeika2025utility}, welfare research
-working from self-reported affect \citep{anthropic2026emotions, anthropic2025card} or from
-behavioural analogues such as ending an interaction
-\citep{ensign2025bail, lesswrong2026bail}. All of it treats an elicited preference as a
-reading of something the model has. If those readings are to carry weight --- in
-evaluations, in value analyses, or in welfare arguments --- it matters whether the
-preference survives the mildest scrutiny a deployed model actually meets: a follow-up
-question. We ask that prior question. Our research questions, lettered PQ to keep them
-distinct from the pre-registered questions of a different, unrun study recorded in the
-project's change log, are:
+A growing body of work reads something about a language model off its stated
+preferences: utility models fitted to pairwise choices \citep{mazeika2025utility}, and
+welfare research working from self-reported affect or from behavioural analogues such
+as ending an interaction \citep{anthropic2026emotions, anthropic2025endconv,
+ensign2025bail, lesswrong2025bail}. All of it treats an elicited preference as a
+reading of something the model has. If those readings are to carry weight, the
+preference should at least survive the mildest scrutiny a deployed model actually
+meets: a follow-up question. We test that prior question. Our research questions are lettered PQ to keep them distinct
+from the pre-registered questions of a different, unrun study recorded in the
+project's change log:
 
 \begin{itemize}
-  \item \textbf{PQ1.} Once a model expresses a preference, does it survive being
-    challenged --- and do different types of challenge produce different degrees of
-    change?
+  \item \textbf{PQ1.} Does an expressed preference survive being challenged, and do
+    different challenge types produce different degrees of change?
   \item \textbf{PQ2.} Is retention predicted by how consistently the model held the
     preference before any challenge?
-  \item \textbf{PQ3.} Do challenges move stated confidence even when the preference
-    itself is retained?
+  \item \textbf{PQ3.} Do challenges move stated confidence even when the preference is
+    retained?
   \item \textbf{PQ4.} Does stability under challenge vary across preference domains?
 \end{itemize}
 
-Together these test not only whether expressed model preferences persist, but whether
-their stability depends systematically on how they are challenged and what the
-preferences concern.
+Our contributions: (1)~an evaluation framework for preference persistence, built from
+fresh-context episodes, forced-choice elicitation with self-reported confidence, four
+challenge arms that neither instruct a change nor supply an argument, and an
+arithmetic positive control that separates preference movement from generic
+answer-switching; (2)~the finding that persistence depends strongly on challenge
+type, with justification leaving preferences essentially unchanged while self-critique
+and counter-consideration cut retention roughly in half on the primary target, an
+asymmetry that reproduces on two further model families; (3)~evidence that the
+pattern appears across preference domains, and that the positive control itself is
+model-specific.
 
-Our main contributions are:
-\begin{enumerate}
-  \item An evaluation framework for preference persistence under challenge: fresh-context
-    episodes, forced-choice elicitation with self-reported confidence, four challenge
-    arms that neither instruct a change nor supply an argument, and an arithmetic
-    positive control that separates preference movement from generic answer-switching.
-  \item The finding that persistence depends strongly on challenge \emph{type}: asking a
-    model to justify its choice leaves preferences essentially unchanged, while
-    self-critique and considering the alternative cut retention roughly in half on the
-    primary target --- with the asymmetry reproducing on two further model families and
-    the rank of the two adversarial arms differing between them.
-  \item Evidence that the pattern appears across diverse preference domains, and that the
-    positive control itself is model-specific: one further target flips arithmetic under
-    the same challenges, which bounds what a persistence result may claim on it.
-\end{enumerate}
-
-The question was not measurable as the items were first built. Instrument-development
-work on an earlier item pool, recorded in the project's public deviation log, found that
-with per-call reasoning suppressed a forced-choice answer on \pairModel{} is often decided
-by which slot an option occupies, and that counterbalancing conceals the failure rather
-than fixing it: a pair answered purely by slot averages across orders to exactly $0.5$,
-the value that reads as perfect balance, so selecting items on the order-averaged split
-selects \emph{for} the artefact. The repair is two controls enforced in every reported
-episode --- per-call reasoning stays on, and presentation order is fixed within an episode
---- plus a piloted per-item order-gap covariate, because the failure is item-specific as
-well as model-specific (Section~\ref{sec:controls}). The instrument-development pool
-itself is retired and is not part of the reported persistence set.
-
-Nothing here was pre-specified. Everything is exploratory, and its value is as a
-hypothesis for a pre-specified replication. All elicitation records, the seed, the
-exclusion rules and the upstream file-level commit are released.
+The question was not measurable as the items were first built: with per-call
+reasoning suppressed, a forced-choice answer on \pairModel{} is often decided by which
+slot an option occupies, and counterbalancing conceals the failure, since a pair
+answered purely by slot averages across orders to exactly $0.5$. Section~\ref{sec:controls}
+lists the controls this forced into every episode. Nothing here was pre-specified:
+everything is exploratory, its value is as a hypothesis for a pre-specified
+replication, and all elicitation records, the seed, the exclusion rules and the
+upstream file-level commit are released.

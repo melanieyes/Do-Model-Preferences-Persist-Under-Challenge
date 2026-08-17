@@ -1,22 +1,16 @@
 \section{Related work}
 \label{sec:related}
 
-The preference-elicitation literature we build on reads utility models off pairwise
-forced choices \citep{mazeika2025utility}; the welfare literature reads affect or
-behavioural analogues off self-report and interaction-ending behaviour
-\citep{anthropic2026emotions, anthropic2025card, ensign2025bail, lesswrong2026bail}.
-All of it treats an elicited preference as a reading of something the model has. The
-persistence question sits between the two: it asks whether a stated preference survives
-being challenged, which treats the elicited preference as the object of measurement
-rather than as a reading of an underlying value. Where one-shot elicitation asks
-\emph{what} a model prefers, persistence under challenge asks how firmly --- and our
-results show the answer depends on what the challenge asks for, information a single
-elicitation cannot supply.
-
-Order effects in multiple-choice answering and in LLM-as-judge evaluation are
-documented \citep{zheng2024selectors, pezeshkpour2023order, shi2025judging}, and the
-standard mitigations are counterbalancing and averaging over permutations. We treat the
-effect as a threat to be controlled per item rather than averaged away: averaging over
-orders conceals a position-driven item instead of repairing it
-(Section~\ref{sec:controls}), so every reported episode holds reasoning on and
-presentation order fixed, and every item carries a measured order-gap covariate.
+The preference-elicitation literature reads utility models off pairwise forced choices
+\citep{mazeika2025utility}; the welfare literature reads affect or behavioural
+analogues off self-report and interaction-ending behaviour
+\citep{anthropic2026emotions, anthropic2025endconv, ensign2025bail, lesswrong2025bail}.
+Both treat an elicited preference as a reading of something the model has. Persistence
+under challenge sits between the two: where one-shot elicitation asks what a model
+prefers, it asks how firmly, information a single elicitation cannot supply. Order
+effects in
+multiple-choice answering and LLM-as-judge evaluation are documented
+\citep{zheng2024selectors, pezeshkpour2023order, shi2025judging}; the standard
+mitigations are counterbalancing and averaging over permutations. We instead control
+the effect per item, because averaging over orders conceals a position-driven item
+rather than repairing it (Section~\ref{sec:controls}).
