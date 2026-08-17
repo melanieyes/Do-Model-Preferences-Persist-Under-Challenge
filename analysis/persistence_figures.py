@@ -97,6 +97,43 @@ FINANCE_COLOR = "#e9a8c4"    # soft pink: the positive control, distinct from ev
 MODEL_COLOUR = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#e287ae",
                 "gemini-2.5-flash": "#4a9c6d"}
 
+# One font scale for every figure in the paper, so no two panels disagree about how
+# big a tick label is. Sizes are in canvas points and the canvases here are ~11-12in
+# wide, which LaTeX renders into a ~6.3in text column: an on-canvas point lands at
+# roughly 0.55pt on the page, so these are ~1.9x the on-page sizes we want. Keep them
+# in that ratio -- undersized figure text is the one defect the submission template
+# calls out by name.
+FS_TITLE = 15.0     # panel title
+FS_AXIS = 15.0      # axis label
+FS_TICK = 14.5      # tick labels
+FS_VALUE = 13.5     # per-bar point estimate (every bar in every figure carries one)
+FS_VALUE_DENSE = 11.5   # same, in the 20-bar domain panel where they sit closer
+FS_LEGEND = 13.0
+FS_NOTE = 12.0      # secondary annotation (CI text, n, callouts)
+
+
+def _value_label(ax, x, point, lo, hi, fmt, *, size=FS_VALUE, pad=2.0):
+    """Write one bar's point estimate at the OUTER end of the bar.
+
+    One helper for every panel, so the labels cannot drift apart in weight or
+    colour between figures. Three choices worth stating, because the obvious
+    alternatives all read worse at print size:
+
+    outer end, never inside the bar -- above a positive bar, below a negative one.
+      Inside-the-bar placement has to survive both a saturated fill and a 10%-tall
+      bar, and cannot do both.
+    regular weight in secondary ink, not bold black. A domain panel carries twenty
+      of these; bold turns them into the loudest thing on the plate, louder than
+      the bars they annotate.
+    horizontal, never rotated. Upright digits are legible but read as clutter.
+      Where they would collide, the fix is a smaller size (FS_VALUE_DENSE), not a
+      rotation.
+    """
+    up = point >= 0
+    y = (max(hi, point) + pad) if up else (min(lo, point) - pad)
+    ax.text(x, y, fmt.format(point), ha="center", va="bottom" if up else "top",
+            fontsize=size, color=INK_2, zorder=4)
+
 
 def _targets():
     from analysis.persistence_models_ext_stats import TARGETS, load_merged
@@ -122,8 +159,7 @@ def _model_arm_panel(ax, targets, domains, value, *, pct, label_fmt, label_gap,
                linewidth=0.6, zorder=2, label=name if legend else None)
         for x, p_, lo, hi in zip(xs, pts, los, his):
             ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
-            ax.text(x, min(lo, p_) - label_gap, label_fmt.format(p_), ha="center",
-                    va="top", fontsize=7.3, color=INK, fontweight="bold", zorder=4)
+            _value_label(ax, x, p_, lo, hi, label_fmt, pad=label_gap)
     ax.set_xticks(range(len(ARMS)))
     ax.set_axisbelow(True)
     ax.yaxis.grid(True, color=GRID, linewidth=0.7)
@@ -140,28 +176,30 @@ def build_models_ext() -> None:
     targets = [(n, [r for r in rows if r.get("retained") is not None])
                for n, rows in _targets()]
     fig, (ax, axf) = plt.subplots(
-        2, 1, figsize=(11.2, 6.6), sharex=True,
-        gridspec_kw={"height_ratios": [2.1, 1.0], "hspace": 0.14})
+        2, 1, figsize=(11.6, 4.2), sharex=True,
+        gridspec_kw={"height_ratios": [2.1, 1.0], "hspace": 0.34})
     ret = lambda r: r["retained"]
     _model_arm_panel(ax, targets, EXTENSION_DOMAINS, ret, pct=True,
-                     label_fmt="{:.0f}", label_gap=3.5, legend=True)
+                     label_fmt="{:.0f}", label_gap=2.0, legend=True)
     ax.set_ylim(0, 118)
     ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_ylabel("retention (%)", fontsize=9)
-    ax.set_title("(a) Four preference domains: preference retention by challenge "
-                 "type across models (same 80 pairs, same arms, same controls)",
-                 fontsize=9.5, loc="left", color=INK)
-    ax.legend(fontsize=7.6, frameon=False, loc="upper right", ncol=3,
-              handlelength=1.1, columnspacing=1.0)
+    ax.set_ylabel("retention (%)", fontsize=FS_AXIS)
+    # Panel titles name the panel and nothing more: the caption in the paper carries
+    # the pairs, arms and controls, and a title long enough to repeat them leaves the
+    # legend nowhere to sit but on top of the value labels.
+    ax.set_title("(a) Four preference domains", fontsize=FS_TITLE, loc="left",
+                 color=INK)
+    ax.legend(fontsize=FS_LEGEND, frameon=False, loc="lower right",
+              bbox_to_anchor=(1.0, 1.01), ncol=3, handlelength=1.1,
+              columnspacing=1.4)
     _model_arm_panel(axf, targets, (POSITIVE_CONTROL,), ret, pct=True,
-                     label_fmt="{:.0f}", label_gap=6.0)
-    axf.set_ylim(0, 118)
+                     label_fmt="{:.0f}", label_gap=2.0)
+    axf.set_ylim(0, 128)     # shorter panel, so the label needs more of the range
     axf.set_yticks([0, 50, 100])
-    axf.set_ylabel("retention (%)", fontsize=9)
-    axf.set_title("(b) Personal finances (check item, never pooled into (a)): "
-                  "arithmetic holds at ceiling except on gpt-5.4-nano",
-                  fontsize=9.5, loc="left", color=INK)
-    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
+    axf.set_ylabel("retention (%)", fontsize=FS_AXIS)
+    axf.set_title("(b) Personal finances — check item, never pooled into (a)",
+                  fontsize=FS_TITLE, loc="left", color=INK)
+    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=FS_TICK)
     fig.tight_layout()
     out = FIGS / "persistence_models_ext.png"
     fig.savefig(out, bbox_inches="tight")
@@ -179,24 +217,28 @@ def build_confidence_models() -> None:
     targets = [(n, [r for r in rows if r.get("retained") is True])
                for n, rows in _targets()]
     fig, (ax, axf) = plt.subplots(
-        2, 1, figsize=(11.2, 6.4), sharex=True,
-        gridspec_kw={"height_ratios": [1.9, 1.0], "hspace": 0.16})
+        2, 1, figsize=(11.2, 5.0), sharex=True,
+        gridspec_kw={"height_ratios": [1.9, 1.0], "hspace": 0.42})
     _model_arm_panel(ax, targets, EXTENSION_DOMAINS, dconf, pct=False,
-                     label_fmt="{:+.1f}", label_gap=0.55, legend=True)
+                     label_fmt="{:+.1f}", label_gap=0.4, legend=True)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
-    ax.set_ylabel(r"$\Delta$confidence, held episodes", fontsize=9)
-    ax.set_title("(a) Four preference domains: confidence change among retained "
-                 "preferences, by model (per-arm means)",
-                 fontsize=9.5, loc="left", color=INK)
-    ax.legend(fontsize=7.6, frameon=False, loc="lower left", ncol=1,
-              handlelength=1.1)
+    ax.margins(y=0.18)       # room for labels at both ends; bars run both signs
+    ax.set_title("(a) Four preference domains", fontsize=FS_TITLE, loc="left",
+                 color=INK)
+    ax.legend(fontsize=FS_LEGEND, frameon=False, loc="lower right",
+              bbox_to_anchor=(1.0, 1.01), ncol=3, handlelength=1.1,
+              columnspacing=1.4)
     _model_arm_panel(axf, targets, (POSITIVE_CONTROL,), dconf, pct=False,
-                     label_fmt="{:+.1f}", label_gap=0.55)
+                     label_fmt="{:+.1f}", label_gap=0.4)
     axf.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
-    axf.set_ylabel(r"$\Delta$confidence, held", fontsize=9)
-    axf.set_title("(b) Personal finances (check item, never pooled into (a))",
-                  fontsize=9.5, loc="left", color=INK)
-    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
+    axf.margins(y=0.24)
+    axf.set_title("(b) Personal finances — check item, never pooled into (a)",
+                  fontsize=FS_TITLE, loc="left", color=INK)
+    # One shared y label: two stacked panels this short cannot each carry the full
+    # phrase without the two labels colliding in the middle of the plate.
+    fig.supylabel(r"$\Delta$confidence among held episodes", fontsize=FS_AXIS,
+                  color=INK_2)
+    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=FS_TICK)
     fig.tight_layout()
     out = FIGS / "persistence_confidence_models.png"
     fig.savefig(out, bbox_inches="tight")
@@ -228,30 +270,33 @@ def build_domains(rows=None,
         xs = x_base + arm_to_offset[arm]
         ax.bar(xs, ys, width=width * 0.9, color=COLOR[arm], edgecolor=AXIS,
                linewidth=0.6, zorder=2, label=LABEL[arm])
-        for x, lo, hi in zip(xs, los, his):
+        for x, p_, lo, hi in zip(xs, ys, los, his):
             if np.isnan(lo) or np.isnan(hi):
                 continue
             ax.plot([x, x], [lo, hi], color=INK, linewidth=1.2, zorder=3)
             ax.plot([x - 0.05, x + 0.05], [lo, lo], color=INK, linewidth=1.0, zorder=3)
             ax.plot([x - 0.05, x + 0.05], [hi, hi], color=INK, linewidth=1.0, zorder=3)
+            # Twenty bars share this axis, so the labels take the smaller size;
+            # everything else about them matches every other panel.
+            _value_label(ax, x, p_, lo, hi, "{:.0f}", size=FS_VALUE_DENSE, pad=2.5)
 
     ax.set_xticks(x_base)
     DOMAIN_LABEL = {"video_games": "video games", "sports": "sports",
                     "pop_culture": "pop culture", "sci_tech": "science & tech",
                     "finances_control": "personal finances"}
     ax.set_xticklabels([DOMAIN_LABEL[d] for d in REPORTED_DOMAINS], rotation=20,
-                       ha="right", fontsize=8)
-    ax.set_ylim(0, 110)
-    ax.set_ylabel("retention (%)", fontsize=9)
+                       ha="right", fontsize=FS_TICK)
+    ax.set_ylim(0, 118)          # headroom for the per-bar value labels
+    ax.set_ylabel("retention (%)", fontsize=FS_AXIS)
     ax.set_title("Retention by domain and arm"
                  + (f" — {model_label}" if model_label else " — deepseek-v4-pro"),
-                 fontsize=9.5, loc="left", color=INK)
+                 fontsize=FS_TITLE, loc="left", color=INK)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
     ax.set_axisbelow(True)
     ax.yaxis.grid(True, color=GRID, linewidth=0.7)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
-    ax.legend(frameon=False, fontsize=7.5, ncol=4, columnspacing=1.0,
+    ax.legend(frameon=False, fontsize=FS_LEGEND, ncol=4, columnspacing=1.0,
               handlelength=1.1, loc="lower right", bbox_to_anchor=(1.0, 1.02))
     fig.tight_layout()
     out = FIGS / out_name
@@ -301,12 +346,12 @@ def build_confidence() -> None:
         if big_labels:
             # labels on the LEFT of the cluster; the right side belongs to the
             # money-ladder cluster drawn beside it
-            ax.text(x - w - 0.08, p, f"{p:+.1f}", fontsize=9, color=INK,
+            ax.text(x - w - 0.08, p, f"{p:+.1f}", fontsize=FS_VALUE, color=INK,
                     fontweight="bold", ha="right", va="center")
             ax.text(x - w - 0.08, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}",
-                    fontsize=6.8, color=INK_2, ha="right", va="top", linespacing=1.25)
+                    fontsize=FS_NOTE, color=INK_2, ha="right", va="top", linespacing=1.25)
         else:
-            ax.text(x, min(0, lo) - 2.0, f"{p:+.1f}", fontsize=7.2, color=INK_2,
+            ax.text(x, min(0, lo) - 2.0, f"{p:+.1f}", fontsize=FS_VALUE, color=INK_2,
                     ha="center", va="top")
 
     # All five domains in one panel, per arm: the four preference domains as the
@@ -328,15 +373,15 @@ def build_confidence() -> None:
         f"{ex['choice_post'].upper()}), confidence "
         f"{ex['conf_pre']} → {ex['conf_post']}",
         xy=(ex_x, dconf(ex)), xytext=((len(ARMS) - 1) * STEP + 0.6, dconf(ex) - 14),
-        fontsize=8, color=INK, ha="right",
+        fontsize=FS_NOTE, color=INK, ha="right",
         arrowprops=dict(arrowstyle="->", color=INK_2, linewidth=0.9))
 
     ax.set_xticks([i * STEP for i in range(len(ARMS))])
-    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
-    ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=9)
+    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=FS_TICK)
+    ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=FS_AXIS)
     ax.set_title("All five approved domains: the choice survives; the stated confidence "
                  "does not always survive with it — except on personal finances",
-                 fontsize=9.5, loc="left", color=INK)
+                 fontsize=FS_TITLE, loc="left", color=INK)
     from matplotlib.lines import Line2D
     ax.legend(handles=[
         Line2D([], [], marker="o", ls="none", color=COLOR["control"], alpha=0.7,
@@ -347,7 +392,7 @@ def build_confidence() -> None:
                label="personal-finances episodes (control item, never pooled)"),
         Line2D([], [], color=INK, lw=1.8,
                label="per-cluster mean, with bootstrap 95% CI over pairs"),
-    ], fontsize=6.8, frameon=False, loc="lower left", handlelength=1.2,
+    ], fontsize=FS_NOTE, frameon=False, loc="lower left", handlelength=1.2,
        borderaxespad=0.2)
 
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
