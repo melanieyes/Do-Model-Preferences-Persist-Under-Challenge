@@ -551,3 +551,33 @@ Bootstrap 95% CIs over pairs, 10,000 resamples, throughout.
 
 **What this entry does not change.** The four arms, the episode structure, the measures, the pairing rules, the five instrument controls, and the PQ numbering are untouched. `prereg/PREREGISTRATION.md` remains read-only. `finances_control` remains a positive control, never pooled.
 ---
+
+## #9 — Cross-model manipulation check: the money ladder on two further targets (data seen: YES → exploratory)
+
+| Date | Change | Rationale | Data seen? | By |
+|---|---|---|---|---|
+| 2026-08-17 | The persistence protocol of entry #5 is run, **restricted to `finances_control`** (20 pairs × 4 arms × k=3 = 240 episodes per target), against **`gpt-5.4-nano`** and **`gemini-2.5-flash`**. A `--domains` pool filter is added to `scripts/run_persistence.py` for this; arms, episode structure, measures, seed, order schedule and all five instrument controls are unchanged, and the filter is recorded in `_meta` and the output filename. Each target first receives its own balance pilot on the **full 100-pair extension pool** (`balance_pilot_{nano,gemini25}_ext.jsonl`, 500/500 elicitations each, 0 refusals, 0 unparsed), satisfying the entry-#7 gates (non-reasoning verification for `gpt-5.4-nano`; own-pilot covariate for both). `deepseek-v4-pro` is **not re-run**: its 240 `finances_control` episodes from entry #6 are the comparison's third cell. `gemini-3.5-flash` remains excluded per the roster. Nothing here enters any PQ estimate; the money ladder is a manipulation check and its cross-model comparison is reported as an **instrument property per target**, never as preference movement. | Mentor direction (H. Kong, relayed by M. Bui): compare the finance domain across three models. Entry #6 established that on the primary target the two arms that flip 40–50% of preference pairs move the money ladder not once — the discriminant half of the PQ1 claim. Whether that discriminant property is a property of the *design* or of the *target* is answerable only by running the same ladder on further targets. | **YES** — commissioned with all five-domain results in hand. Exploratory. | Melanie (cost-guard confirm), Haein (direction) |
+
+**Measured output.** All cells full coverage: 240/240 scoreable, 0 refusals, 0 unparsed, 0 errors, 0 schema failures on both new targets.
+
+| target | all arms | control | reason_elicitation | self_critique | counter_consideration | flips / challenge eps |
+|---|---|---|---|---|---|---|
+| `deepseek-v4-pro` (entry #6) | 100.0 [100.0, 100.0] | 100.0 | 100.0 | 100.0 | 100.0 | 0 / 120 |
+| `gemini-2.5-flash` | 96.2 [93.3, 98.8] | 100.0 | 100.0 | 98.3 [95.0, 100.0] | 86.7 [76.7, 95.0] | 9 / 120 |
+| `gpt-5.4-nano` | 83.3 [78.8, 87.9] | 100.0 | 100.0 | 78.3 [66.7, 88.3] | 55.0 [43.3, 68.3] | 40 / 120 |
+
+Bootstrap 95% CIs over pairs, 10,000 resamples. Analysis and figure: `analysis/finance_check.py` (`--figure` → `paper/figures/finance_models.png`).
+
+**The reading: the discriminant property is model-specific.** On `deepseek-v4-pro` the ladder is immovable — the check passes with force and licenses the content-vs-slot reading of its preference results. On `gemini-2.5-flash` it nearly holds (9 flips of 120). On `gpt-5.4-nano` the two adversarial arms flip **arithmetic** — 45% of `counter_consideration` episodes — while control and `reason_elicitation` stay at ceiling. So on that target, challenge-induced answer-switching is *not* content-specific, and a preference-persistence result of the entry-#5 form could not carry the discriminant interpretation there without this check failing first. This is the strongest available argument for running the positive control **per target** rather than inheriting it.
+
+**Corroborating pilot observations (no challenge).** In the k=5 balance pilot, `gpt-5.4-nano` wavers on 4 of 20 money-ladder pairs with no challenge at all (`deepseek-v4-pro`: 0 of 20; `gemini-2.5-flash`: 2 of 20 wavered once), including *owe $1 vs owe $5,000* split 3/2 with per-pair position bias 0.61. Its ext-pool order gap (median 0.27) is also far above the ~0 median that qualified it on the retired original pool — reconfirming, on fresh items, entry #6's finding that position dependence is item-specific as well as model-specific.
+
+**Primary-target status.** CLAUDE.md's stop rule ("wavering on the money ladder means the instrument is broken") concerns the reported study's target. On `deepseek-v4-pro` the check still passes with force; nothing in this entry touches the five-domain results. The wavering is on further targets and is reported as those targets' elicitation instability.
+
+**Cost.** Pilots ≈ $0.03 + $0.21 (estimates); persistence runs estimated $0.03 / $0.75; per-record token usage is logged in every episode file.
+
+Provenance: `data/pairs/balance_pilot_nano_ext.jsonl`, `balance_pilot_gemini25_ext.jsonl`;
+episodes in `data/persistence/persistence_nano_ext_finances_control.jsonl` and
+`persistence_gemini25_ext_finances_control.jsonl` (**all committed**);
+`deepseek-v4-pro` cell from `persistence_deepseek_ext.jsonl` (entry #6, untouched).
+---
