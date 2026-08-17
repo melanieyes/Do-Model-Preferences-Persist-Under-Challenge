@@ -124,6 +124,15 @@ bias-aware sensitivity check.
 \section{The domain split on the further targets}
 \label{app:othermodels}
 
+Section~\ref{sec:pq4} gives the by-domain breakdown for the primary target; the same
+breakdown for \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash} is below, in the
+layout of Figure~\ref{fig:persistence-domains-main} and with personal finances kept
+separate as the positive control. The arm ordering reproduces on both. Each also
+carries a qualification of its own --- the control sits below ceiling on
+\texttt{gpt-5.4-nano}, and reason elicitation falls below control in several domains on
+\texttt{gemini-2.5-flash} --- which is why the domain split is reported per target and
+never pooled across them.
+
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_domains_gpt_54_nano.png}
