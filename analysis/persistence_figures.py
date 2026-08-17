@@ -22,8 +22,9 @@ figure ships without one.
 Emits:
     paper/figures/persistence.png            (--scope main)
     paper/figures/persistence_domains.png    (--scope domains)
+    paper/figures/persistence_confidence.png (--scope confidence)
 
-    python analysis/persistence_figures.py               # regenerates both
+    python analysis/persistence_figures.py               # regenerates all
     python analysis/persistence_figures.py --scope main
 """
 
@@ -218,15 +219,80 @@ def build_domains() -> None:
     print(f"  wrote {out.relative_to(REPO)}")
 
 
+def build_confidence() -> None:
+    """PQ3, pointed at directly: every HELD episode's Delta-confidence, one point each.
+
+    Panel (b) of the main figure shows the per-arm means. This figure shows the
+    episodes those means summarise, so a reader can see the phenomenon the design
+    was built to detect: the choice is retained and the stated confidence drops
+    anyway (e.g. A at 100 -> A at 70). Points are jittered within arm; the dark
+    marker is the per-arm mean with its cluster-bootstrap 95% CI over pairs. The
+    annotated point is a real episode, selected in code (the largest confidence
+    drop among held self_critique episodes), never typed by hand.
+    """
+    rows = load(EXT)
+    dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
+                       else r["conf_post"] - r["conf_pre"])
+    held = [r for r in rows
+            if r.get("retained") is True and r["domain"] in EXTENSION_DOMAINS
+            and dconf(r) is not None]
+    print(f"[confidence] {len(held)} held episodes with both confidences")
+
+    fig, ax = plt.subplots(figsize=(8.6, 4.0))
+    rng = np.random.default_rng(20260815)      # jitter only; fixed for reproducibility
+    for i, arm in enumerate(ARMS):
+        eps = [r for r in held if r["arm"] == arm]
+        ys = np.array([dconf(r) for r in eps], dtype=float)
+        xs = i + rng.uniform(-0.26, 0.26, size=len(ys))
+        ax.scatter(xs, ys, s=14, color=COLOR[arm], alpha=0.5,
+                   edgecolors="none", zorder=2)
+        p, lo, hi, npair, _ = cluster_bootstrap(
+            group(eps, lambda r: True, dconf))
+        ax.plot([i - 0.32, i + 0.32], [p, p], color=INK, linewidth=1.8, zorder=4)
+        ax.plot([i + 0.36, i + 0.36], [lo, hi], color=INK, linewidth=1.4, zorder=4)
+        ax.plot([i + 0.32, i + 0.40], [lo, lo], color=INK, linewidth=1.1, zorder=4)
+        ax.plot([i + 0.32, i + 0.40], [hi, hi], color=INK, linewidth=1.1, zorder=4)
+
+    # Annotate one real retained-but-shaken episode, picked by rule, not by hand.
+    crit_held = [r for r in held if r["arm"] == "self_critique"]
+    ex = min(crit_held, key=dconf)
+    ex_i = ARMS.index("self_critique")
+    ax.annotate(
+        f"choice kept ({ex['choice_pre'].upper()} → "
+        f"{ex['choice_post'].upper()}), confidence "
+        f"{ex['conf_pre']} → {ex['conf_post']}",
+        xy=(ex_i, dconf(ex)), xytext=(ex_i - 1.55, dconf(ex) - 6),
+        fontsize=8, color=INK,
+        arrowprops=dict(arrowstyle="->", color=INK_2, linewidth=0.9))
+
+    ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    ax.set_xticks(range(len(ARMS)))
+    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
+    ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=9)
+    ax.set_title("The choice survives; the stated confidence does not always survive "
+                 "with it", fontsize=9.5, loc="left", color=INK)
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    fig.tight_layout()
+    out = FIGS / "persistence_confidence.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  wrote {out.relative_to(REPO)}")
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="persistence figures, by domain scope")
-    ap.add_argument("--scope", choices=("main", "domains", "both"),
+    ap.add_argument("--scope", choices=("main", "domains", "confidence", "both"),
                     default="both",
                     help="which figure set to draw; default regenerates all figures")
     a = ap.parse_args()
-    scopes = ("main", "domains") if a.scope == "both" else (a.scope,)
+    scopes = ("main", "domains", "confidence") if a.scope == "both" else (a.scope,)
     for sc in scopes:
         if sc == "domains":
             build_domains()
+        elif sc == "confidence":
+            build_confidence()
         else:
             build(sc)

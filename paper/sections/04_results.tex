@@ -56,11 +56,29 @@ episodes that began at zero confidence leaves the direction unchanged
 (\pqxeHeldCritiqueNoZero{}, \pqxeHeldCounterNoZero{}). This is retention with reduced
 confidence. The model keeps its
 answer and reports itself less sure of it. That is what the design was built to detect, and
-what a choice-only measure records as nothing happening. Averaged over \emph{all} episodes
+what a choice-only measure records as nothing happening. Figure~\ref{fig:held-confidence}
+shows the phenomenon episode by episode rather than as means: every held episode is one
+point, the control column is a flat line at exactly zero, and the two adversarial columns
+scatter downward --- including episodes that keep the choice while dropping thirty points
+of confidence. Averaged over \emph{all} episodes
 the contrasts are \pqxeConfReason{}, \pqxeConfCritique{} and \pqxeConfCounter{}
 points vs.\ control, because held and flipped episodes move in opposite directions. We do
 not interpret the flipped half, for the reason given in the Limitations.
 Figure~\ref{fig:persistence} in Appendix~\ref{app:persistdetail} shows all three channels.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_confidence.png}
+  \caption{PQ3, pointed at directly: $\Delta$Confidence for every \emph{held} episode in
+  the four preference domains, one jittered point per episode, by arm. The dark rule is
+  the per-arm mean and the whisker its bootstrap 95\% CI over pairs, \num{10000}
+  resamples. Retention with reduced confidence --- the choice is kept while the stated
+  confidence falls, e.g.\ the annotated episode --- is what a choice-only measure cannot
+  see. The control column is exactly zero in \pqxCtlZero{} of \pqxCtlScored{} scored
+  episodes (Limitations); the annotated example is selected in code, not by hand. The
+  contrasts quoted in the text are paired within pair before averaging.}
+  \label{fig:held-confidence}
+\end{figure}
 
 \subsection{The domain split and the manipulation check}
 \label{sec:extension}
