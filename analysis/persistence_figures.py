@@ -316,8 +316,8 @@ def build_confidence() -> None:
         f"choice kept ({ex['choice_pre'].upper()} → "
         f"{ex['choice_post'].upper()}), confidence "
         f"{ex['conf_pre']} → {ex['conf_post']}",
-        xy=(ex_i, dconf(ex)), xytext=(ex_i - 1.55, dconf(ex) - 6),
-        fontsize=8, color=INK,
+        xy=(ex_i, dconf(ex)), xytext=(len(ARMS) - 0.35, dconf(ex) - 14),
+        fontsize=8, color=INK, ha="right",
         arrowprops=dict(arrowstyle="->", color=INK_2, linewidth=0.9))
 
     ax.set_xticks(range(len(ARMS)))
@@ -326,6 +326,18 @@ def build_confidence() -> None:
     ax.set_title("(a) Four preference domains: the choice survives; the stated\n"
                  "confidence does not always survive with it",
                  fontsize=9.5, loc="left", color=INK)
+    from matplotlib.lines import Line2D
+    ax.legend(handles=[
+        Line2D([], [], marker="o", ls="none", color=COLOR["control"], alpha=0.7,
+               label="episodes: arms that leave the choice at ceiling"),
+        Line2D([], [], marker="o", ls="none", color=COLOR["self_critique"], alpha=0.7,
+               label="episodes: arms that move the choice"),
+        Line2D([], [], marker="o", ls="none", color="#a7abb3", alpha=0.8,
+               label="episodes: money ladder (positive control, panel b)"),
+        Line2D([], [], color=INK, lw=1.8,
+               label="per-arm mean, with bootstrap 95% CI over pairs"),
+    ], fontsize=6.8, frameon=False, loc="lower left", handlelength=1.2,
+       borderaxespad=0.2)
 
     # --- the positive control, beside it and never pooled ----------------------
     # Two challenge-arm columns for the money ladder: the arms that cost the
