@@ -238,7 +238,7 @@ def build_confidence() -> None:
             and dconf(r) is not None]
     print(f"[confidence] {len(held)} held episodes with both confidences")
 
-    fig, ax = plt.subplots(figsize=(8.6, 4.0))
+    fig, ax = plt.subplots(figsize=(11.0, 4.2))
     rng = np.random.default_rng(20260815)      # jitter only; fixed for reproducibility
     for i, arm in enumerate(ARMS):
         eps = [r for r in held if r["arm"] == arm]
@@ -246,12 +246,18 @@ def build_confidence() -> None:
         xs = i + rng.uniform(-0.26, 0.26, size=len(ys))
         ax.scatter(xs, ys, s=14, color=COLOR[arm], alpha=0.5,
                    edgecolors="none", zorder=2)
-        p, lo, hi, npair, _ = cluster_bootstrap(
+        p, lo, hi, npair, nobs = cluster_bootstrap(
             group(eps, lambda r: True, dconf))
         ax.plot([i - 0.32, i + 0.32], [p, p], color=INK, linewidth=1.8, zorder=4)
         ax.plot([i + 0.36, i + 0.36], [lo, hi], color=INK, linewidth=1.4, zorder=4)
         ax.plot([i + 0.32, i + 0.40], [lo, lo], color=INK, linewidth=1.1, zorder=4)
         ax.plot([i + 0.32, i + 0.40], [hi, hi], color=INK, linewidth=1.1, zorder=4)
+        # Direct label: the per-arm mean with its CI, beside the whisker. Selective
+        # labelling only — the individual points stay unlabelled.
+        ax.text(i + 0.44, p, f"{p:+.1f}", fontsize=9, color=INK,
+                fontweight="bold", ha="left", va="center")
+        ax.text(i + 0.44, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}", fontsize=6.8,
+                color=INK_2, ha="left", va="top", linespacing=1.25)
 
     # Annotate one real retained-but-shaken episode, picked by rule, not by hand.
     crit_held = [r for r in held if r["arm"] == "self_critique"]
