@@ -593,8 +593,8 @@ episodes in `data/persistence/persistence_nano_ext_finances_control.jsonl` and
 | target | control | reason_elicitation | self_critique | counter_consideration | stronger adversarial arm |
 |---|---|---|---|---|---|
 | `deepseek-v4-pro` (entry #6) | 100.0 | 100.0 | 50.0 [41.7, 58.3] | 57.5 [50.0, 65.0] | self_critique |
-| `gpt-5.4-nano` | 93.3 [89.6, 96.7] | 98.8 [97.1, 100.0] | 51.2 [43.3, 59.2] | 28.3 [21.2, 35.8] | counter_consideration |
-| `gemini-2.5-flash` | 91.9 [88.1, 95.3] | 84.0 [76.8, 90.3] | 54.0 [45.8, 62.6] | 63.4 [54.7, 72.0] | self_critique |
+| `gpt-5.4-nano` | 93.3 [89.6, 96.7] | 98.8 [97.1, 100.0] | 51.2 [43.8, 59.2] | 28.3 [21.2, 35.4] | counter_consideration |
+| `gemini-2.5-flash` | 91.9 [88.1, 95.3] | 84.0 [76.8, 90.3] | 54.0 [46.0, 62.4] | 63.4 [54.9, 71.9] | self_critique |
 
 (CIs for control/reason rows are in `paper/persist_models_ext_stats.tex`; the deepseek row repeats entry #6 and is not re-run.)
 
@@ -626,3 +626,16 @@ reported episode file** (merging would raise the check item's k above the design
 k=3 per cell). The rerun reproduces the original exactly: 100.0% retention in all
 four arms, 0 flips, 0 errors, 240/240 scoreable. The reported finance estimates are
 unchanged; the file is committed as a same-day replication record.
+
+---
+
+## Note — figure labelling and typography (2026-08-17, not a deviation)
+
+Two changes to the shipped figures, both labelling only: every bar in `build_domains`
+now carries its point estimate, matching every other figure in the paper, which already
+did; and the per-figure font sizes are replaced by one named scale in
+`analysis/persistence_figures.py` (`FS_TITLE`/`FS_AXIS`/`FS_TICK`/`FS_VALUE`/
+`FS_LEGEND`/`FS_NOTE`), sized so figure text stays legible after LaTeX downscales an
+~11in canvas into the text column. Every figure was regenerated. No estimate moved, no
+macro changed, and `paper/persist_ext_stats.tex` and `paper/persist_models_ext_stats.tex`
+regenerate byte-identically.

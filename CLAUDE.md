@@ -53,6 +53,20 @@ refuses to start.
 ## Analysis discipline
 - Every reported effect ships with a bootstrap 95% CI, 10,000 resamples,
   clustered OVER PAIRS (episodes of one pair are correlated).
+- NUMBERS ARE GENERATED, NEVER TYPED. Every statistic anywhere in the repo
+  traces to a paper/*_stats.tex emitted by analysis/. The paper is safe by
+  construction — it reads macros, so it cannot drift. The two places that DO
+  drift are the ones holding hand-copied values: prereg/DEVIATIONS.md tables
+  and index.html. Before editing either, re-read the generated value and paste
+  it; after regenerating a stats file, re-check both. A CI bound is part of the
+  number — never retype one from memory, from an older table, or rounded.
+  Found in practice (2026-08-17): entry #10's table had gpt-5.4-nano
+  self_critique [43.3, 59.2] against the generated [43.8, 59.2], and
+  counter_consideration [21.2, 35.8] against [21.2, 35.4].
+- index.html and the paper report the SAME study. When a run is added or a
+  scope changes, update both or neither. The site silently went on claiming one
+  model and "does this transfer?" as an open question after the cross-model
+  runs (#9/#10) had answered it.
 - Everything collected after prereg-v1 is EXPLORATORY. analysis:
   "exploratory" is hard-set on every record; nothing may be reported as
   confirmatory.
