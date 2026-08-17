@@ -34,12 +34,12 @@ from analysis.persistence_analysis import (  # noqa: E402
 DATA = ROOT / "data" / "persistence"
 CHALLENGE_ARMS = ("self_critique", "counter_consideration")
 
-# (label, file, filter-to-finance?) — deepseek's finance episodes live inside the
-# full extension run; the further targets ran the finance subset directly.
+# (label, file, filter-to-finance?) — every target now has one five-domain file;
+# the finance episodes are filtered out of each.
 SOURCES = [
     ("deepseek-v4-pro", DATA / "persistence_deepseek_ext.jsonl", True),
-    ("gpt-5.4-nano", DATA / "persistence_nano_ext_finances_control.jsonl", False),
-    ("gemini-2.5-flash", DATA / "persistence_gemini25_ext_finances_control.jsonl", False),
+    ("gpt-5.4-nano", DATA / "persistence_nano_ext.jsonl", True),
+    ("gemini-2.5-flash", DATA / "persistence_gemini25_ext.jsonl", True),
 ]
 
 

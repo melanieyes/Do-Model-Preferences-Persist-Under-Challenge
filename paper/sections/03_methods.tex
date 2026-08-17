@@ -76,8 +76,10 @@ argument (Table~\ref{tab:arms}).
 On the two further targets the five-domain protocol was collected in two batches
 (the positive control first, the four preference domains after), with the same seed,
 arms and per-pair order schedule; the schedule is deterministic per pair $\times$ arm
-$\times$ repeat, so batching by domain leaves the counterbalancing untouched and the
-batches merge at analysis time with episode uniqueness asserted.
+$\times$ repeat, so batching by domain leaves the counterbalancing untouched. After
+collection the batches were concatenated into one five-domain episode file per target,
+episode records byte-for-byte unchanged and uniqueness asserted; each merged file's
+metadata names its source batches (change log, entries \#9--\#10).
 
 \subsection{Items, measures, and the unfiltered pool}
 \label{sec:pairs}

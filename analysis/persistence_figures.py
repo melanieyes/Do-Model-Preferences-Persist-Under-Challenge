@@ -391,79 +391,78 @@ def build_confidence() -> None:
     print(f"[confidence] {len(held)} held preference episodes, "
           f"{len(fin_held)} held {POSITIVE_CONTROL} episodes (drawn separately)")
 
-    fig, (ax, axf) = plt.subplots(
-        1, 2, figsize=(13.6, 4.2), sharey=True,
-        gridspec_kw={"width_ratios": [2.55, 1.45], "wspace": 0.06})
+    fig, ax = plt.subplots(figsize=(13.2, 4.4))
     rng = np.random.default_rng(20260815)      # jitter only; fixed for reproducibility
+    STEP = 1.7                                 # room per arm for both clusters + labels
 
-    def column(axis, i, eps, colour):
-        """One jittered column with mean rule, CI whisker and the value labels."""
+    def column(x, eps, colour, *, spread, big_labels):
+        """One jittered cluster with mean rule, CI whisker and value labels."""
         ys = np.array([dconf(r) for r in eps], dtype=float)
-        xs = i + rng.uniform(-0.26, 0.26, size=len(ys))
-        axis.scatter(xs, ys, s=14, color=colour, alpha=0.5,
-                     edgecolors="none", zorder=2)
+        xs = x + rng.uniform(-spread, spread, size=len(ys))
+        ax.scatter(xs, ys, s=14, color=colour, alpha=0.5,
+                   edgecolors="none", zorder=2)
         p, lo, hi, _, nobs = cluster_bootstrap(group(eps, lambda r: True, dconf))
-        axis.plot([i - 0.32, i + 0.32], [p, p], color=INK, linewidth=1.8, zorder=4)
-        axis.plot([i + 0.36, i + 0.36], [lo, hi], color=INK, linewidth=1.4, zorder=4)
-        axis.plot([i + 0.32, i + 0.40], [lo, lo], color=INK, linewidth=1.1, zorder=4)
-        axis.plot([i + 0.32, i + 0.40], [hi, hi], color=INK, linewidth=1.1, zorder=4)
-        axis.text(i + 0.44, p, f"{p:+.1f}", fontsize=9, color=INK,
-                  fontweight="bold", ha="left", va="center")
-        axis.text(i + 0.44, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}", fontsize=6.8,
-                  color=INK_2, ha="left", va="top", linespacing=1.25)
+        w = spread + 0.06
+        ax.plot([x - w, x + w], [p, p], color=INK, linewidth=1.8, zorder=4)
+        ax.plot([x + w + 0.04, x + w + 0.04], [lo, hi], color=INK, linewidth=1.4,
+                zorder=4)
+        if big_labels:
+            # labels on the LEFT of the cluster; the right side belongs to the
+            # money-ladder cluster drawn beside it
+            ax.text(x - w - 0.08, p, f"{p:+.1f}", fontsize=9, color=INK,
+                    fontweight="bold", ha="right", va="center")
+            ax.text(x - w - 0.08, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}",
+                    fontsize=6.8, color=INK_2, ha="right", va="top", linespacing=1.25)
+        else:
+            ax.text(x, min(0, lo) - 2.0, f"{p:+.1f}", fontsize=7.2, color=INK_2,
+                    ha="center", va="top")
 
+    # All five domains in one panel, per arm: the four preference domains as the
+    # blue cluster, the money ladder as the grey cluster beside it — side by side
+    # as separate estimates, never pooled.
     for i, arm in enumerate(ARMS):
-        column(ax, i, [r for r in held if r["arm"] == arm], COLOR[arm])
+        x = i * STEP
+        column(x - 0.18, [r for r in held if r["arm"] == arm], COLOR[arm],
+               spread=0.24, big_labels=True)
+        column(x + 0.52, [r for r in fin_held if r["arm"] == arm], "#a7abb3",
+               spread=0.07, big_labels=False)
 
     # Annotate one real retained-but-shaken episode, picked by rule, not by hand.
     crit_held = [r for r in held if r["arm"] == "self_critique"]
     ex = min(crit_held, key=dconf)
-    ex_i = ARMS.index("self_critique")
+    ex_x = ARMS.index("self_critique") * STEP - 0.18
     ax.annotate(
         f"choice kept ({ex['choice_pre'].upper()} → "
         f"{ex['choice_post'].upper()}), confidence "
         f"{ex['conf_pre']} → {ex['conf_post']}",
-        xy=(ex_i, dconf(ex)), xytext=(len(ARMS) - 0.35, dconf(ex) - 14),
+        xy=(ex_x, dconf(ex)), xytext=((len(ARMS) - 1) * STEP + 0.6, dconf(ex) - 14),
         fontsize=8, color=INK, ha="right",
         arrowprops=dict(arrowstyle="->", color=INK_2, linewidth=0.9))
 
-    ax.set_xticks(range(len(ARMS)))
+    ax.set_xticks([i * STEP for i in range(len(ARMS))])
     ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
     ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=9)
-    ax.set_title("(a) Four preference domains: the choice survives; the stated\n"
-                 "confidence does not always survive with it",
+    ax.set_title("All five approved domains: the choice survives; the stated confidence "
+                 "does not always survive with it — except on the money ladder",
                  fontsize=9.5, loc="left", color=INK)
     from matplotlib.lines import Line2D
     ax.legend(handles=[
         Line2D([], [], marker="o", ls="none", color=COLOR["control"], alpha=0.7,
-               label="episodes: arms that leave the choice at ceiling"),
+               label="preference episodes: arms that leave the choice at ceiling"),
         Line2D([], [], marker="o", ls="none", color=COLOR["self_critique"], alpha=0.7,
-               label="episodes: arms that move the choice"),
+               label="preference episodes: arms that move the choice"),
         Line2D([], [], marker="o", ls="none", color="#a7abb3", alpha=0.8,
-               label="episodes: money ladder (positive control, panel b)"),
+               label="money-ladder episodes (positive control, never pooled)"),
         Line2D([], [], color=INK, lw=1.8,
-               label="per-arm mean, with bootstrap 95% CI over pairs"),
+               label="per-cluster mean, with bootstrap 95% CI over pairs"),
     ], fontsize=6.8, frameon=False, loc="lower left", handlelength=1.2,
        borderaxespad=0.2)
 
-    # --- the positive control, beside it and never pooled ----------------------
-    # Two challenge-arm columns for the money ladder: the arms that cost the
-    # preferences confidence leave arithmetic's confidence (nearly) alone.
-    FIN_ARMS = ("self_critique", "counter_consideration")
-    for i, arm in enumerate(FIN_ARMS):
-        column(axf, i, [r for r in fin_held if r["arm"] == arm], "#a7abb3")
-    axf.set_xticks(range(len(FIN_ARMS)))
-    axf.set_xticklabels([LABEL[a] for a in FIN_ARMS], fontsize=8.5)
-    axf.set_xlim(-0.6, len(FIN_ARMS) - 0.4 + 0.75)
-    axf.set_title("(b) Positive control (money ladder):\nthe same arms move almost "
-                  "nothing", fontsize=9.5, loc="left", color=INK)
-
-    for axis in (ax, axf):
-        axis.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
-        axis.set_axisbelow(True)
-        axis.yaxis.grid(True, color=GRID, linewidth=0.7)
-        for s in ("top", "right"):
-            axis.spines[s].set_visible(False)
+    ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
     fig.tight_layout()
     out = FIGS / "persistence_confidence.png"
     fig.savefig(out, bbox_inches="tight")

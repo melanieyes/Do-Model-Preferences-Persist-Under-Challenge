@@ -606,3 +606,14 @@ episodes in `data/persistence/persistence_nano_ext_finances_control.jsonl` and
 
 Provenance: episodes in `data/persistence/persistence_{nano,gemini25}_ext_pop_culture-sci_tech-sports-video_games.jsonl` (**committed**), merged with the entry-#9 finance batches by `analysis/persistence_models_ext_stats.py` → `paper/persist_models_ext_stats.tex` (macro prefix `xm`; the retired `pqm` prefix stays retired); figures from `analysis/persistence_figures.py --scope models`.
 ---
+
+**Amendment to #10 (2026-08-17, same day).** The two collection batches per further
+target are now stored as one five-domain episode file per target
+(`persistence_nano_ext.jsonl`, `persistence_gemini25_ext.jsonl`), mirroring the primary
+target's layout. The merge is a concatenation: episode records are byte-for-byte the
+lines of the batch files, uniqueness (1,200 distinct episode ids per target) and schema
+validity were asserted at merge, and each merged file's `_meta` names its source batches
+(`merged_from`). No number changed: `paper/persist_models_ext_stats.tex` regenerated
+identically from the merged files. The batch files are removed from the working tree and
+remain in the repository history at commits `7390a0c`, `e916126` and the entry-#10 data
+commits.

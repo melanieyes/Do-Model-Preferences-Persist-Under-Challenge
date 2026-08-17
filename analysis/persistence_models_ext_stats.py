@@ -42,15 +42,13 @@ OUT = ROOT / "paper" / "persist_models_ext_stats.tex"
 SHORT = {"control": "Ctl", "reason_elicitation": "Reason",
          "self_critique": "Critique", "counter_consideration": "Counter"}
 
-# (macro key, display name, episode files to merge)
+# (macro key, display name, episode files) — one five-domain file per target; the
+# two collection batches of DEVIATIONS #9/#10 were concatenated post-collection,
+# episode records unchanged (see each file's _meta.merged_from).
 TARGETS = [
     ("Ds", "deepseek-v4-pro", ["persistence_deepseek_ext.jsonl"]),
-    ("Nano", "gpt-5.4-nano",
-     ["persistence_nano_ext_finances_control.jsonl",
-      "persistence_nano_ext_pop_culture-sci_tech-sports-video_games.jsonl"]),
-    ("Gtwo", "gemini-2.5-flash",
-     ["persistence_gemini25_ext_finances_control.jsonl",
-      "persistence_gemini25_ext_pop_culture-sci_tech-sports-video_games.jsonl"]),
+    ("Nano", "gpt-5.4-nano", ["persistence_nano_ext.jsonl"]),
+    ("Gtwo", "gemini-2.5-flash", ["persistence_gemini25_ext.jsonl"]),
 ]
 
 
