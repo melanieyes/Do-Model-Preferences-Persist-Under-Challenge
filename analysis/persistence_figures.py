@@ -93,9 +93,9 @@ REPORTED_DOMAINS = (
 
 FINANCE_COLOR = "#e9a8c4"    # soft pink: the positive control, distinct from every arm blue
 
-# Blue + soft-pink palette, validated (CVD dE >= 14; every bar carries a label).
+# Blue + soft-pink palette, validated (CVD dE >= 9; every bar carries a label).
 MODEL_COLOUR = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#e287ae",
-                "gemini-2.5-flash": "#7d3a5c"}
+                "gemini-2.5-flash": "#4a9c6d"}
 
 
 def _targets():
