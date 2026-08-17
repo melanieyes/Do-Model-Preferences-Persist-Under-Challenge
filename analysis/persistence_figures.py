@@ -97,45 +97,87 @@ SCOPES = {
 }
 
 
+FINANCE_COLOR = "#a7abb3"    # recessive gray: the positive control is a check, not a finding
+
+
 def build(scope: str) -> None:
     files, domains, fname = SCOPES[scope]
     rows = [r for f in files for r in load(f)]
     scored = [r for r in rows if r.get("retained") is not None
-              and r["domain"] in domains]          # positive control never included
-    held_out = sum(1 for r in rows if r["domain"] == POSITIVE_CONTROL)
+              and r["domain"] in domains]          # preference domains; never pooled with...
+    fin = [r for r in rows if r.get("retained") is not None
+           and r["domain"] == POSITIVE_CONTROL]    # ...the positive control, drawn beside them
     print(f"[{scope}] {len(rows)} episodes -> {len(scored)} scored across "
-          f"{len(domains)} domains ({len({r['pair_id'] for r in scored})} pairs)"
-          + (f"; {held_out} {POSITIVE_CONTROL} episodes held out" if held_out else ""))
+          f"{len(domains)} domains ({len({r['pair_id'] for r in scored})} pairs); "
+          f"{len(fin)} {POSITIVE_CONTROL} episodes drawn separately, never pooled")
 
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
 
-    fig, axes = plt.subplots(1, 3, figsize=(11.4, 3.5))
+    fig, axes = plt.subplots(1, 3, figsize=(11.8, 3.6))
 
-    # --- (a) retention by arm -------------------------------------------------
+    def paired_panel(ax, value, pct):
+        """Per arm, the preference-domain estimate beside the positive control's.
+        Side by side, never pooled: the two bars of a pair are separate estimates."""
+        w = 0.36
+        for si, (rs, colors) in enumerate((
+                (scored, [COLOR[a] for a in ARMS]),
+                (fin, [FINANCE_COLOR] * len(ARMS)))):
+            xs, pts, los, his = [], [], [], []
+            for ai, arm in enumerate(ARMS):
+                p, lo, hi, *_ = cluster_bootstrap(
+                    group(rs, lambda r, a=arm: r["arm"] == a, value))
+                if p is None:
+                    continue
+                k = 100 if pct else 1
+                xs.append(ai + (si - 0.5) * w)
+                pts.append(p * k); los.append(lo * k); his.append(hi * k)
+            for x, p_, lo, hi, c in zip(xs, pts, los, his,
+                                        colors if si == 0 else [FINANCE_COLOR] * len(xs)):
+                ax.bar(x, p_, width=w * 0.9, color=c, edgecolor=AXIS,
+                       linewidth=0.6, zorder=2)
+                ax.plot([x, x], [lo, hi], color=INK, linewidth=1.2, zorder=3)
+        ax.set_axisbelow(True)
+        ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+        ax.set_xticks(range(len(ARMS)))
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
+
+    # --- (a) retention by arm, preference domains beside the control -----------
     ax = axes[0]
-    pts, los, his = [], [], []
-    for arm in ARMS:
-        p, lo, hi, *_ = cluster_bootstrap(
-            group(scored, lambda r, a=arm: r["arm"] == a, lambda r: r["retained"]))
-        pts.append(p * 100); los.append(lo * 100); his.append(hi * 100)
-    bars(ax, range(len(ARMS)), pts, los, his, [COLOR[a] for a in ARMS], pct=True)
+    paired_panel(ax, lambda r: r["retained"], pct=True)
     ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=7.5)
     ax.set_ylim(0, 108)
     ax.set_ylabel("retention (%)", fontsize=9)
     ax.set_title("(a) The preference survives, or does not,\naccording to what the "
                  "challenge asks for", fontsize=9, loc="left", color=INK)
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(color=COLOR["self_critique"], label="4 preference domains"),
+                       Patch(color=FINANCE_COLOR,
+                             label="finances_control (positive control)")],
+              fontsize=6.6, frameon=False, loc="lower left", handlelength=1.1)
 
     # --- (b) Delta-confidence among HELD episodes ------------------------------
     ax = axes[1]
     held = [r for r in scored if r["retained"] is True]
-    pts, los, his = [], [], []
-    for arm in ARMS:
-        p, lo, hi, *_ = cluster_bootstrap(
-            group(held, lambda r, a=arm: r["arm"] == a, dconf))
-        pts.append(p); los.append(lo); his.append(hi)
-    bars(ax, range(len(ARMS)), pts, los, his, [COLOR[a] for a in ARMS], pct=False)
+    fin_held = [r for r in fin if r["retained"] is True]
+    w = 0.36
+    for si, rs in enumerate((held, fin_held)):
+        for ai, arm in enumerate(ARMS):
+            p, lo, hi, *_ = cluster_bootstrap(
+                group(rs, lambda r, a=arm: r["arm"] == a, dconf))
+            if p is None:
+                continue
+            c = COLOR[arm] if si == 0 else FINANCE_COLOR
+            x = ai + (si - 0.5) * w
+            ax.bar(x, p, width=w * 0.9, color=c, edgecolor=AXIS, linewidth=0.6, zorder=2)
+            ax.plot([x, x], [lo, hi], color=INK, linewidth=1.2, zorder=3)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+    ax.set_xticks(range(len(ARMS)))
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
     ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=7.5)
     ax.set_ylabel(r"$\Delta$confidence (0--100 scale)", fontsize=9)
     ax.set_title("(b) Among preferences that DO survive, the two\narms that move "
@@ -236,28 +278,35 @@ def build_confidence() -> None:
     held = [r for r in rows
             if r.get("retained") is True and r["domain"] in EXTENSION_DOMAINS
             and dconf(r) is not None]
-    print(f"[confidence] {len(held)} held episodes with both confidences")
+    fin_held = [r for r in rows
+                if r.get("retained") is True and r["domain"] == POSITIVE_CONTROL
+                and dconf(r) is not None]
+    print(f"[confidence] {len(held)} held preference episodes, "
+          f"{len(fin_held)} held {POSITIVE_CONTROL} episodes (drawn separately)")
 
-    fig, ax = plt.subplots(figsize=(11.0, 4.2))
+    fig, (ax, axf) = plt.subplots(
+        1, 2, figsize=(13.6, 4.2), sharey=True,
+        gridspec_kw={"width_ratios": [2.55, 1.45], "wspace": 0.06})
     rng = np.random.default_rng(20260815)      # jitter only; fixed for reproducibility
-    for i, arm in enumerate(ARMS):
-        eps = [r for r in held if r["arm"] == arm]
+
+    def column(axis, i, eps, colour):
+        """One jittered column with mean rule, CI whisker and the value labels."""
         ys = np.array([dconf(r) for r in eps], dtype=float)
         xs = i + rng.uniform(-0.26, 0.26, size=len(ys))
-        ax.scatter(xs, ys, s=14, color=COLOR[arm], alpha=0.5,
-                   edgecolors="none", zorder=2)
-        p, lo, hi, npair, nobs = cluster_bootstrap(
-            group(eps, lambda r: True, dconf))
-        ax.plot([i - 0.32, i + 0.32], [p, p], color=INK, linewidth=1.8, zorder=4)
-        ax.plot([i + 0.36, i + 0.36], [lo, hi], color=INK, linewidth=1.4, zorder=4)
-        ax.plot([i + 0.32, i + 0.40], [lo, lo], color=INK, linewidth=1.1, zorder=4)
-        ax.plot([i + 0.32, i + 0.40], [hi, hi], color=INK, linewidth=1.1, zorder=4)
-        # Direct label: the per-arm mean with its CI, beside the whisker. Selective
-        # labelling only — the individual points stay unlabelled.
-        ax.text(i + 0.44, p, f"{p:+.1f}", fontsize=9, color=INK,
-                fontweight="bold", ha="left", va="center")
-        ax.text(i + 0.44, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}", fontsize=6.8,
-                color=INK_2, ha="left", va="top", linespacing=1.25)
+        axis.scatter(xs, ys, s=14, color=colour, alpha=0.5,
+                     edgecolors="none", zorder=2)
+        p, lo, hi, _, nobs = cluster_bootstrap(group(eps, lambda r: True, dconf))
+        axis.plot([i - 0.32, i + 0.32], [p, p], color=INK, linewidth=1.8, zorder=4)
+        axis.plot([i + 0.36, i + 0.36], [lo, hi], color=INK, linewidth=1.4, zorder=4)
+        axis.plot([i + 0.32, i + 0.40], [lo, lo], color=INK, linewidth=1.1, zorder=4)
+        axis.plot([i + 0.32, i + 0.40], [hi, hi], color=INK, linewidth=1.1, zorder=4)
+        axis.text(i + 0.44, p, f"{p:+.1f}", fontsize=9, color=INK,
+                  fontweight="bold", ha="left", va="center")
+        axis.text(i + 0.44, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}", fontsize=6.8,
+                  color=INK_2, ha="left", va="top", linespacing=1.25)
+
+    for i, arm in enumerate(ARMS):
+        column(ax, i, [r for r in held if r["arm"] == arm], COLOR[arm])
 
     # Annotate one real retained-but-shaken episode, picked by rule, not by hand.
     crit_held = [r for r in held if r["arm"] == "self_critique"]
@@ -271,16 +320,31 @@ def build_confidence() -> None:
         fontsize=8, color=INK,
         arrowprops=dict(arrowstyle="->", color=INK_2, linewidth=0.9))
 
-    ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
     ax.set_xticks(range(len(ARMS)))
     ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
     ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=9)
-    ax.set_title("The choice survives; the stated confidence does not always survive "
-                 "with it", fontsize=9.5, loc="left", color=INK)
-    ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
+    ax.set_title("(a) Four preference domains: the choice survives; the stated\n"
+                 "confidence does not always survive with it",
+                 fontsize=9.5, loc="left", color=INK)
+
+    # --- the positive control, beside it and never pooled ----------------------
+    # Two challenge-arm columns for the money ladder: the arms that cost the
+    # preferences confidence leave arithmetic's confidence (nearly) alone.
+    FIN_ARMS = ("self_critique", "counter_consideration")
+    for i, arm in enumerate(FIN_ARMS):
+        column(axf, i, [r for r in fin_held if r["arm"] == arm], "#a7abb3")
+    axf.set_xticks(range(len(FIN_ARMS)))
+    axf.set_xticklabels([LABEL[a] for a in FIN_ARMS], fontsize=8.5)
+    axf.set_xlim(-0.6, len(FIN_ARMS) - 0.4 + 0.75)
+    axf.set_title("(b) Positive control (money ladder):\nthe same arms move almost "
+                  "nothing", fontsize=9.5, loc="left", color=INK)
+
+    for axis in (ax, axf):
+        axis.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+        axis.set_axisbelow(True)
+        axis.yaxis.grid(True, color=GRID, linewidth=0.7)
+        for s in ("top", "right"):
+            axis.spines[s].set_visible(False)
     fig.tight_layout()
     out = FIGS / "persistence_confidence.png"
     fig.savefig(out, bbox_inches="tight")

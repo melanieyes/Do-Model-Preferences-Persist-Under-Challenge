@@ -69,14 +69,18 @@ Figure~\ref{fig:persistence} in Appendix~\ref{app:persistdetail} shows all three
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_confidence.png}
-  \caption{PQ3, pointed at directly: $\Delta$Confidence for every \emph{held} episode in
-  the four preference domains, one jittered point per episode, by arm. The dark rule is
-  the per-arm mean and the whisker its bootstrap 95\% CI over pairs, \num{10000}
-  resamples. Retention with reduced confidence --- the choice is kept while the stated
-  confidence falls, e.g.\ the annotated episode --- is what a choice-only measure cannot
-  see. The control column is exactly zero in \pqxCtlZero{} of \pqxCtlScored{} scored
-  episodes (Limitations); the annotated example is selected in code, not by hand. The
-  contrasts quoted in the text are paired within pair before averaging.}
+  \caption{PQ3, pointed at directly. \textbf{(a)}~$\Delta$Confidence for every
+  \emph{held} episode in the four preference domains, one jittered point per episode, by
+  arm. The dark rule is the per-arm mean and the whisker its bootstrap 95\% CI over
+  pairs, \num{10000} resamples. Retention with reduced confidence --- the choice is kept
+  while the stated confidence falls, e.g.\ the annotated episode --- is what a
+  choice-only measure cannot see. The control column is exactly zero in \pqxCtlZero{} of
+  \pqxCtlScored{} scored episodes (Limitations); the annotated example is selected in
+  code, not by hand. \textbf{(b)}~The positive control, drawn beside the preference
+  domains and never pooled with them: on the money ladder the same two challenge arms
+  move held-episode confidence by about a point --- an order of magnitude less than in
+  the preference domains --- alongside their zero effect on its choices. The contrasts
+  quoted in the text are paired within pair before averaging.}
   \label{fig:held-confidence}
 \end{figure}
 

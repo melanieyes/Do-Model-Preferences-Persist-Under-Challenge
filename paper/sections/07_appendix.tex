@@ -145,17 +145,23 @@ carry this in the Limitations as a live risk rather than a resolved one.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence.png}
-  \caption{Persistence under challenge on the four reported preference domains:
-  \pqxeEps{} scored episodes, \pqxePairs{} pairs, \pairModel{}; the
-  \texttt{finances\_control} episodes are held out and reported separately. These are
+  \caption{Persistence under challenge on the five approved domains:
+  \pqxeEps{} scored preference episodes on \pqxePairs{} pairs (blue) with the
+  \pqxfEps{} \texttt{finances\_control} episodes drawn beside them in grey --- side by
+  side as separate estimates, never pooled. These are
   the main estimates quoted in
   Sections~\ref{sec:pq1} and \ref{sec:pq3}. Bars are means, whiskers bootstrap 95\% CIs
-  over pairs, \num{10000} resamples. \textbf{(a)}~Retention by arm.
-  \textbf{(b)}~$\Delta$confidence among episodes that \emph{held}, as per-arm means and
-  not differenced against control, which sits at zero here. The contrasts quoted in
+  over pairs, \num{10000} resamples. \textbf{(a)}~Retention by arm: the two arms that
+  flip \numrange{40}{50}\% of preference pairs leave the money ladder at
+  \pqxfRet{}\% in every arm. \textbf{(b)}~$\Delta$confidence among episodes that
+  \emph{held}, as per-arm means and
+  not differenced against control, which sits at zero here; the grey control bars stay
+  within about a point of zero. The contrasts quoted in
   Section~\ref{sec:pq3} are paired within pair before averaging, so they differ from
   these bars by a few tenths of a point. \textbf{(c)}~PQ2: retention against
-  balance-pilot consistency, which at $k=\pairK{}$ takes three values.}
+  balance-pilot consistency in the preference domains, which at $k=\pairK{}$ takes
+  three values; the control's pairs sit at consistency $1.0$ by construction and are
+  not in this panel.}
   \label{fig:persistence}
 \end{figure}
 
