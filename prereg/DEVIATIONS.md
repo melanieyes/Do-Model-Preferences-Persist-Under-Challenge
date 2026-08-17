@@ -581,3 +581,28 @@ episodes in `data/persistence/persistence_nano_ext_finances_control.jsonl` and
 `persistence_gemini25_ext_finances_control.jsonl` (**all committed**);
 `deepseek-v4-pro` cell from `persistence_deepseek_ext.jsonl` (entry #6, untouched).
 ---
+
+## #10 — Cross-model persistence on the five-domain pool: two further targets (data seen: YES → exploratory)
+
+| Date | Change | Rationale | Data seen? | By |
+|---|---|---|---|---|
+| 2026-08-17 | The four preference domains of the extension pool (`video_games`, `sports`, `pop_culture`, `sci_tech`; 80 pairs × 4 arms × k=3 = 960 episodes per target) are run against **`gpt-5.4-nano`** and **`gemini-2.5-flash`**, completing on each the same five-domain protocol `deepseek-v4-pro` ran under entry #6: each target's `finances_control` batch was collected under entry #9, and the two batches per target are **merged at analysis time** — same seed, same arms, same per-pair order schedule (deterministic per pair × arm × repeat, so batching by domain leaves the counterbalancing untouched), episode-id uniqueness asserted at merge. Nothing about the design changes; the entry-#9 gates (own ext-pool balance pilots, non-reasoning verification for `gpt-5.4-nano`) carry over. Every estimate is per model; nothing is pooled across models; `finances_control` remains outside every PQ estimate. | Mentor direction (H. Kong, via M. Bui): the submission's headline figure is preference retention by challenge type **across models**. Entry #8 removed the retired original-pool comparison; this entry rebuilds the cross-model check on the pool the paper actually reports. | **YES** — commissioned with the five-domain and entry-#9 results in hand. Exploratory. | Melanie (cost-guard confirm), Haein (direction) |
+
+**Measured output.** Coverage: `gpt-5.4-nano` 960/960 preference episodes scoreable, 0 refusals / 0 unparsed / 0 errors. `gemini-2.5-flash` **944/960 scored**: 16 episodes (1.7%) lost to provider read-timeouts (`ReadTimeout` against `generativelanguage.googleapis.com`, 11 after the initial choice, 5 before it), logged with `status: "error"`, never imputed, never silently dropped. Retention by arm on the four preference domains, bootstrap 95% CIs over pairs, 10,000 resamples:
+
+| target | control | reason_elicitation | self_critique | counter_consideration | stronger adversarial arm |
+|---|---|---|---|---|---|
+| `deepseek-v4-pro` (entry #6) | 100.0 | 100.0 | 50.0 [41.7, 58.3] | 57.5 [50.0, 65.0] | self_critique |
+| `gpt-5.4-nano` | 93.3 [89.6, 96.7] | 98.8 [97.1, 100.0] | 51.2 [43.3, 59.2] | 28.3 [21.2, 35.8] | counter_consideration |
+| `gemini-2.5-flash` | 91.9 [88.1, 95.3] | 84.0 [76.8, 90.3] | 54.0 [45.8, 62.6] | 63.4 [54.7, 72.0] | self_critique |
+
+(CIs for control/reason rows are in `paper/persist_models_ext_stats.tex`; the deepseek row repeats entry #6 and is not re-run.)
+
+**What replicates and what does not.** The core asymmetry — both adversarial arms move the choice far more than control or reason-elicitation on every target — replicates. The **rank swap replicates too**: `counter_consideration` is the stronger arm on `gpt-5.4-nano` (−65.0 vs −42.1 points against control), `self_critique` on the other two, reproducing entry #7's tally (2–1) on an independent item pool. Two invariants weaken: on `gemini-2.5-flash`, control itself sits below ceiling (91.9%) and `reason_elicitation` retains *less* than control (84.0%, −7.7 [−14.4, −1.9] vs control), so "justifying is indistinguishable from doing nothing" is a property of two of the three targets, not of the design. And `gpt-5.4-nano` carries entry #9's caveat: it flips arithmetic under the same adversarial arms (finance retention 83.3%, 40 flips), so part of its preference-domain movement is generic answer-switching rather than preference-specific — its cells are reported with that caveat attached and the finance comparison alongside.
+
+**Held-episode confidence.** The direction (confidence falls among held episodes under the adversarial arms) holds on `deepseek-v4-pro` (−6.5 / −3.3) and `gemini-2.5-flash` (−4.6 / −5.7); on `gpt-5.4-nano` the held-episode contrasts are near zero (−0.1 / −1.7) against a control arm that itself moves — the degenerate-baseline limitation of entry #6 inverts on this target.
+
+**Cost.** Estimates $0.12 (`nano`) and $3.01 (`gemini25`) printed at launch under the cost guard; per-record usage is logged in the episode files.
+
+Provenance: episodes in `data/persistence/persistence_{nano,gemini25}_ext_pop_culture-sci_tech-sports-video_games.jsonl` (**committed**), merged with the entry-#9 finance batches by `analysis/persistence_models_ext_stats.py` → `paper/persist_models_ext_stats.tex` (macro prefix `xm`; the retired `pqm` prefix stays retired); figures from `analysis/persistence_figures.py --scope models`.
+---

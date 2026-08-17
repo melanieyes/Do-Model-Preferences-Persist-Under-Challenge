@@ -212,9 +212,115 @@ def build(scope: str) -> None:
     print(f"  wrote {out.relative_to(REPO)}")
 
 
-def build_domains() -> None:
+MODEL_COLOUR = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#d1662b",
+                "gemini-2.5-flash": "#4a9c6d"}
+
+
+def _targets():
+    from analysis.persistence_models_ext_stats import TARGETS, load_merged
+    return [(name, load_merged(files)) for _, name, files in TARGETS]
+
+
+def build_models_ext() -> None:
+    """Figure 1 of the submission: preference-domain retention by arm, three models.
+
+    Same pool, same arms, same controls; finances_control is excluded here and
+    reported as the separate manipulation check (finance_models.png).
+    """
+    targets = _targets()
+    fig, ax = plt.subplots(figsize=(11.2, 4.4))
+    width = 0.26
+    for mi, (name, rows) in enumerate(targets):
+        pref = [r for r in rows if r.get("retained") is not None
+                and r["domain"] in EXTENSION_DOMAINS]
+        xs, pts, los, his = [], [], [], []
+        for ai, arm in enumerate(ARMS):
+            p, lo, hi, *_ = cluster_bootstrap(
+                group(pref, lambda r, a=arm: r["arm"] == a, lambda r: r["retained"]))
+            if p is None:
+                continue
+            xs.append(ai + (mi - (len(targets) - 1) / 2) * width)
+            pts.append(p * 100); los.append(lo * 100); his.append(hi * 100)
+        ax.bar(xs, pts, width=width * 0.9, color=MODEL_COLOUR[name], edgecolor=AXIS,
+               linewidth=0.6, zorder=2, label=name)
+        for x, p_, lo, hi in zip(xs, pts, los, his):
+            ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
+            ax.text(x, min(lo, p_) - 3.5, f"{p_:.0f}", ha="center", va="top",
+                    fontsize=7.6, color=INK, fontweight="bold", zorder=4)
+    ax.set_xticks(range(len(ARMS)))
+    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
+    ax.set_ylim(0, 118)
+    ax.set_yticks([0, 25, 50, 75, 100])
+    ax.set_ylabel("retention, four preference domains (%)", fontsize=9)
+    ax.set_title("Preference retention by challenge type across models "
+                 "(same 80 pairs, same arms, same controls)",
+                 fontsize=9.5, loc="left", color=INK)
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    ax.legend(fontsize=7.6, frameon=False, loc="upper right", ncol=3,
+              handlelength=1.1, columnspacing=1.0)
+    fig.tight_layout()
+    out = FIGS / "persistence_models_ext.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  wrote {out.relative_to(REPO)}")
+
+
+def build_confidence_models() -> None:
+    """Figure 3 of the submission: held-episode Delta-confidence by arm, three models.
+
+    Per-arm means among episodes whose choice did not move, with cluster-bootstrap
+    95% CIs; the value label sits under each bar.
+    """
+    targets = _targets()
+    dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
+                       else r["conf_post"] - r["conf_pre"])
+    fig, ax = plt.subplots(figsize=(11.2, 4.2))
+    width = 0.26
+    for mi, (name, rows) in enumerate(targets):
+        held = [r for r in rows if r.get("retained") is True
+                and r["domain"] in EXTENSION_DOMAINS]
+        xs, pts, los, his = [], [], [], []
+        for ai, arm in enumerate(ARMS):
+            p, lo, hi, *_ = cluster_bootstrap(
+                group(held, lambda r, a=arm: r["arm"] == a, dconf))
+            if p is None:
+                continue
+            xs.append(ai + (mi - (len(targets) - 1) / 2) * width)
+            pts.append(p); los.append(lo); his.append(hi)
+        ax.bar(xs, pts, width=width * 0.9, color=MODEL_COLOUR[name], edgecolor=AXIS,
+               linewidth=0.6, zorder=2, label=name)
+        for x, p_, lo, hi in zip(xs, pts, los, his):
+            ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
+            ax.text(x, min(lo, p_) - 0.55, f"{p_:+.1f}", ha="center", va="top",
+                    fontsize=7.3, color=INK, fontweight="bold", zorder=4)
+    ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    ax.set_xticks(range(len(ARMS)))
+    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
+    ax.set_ylabel(r"$\Delta$confidence among HELD episodes", fontsize=9)
+    ax.set_title("Confidence change among retained preferences, by model "
+                 "(per-arm means, four preference domains)",
+                 fontsize=9.5, loc="left", color=INK)
+    ax.set_axisbelow(True)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    ax.legend(fontsize=7.6, frameon=False, loc="lower left", ncol=1,
+              handlelength=1.1)
+    fig.tight_layout()
+    out = FIGS / "persistence_confidence_models.png"
+    fig.savefig(out, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  wrote {out.relative_to(REPO)}")
+
+
+def build_domains(rows=None, out_name: str = "persistence_domains.png",
+                  model_label: str | None = None) -> None:
     """Retention by arm across the four preference domains plus the positive control."""
-    rows = load(EXT)
+    if rows is None:
+        rows = load(EXT)
     scored = [r for r in rows if r.get("retained") is not None and r["domain"] in REPORTED_DOMAINS]
     fig, ax = plt.subplots(figsize=(12.0, 3.8))
     x_base = np.arange(len(REPORTED_DOMAINS))
@@ -245,7 +351,8 @@ def build_domains() -> None:
                        ha="right", fontsize=8)
     ax.set_ylim(0, 110)
     ax.set_ylabel("retention (%)", fontsize=9)
-    ax.set_title("Retention by domain and arm for the approved persistence set",
+    ax.set_title("Retention by domain and arm for the approved persistence set"
+                 + (f" — {model_label}" if model_label else ""),
                  fontsize=9.5, loc="left", color=INK)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
     ax.set_axisbelow(True)
@@ -255,7 +362,7 @@ def build_domains() -> None:
     ax.legend(frameon=False, fontsize=7.5, ncol=4, columnspacing=1.0,
               handlelength=1.1, loc="upper center", bbox_to_anchor=(0.5, 1.08))
     fig.tight_layout()
-    out = FIGS / "persistence_domains.png"
+    out = FIGS / out_name
     fig.savefig(out, bbox_inches="tight")
     plt.close(fig)
     print(f"  wrote {out.relative_to(REPO)}")
@@ -366,15 +473,26 @@ def build_confidence() -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="persistence figures, by domain scope")
-    ap.add_argument("--scope", choices=("main", "domains", "confidence", "both"),
+    ap.add_argument("--scope",
+                    choices=("main", "domains", "confidence", "models", "both"),
                     default="both",
                     help="which figure set to draw; default regenerates all figures")
     a = ap.parse_args()
-    scopes = ("main", "domains", "confidence") if a.scope == "both" else (a.scope,)
+    scopes = (("main", "domains", "confidence", "models")
+              if a.scope == "both" else (a.scope,))
     for sc in scopes:
         if sc == "domains":
             build_domains()
         elif sc == "confidence":
             build_confidence()
+        elif sc == "models":
+            build_models_ext()
+            build_confidence_models()
+            # appendix versions of the domain split for the two further targets
+            for name, rows in _targets():
+                if name == "deepseek-v4-pro":
+                    continue
+                tag = name.replace(".", "").replace("-", "_")
+                build_domains(rows, f"persistence_domains_{tag}.png", name)
         else:
             build(sc)
