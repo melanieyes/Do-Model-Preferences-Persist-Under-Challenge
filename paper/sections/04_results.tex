@@ -18,13 +18,18 @@ bootstrap 95\% CI over pairs, \num{10000} resamples; everything is exploratory.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_models_ext.png}
-  \caption{\textbf{Figure 1: Preference retention by challenge type across models.}
-  Retention on the four preference domains (the positive control is excluded here and
-  reported separately), same \pqxePairs{} pairs, same arms, same instrument controls on
-  all three targets. Bars are means with bootstrap 95\% CIs over pairs; the printed
-  number is the retention point estimate. Control and reason-elicitation sit at or near
+  \caption{\textbf{Figure 1: Retention by challenge type across models, all five
+  approved domains.} Bars are means with bootstrap 95\% CIs over pairs; the printed
+  number is the retention point estimate. \textbf{(a)}~The four preference domains
+  (same \pqxePairs{} pairs, same arms, same instrument controls on all three targets):
+  control and reason-elicitation sit at or near
   ceiling on two of three targets while both adversarial arms cut retention deeply on
-  all three; the \emph{rank} of the two adversarial arms differs by model.}
+  all three, and the \emph{rank} of the two adversarial arms differs by model.
+  \textbf{(b)}~Personal finances, the check item, in the same layout and never pooled
+  into~(a): a choice between two money amounts is arithmetic, so ceiling retention is
+  the expected result --- it holds on \pairModel{} and nearly holds on
+  \texttt{gemini-2.5-flash}, and fails on \texttt{gpt-5.4-nano}, which bounds how that
+  target's panel-(a) bars may be read.}
   \label{fig:models}
 \end{figure}
 
@@ -138,13 +143,17 @@ set aside. We report that as a sensitivity check, not a headline.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_confidence_models.png}
-  \caption{\textbf{Figure 3: Confidence change among retained preferences, by model.}
-  Per-arm mean $\Delta$Confidence among episodes whose choice did \emph{not} move, four
-  preference domains, with bootstrap 95\% CIs over pairs. On \pairModel{} and
+  \caption{\textbf{Figure 3: Confidence change among retained preferences, by model,
+  all five approved domains.} Per-arm mean $\Delta$Confidence among episodes whose
+  choice did \emph{not} move, with bootstrap 95\% CIs over pairs.
+  \textbf{(a)}~The four preference domains: on \pairModel{} and
   \texttt{gemini-2.5-flash} the two adversarial arms cost the surviving preferences
   confidence while control sits at or near zero; on \texttt{gpt-5.4-nano} the control
   arm itself moves, so its held-episode contrasts are not interpreted
-  (Section~\ref{sec:discussion}).}
+  (Section~\ref{sec:discussion}). \textbf{(b)}~Personal finances, never pooled
+  into~(a): on \pairModel{} and \texttt{gemini-2.5-flash} the surviving arithmetic
+  answers keep their confidence to within about a point, while \texttt{gpt-5.4-nano}
+  loses confidence even on arithmetic --- including under its moving control.}
   \label{fig:confidence-models}
 \end{figure}
 

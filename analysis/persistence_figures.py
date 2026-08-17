@@ -103,46 +103,65 @@ def _targets():
     return [(name, load_merged(files)) for _, name, files in TARGETS]
 
 
-def build_models_ext() -> None:
-    """Figure 1 of the submission: preference-domain retention by arm, three models.
-
-    Same pool, same arms, same controls; finances_control is excluded here and
-    reported as the separate manipulation check (finance_models.png).
-    """
-    targets = _targets()
-    fig, ax = plt.subplots(figsize=(11.2, 4.4))
+def _model_arm_panel(ax, targets, domains, value, *, pct, label_fmt, label_gap,
+                     legend=False):
+    """Grouped bars: arms on x, one colour per model, over the given domain set."""
     width = 0.26
     for mi, (name, rows) in enumerate(targets):
-        pref = [r for r in rows if r.get("retained") is not None
-                and r["domain"] in EXTENSION_DOMAINS]
+        sel = [r for r in rows if r["domain"] in domains]
         xs, pts, los, his = [], [], [], []
         for ai, arm in enumerate(ARMS):
             p, lo, hi, *_ = cluster_bootstrap(
-                group(pref, lambda r, a=arm: r["arm"] == a, lambda r: r["retained"]))
+                group(sel, lambda r, a=arm: r["arm"] == a, value))
             if p is None:
                 continue
+            k = 100 if pct else 1
             xs.append(ai + (mi - (len(targets) - 1) / 2) * width)
-            pts.append(p * 100); los.append(lo * 100); his.append(hi * 100)
+            pts.append(p * k); los.append(lo * k); his.append(hi * k)
         ax.bar(xs, pts, width=width * 0.9, color=MODEL_COLOUR[name], edgecolor=AXIS,
-               linewidth=0.6, zorder=2, label=name)
+               linewidth=0.6, zorder=2, label=name if legend else None)
         for x, p_, lo, hi in zip(xs, pts, los, his):
             ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
-            ax.text(x, min(lo, p_) - 3.5, f"{p_:.0f}", ha="center", va="top",
-                    fontsize=7.6, color=INK, fontweight="bold", zorder=4)
+            ax.text(x, min(lo, p_) - label_gap, label_fmt.format(p_), ha="center",
+                    va="top", fontsize=7.3, color=INK, fontweight="bold", zorder=4)
     ax.set_xticks(range(len(ARMS)))
-    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
-    ax.set_ylim(0, 118)
-    ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_ylabel("retention, four preference domains (%)", fontsize=9)
-    ax.set_title("Preference retention by challenge type across models "
-                 "(same 80 pairs, same arms, same controls)",
-                 fontsize=9.5, loc="left", color=INK)
     ax.set_axisbelow(True)
     ax.yaxis.grid(True, color=GRID, linewidth=0.7)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+
+
+def build_models_ext() -> None:
+    """Figure 1 of the submission: retention by arm across models, all five domains.
+
+    Panel (a) pools the four preference domains; panel (b) is personal finances,
+    the check item, drawn in the same layout and never pooled into panel (a).
+    """
+    targets = [(n, [r for r in rows if r.get("retained") is not None])
+               for n, rows in _targets()]
+    fig, (ax, axf) = plt.subplots(
+        2, 1, figsize=(11.2, 6.6), sharex=True,
+        gridspec_kw={"height_ratios": [2.1, 1.0], "hspace": 0.14})
+    ret = lambda r: r["retained"]
+    _model_arm_panel(ax, targets, EXTENSION_DOMAINS, ret, pct=True,
+                     label_fmt="{:.0f}", label_gap=3.5, legend=True)
+    ax.set_ylim(0, 118)
+    ax.set_yticks([0, 25, 50, 75, 100])
+    ax.set_ylabel("retention (%)", fontsize=9)
+    ax.set_title("(a) Four preference domains: preference retention by challenge "
+                 "type across models (same 80 pairs, same arms, same controls)",
+                 fontsize=9.5, loc="left", color=INK)
     ax.legend(fontsize=7.6, frameon=False, loc="upper right", ncol=3,
               handlelength=1.1, columnspacing=1.0)
+    _model_arm_panel(axf, targets, (POSITIVE_CONTROL,), ret, pct=True,
+                     label_fmt="{:.0f}", label_gap=6.0)
+    axf.set_ylim(0, 118)
+    axf.set_yticks([0, 50, 100])
+    axf.set_ylabel("retention (%)", fontsize=9)
+    axf.set_title("(b) Personal finances (check item, never pooled into (a)): "
+                  "arithmetic holds at ceiling except on gpt-5.4-nano",
+                  fontsize=9.5, loc="left", color=INK)
+    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
     fig.tight_layout()
     out = FIGS / "persistence_models_ext.png"
     fig.savefig(out, bbox_inches="tight")
@@ -151,46 +170,33 @@ def build_models_ext() -> None:
 
 
 def build_confidence_models() -> None:
-    """Figure 3 of the submission: held-episode Delta-confidence by arm, three models.
-
-    Per-arm means among episodes whose choice did not move, with cluster-bootstrap
-    95% CIs; the value label sits under each bar.
+    """Figure 3 of the submission: held-episode Delta-confidence by arm, three models,
+    all five domains. Panel (a) is the four preference domains; panel (b) is personal
+    finances, same layout, never pooled into (a).
     """
-    targets = _targets()
     dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
                        else r["conf_post"] - r["conf_pre"])
-    fig, ax = plt.subplots(figsize=(11.2, 4.2))
-    width = 0.26
-    for mi, (name, rows) in enumerate(targets):
-        held = [r for r in rows if r.get("retained") is True
-                and r["domain"] in EXTENSION_DOMAINS]
-        xs, pts, los, his = [], [], [], []
-        for ai, arm in enumerate(ARMS):
-            p, lo, hi, *_ = cluster_bootstrap(
-                group(held, lambda r, a=arm: r["arm"] == a, dconf))
-            if p is None:
-                continue
-            xs.append(ai + (mi - (len(targets) - 1) / 2) * width)
-            pts.append(p); los.append(lo); his.append(hi)
-        ax.bar(xs, pts, width=width * 0.9, color=MODEL_COLOUR[name], edgecolor=AXIS,
-               linewidth=0.6, zorder=2, label=name)
-        for x, p_, lo, hi in zip(xs, pts, los, his):
-            ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
-            ax.text(x, min(lo, p_) - 0.55, f"{p_:+.1f}", ha="center", va="top",
-                    fontsize=7.3, color=INK, fontweight="bold", zorder=4)
+    targets = [(n, [r for r in rows if r.get("retained") is True])
+               for n, rows in _targets()]
+    fig, (ax, axf) = plt.subplots(
+        2, 1, figsize=(11.2, 6.4), sharex=True,
+        gridspec_kw={"height_ratios": [1.9, 1.0], "hspace": 0.16})
+    _model_arm_panel(ax, targets, EXTENSION_DOMAINS, dconf, pct=False,
+                     label_fmt="{:+.1f}", label_gap=0.55, legend=True)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
-    ax.set_xticks(range(len(ARMS)))
-    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
-    ax.set_ylabel(r"$\Delta$confidence among HELD episodes", fontsize=9)
-    ax.set_title("Confidence change among retained preferences, by model "
-                 "(per-arm means, four preference domains)",
+    ax.set_ylabel(r"$\Delta$confidence, held episodes", fontsize=9)
+    ax.set_title("(a) Four preference domains: confidence change among retained "
+                 "preferences, by model (per-arm means)",
                  fontsize=9.5, loc="left", color=INK)
-    ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
     ax.legend(fontsize=7.6, frameon=False, loc="lower left", ncol=1,
               handlelength=1.1)
+    _model_arm_panel(axf, targets, (POSITIVE_CONTROL,), dconf, pct=False,
+                     label_fmt="{:+.1f}", label_gap=0.55)
+    axf.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    axf.set_ylabel(r"$\Delta$confidence, held", fontsize=9)
+    axf.set_title("(b) Personal finances (check item, never pooled into (a))",
+                  fontsize=9.5, loc="left", color=INK)
+    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
     fig.tight_layout()
     out = FIGS / "persistence_confidence_models.png"
     fig.savefig(out, bbox_inches="tight")
