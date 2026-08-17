@@ -13,7 +13,6 @@ target it is a property of that target's elicitation stability, reported as
 such and never as retention-of-a-preference.
 
     python analysis/finance_check.py             # console comparison
-    python analysis/finance_check.py --figure    # + paper/figures/finance_models.png
 """
 
 from __future__ import annotations
@@ -50,71 +49,6 @@ def load(path: Path, finance_only: bool) -> list[dict]:
 
 def pct(x):
     return "--" if x is None else f"{x * 100:5.1f}%"
-
-
-def build_figure() -> None:
-    """Grouped bars: arms on x, one colour per model — the mentor's layout, on the
-    manipulation check. Value labels on every bar (selective: one number per bar,
-    the retention point) plus the bootstrap 95% CI whisker the house rule requires.
-    """
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    sys.path.insert(0, str(ROOT / "analysis"))
-    from figure_style import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE
-
-    plt.rcParams.update({
-        "font.family": "sans-serif", "font.sans-serif": ["DejaVu Sans"],
-        "figure.facecolor": SURFACE, "axes.facecolor": SURFACE,
-        "axes.edgecolor": AXIS, "text.color": INK, "axes.labelcolor": INK_2,
-        "xtick.color": MUTED, "ytick.color": MUTED,
-        "savefig.dpi": DPI, "figure.dpi": DPI,
-    })
-    # Blue + soft-pink palette, validated (CVD dE >= 9; every bar carries a label).
-    COLOURS = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#e287ae",
-               "gemini-2.5-flash": "#4a9c6d"}
-    ARM_LABEL = {"control": "control", "reason_elicitation": "reason\nelicitation",
-                 "self_critique": "self\ncritique",
-                 "counter_consideration": "counter\nconsideration"}
-
-    present = [(n, p, f) for n, p, f in SOURCES if p.exists()]
-    fig, ax = plt.subplots(figsize=(11.2, 4.4))
-    width = 0.26
-    for mi, (name, path, fin_only) in enumerate(present):
-        scored = [r for r in load(path, fin_only) if r.get("retained") is not None]
-        xs, pts, los, his = [], [], [], []
-        for ai, arm in enumerate(ARMS):
-            p, lo, hi, _, _ = cluster_bootstrap(group(
-                scored, lambda r, a=arm: r["arm"] == a, lambda r: r["retained"]))
-            if p is None:
-                continue
-            xs.append(ai + (mi - (len(present) - 1) / 2) * width)
-            pts.append(p * 100); los.append(lo * 100); his.append(hi * 100)
-        ax.bar(xs, pts, width=width * 0.9, color=COLOURS[name], edgecolor=AXIS,
-               linewidth=0.6, zorder=2, label=name)
-        for x, p_, lo, hi in zip(xs, pts, los, his):
-            ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
-            ax.text(x, min(lo, p_) - 3.5, f"{p_:.0f}", ha="center", va="top",
-                    fontsize=7.6, color=INK, fontweight="bold", zorder=4)
-
-    ax.set_xticks(range(len(ARMS)))
-    ax.set_xticklabels([ARM_LABEL[a] for a in ARMS], fontsize=8.5)
-    ax.set_ylim(0, 118)
-    ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_ylabel("retention on the money ladder (%)", fontsize=9)
-    ax.set_title("Manipulation check across models: does a challenge move arithmetic?",
-                 fontsize=9.5, loc="left", color=INK)
-    ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-    ax.legend(fontsize=7.6, frameon=False, loc="upper right", ncol=3,
-              handlelength=1.1, columnspacing=1.0)
-    fig.tight_layout()
-    out = ROOT / "paper" / "figures" / "finance_models.png"
-    fig.savefig(out, bbox_inches="tight")
-    plt.close(fig)
-    print(f"\nwrote {out.relative_to(ROOT)}")
 
 
 def main() -> None:
@@ -163,5 +97,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-    if "--figure" in sys.argv:
-        build_figure()

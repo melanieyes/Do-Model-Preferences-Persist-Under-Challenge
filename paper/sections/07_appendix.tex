@@ -129,20 +129,13 @@ bias-aware sensitivity check.
   \label{fig:domains-gemini}
 \end{figure}
 
-\section{The manipulation check across models}
+\section{The personal-finances check across models}
 \label{app:fincheck}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{finance_models.png}
-  \caption{The money-ladder manipulation check across the three targets: retention on
-  \texttt{finances\_control} by arm, bootstrap 95\% CIs over pairs. A forced choice
-  between two rungs of the ladder is arithmetic, so ceiling retention is the expected
-  result everywhere.}
-  \label{fig:finance-models}
-\end{figure}
-
-The discriminant property --- challenges move preferences but not arithmetic --- is
+The personal-finances rows of Figure~\ref{fig:persistence-domains-main} and
+Figures~\ref{fig:domains-nano}--\ref{fig:domains-gemini} carry the cross-model
+comparison; no separate figure is needed. The discriminant property --- challenges move
+preferences but not arithmetic --- is
 itself model-specific. On \pairModel{} the ladder is immovable (\pqxfFlips{} flips in
 \pqxfChallengeEps{} challenge episodes). On \texttt{gemini-2.5-flash} it nearly holds
 (\xmGtwoFinRet{}\% retention, \xmGtwoFinFlips{} flips). On \texttt{gpt-5.4-nano} the two
@@ -152,7 +145,7 @@ money-ladder pairs in the no-challenge balance pilot (4 of 20 pairs, against 0 o
 \pairModel{}). On that target, challenge-induced answer-switching is not
 content-specific, so its preference-domain retention is an upper bound on
 preference-specific movement rather than a clean estimate. This is the case for running
-the positive control per target rather than inheriting it from a published figure or a
+the check per target rather than inheriting it from a published figure or a
 sister model.
 
 \section{Human validation}

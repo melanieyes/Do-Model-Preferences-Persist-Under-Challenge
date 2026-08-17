@@ -229,7 +229,10 @@ def build_domains(rows=None, out_name: str = "persistence_domains.png",
             ax.plot([x - 0.05, x + 0.05], [hi, hi], color=INK, linewidth=1.0, zorder=3)
 
     ax.set_xticks(x_base)
-    ax.set_xticklabels([d.replace("_", " ") for d in REPORTED_DOMAINS], rotation=20,
+    DOMAIN_LABEL = {"video_games": "video games", "sports": "sports",
+                    "pop_culture": "pop culture", "sci_tech": "science & tech",
+                    "finances_control": "personal finances"}
+    ax.set_xticklabels([DOMAIN_LABEL[d] for d in REPORTED_DOMAINS], rotation=20,
                        ha="right", fontsize=8)
     ax.set_ylim(0, 110)
     ax.set_ylabel("retention (%)", fontsize=9)
@@ -325,7 +328,7 @@ def build_confidence() -> None:
     ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=8.5)
     ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=9)
     ax.set_title("All five approved domains: the choice survives; the stated confidence "
-                 "does not always survive with it — except on the money ladder",
+                 "does not always survive with it — except on personal finances",
                  fontsize=9.5, loc="left", color=INK)
     from matplotlib.lines import Line2D
     ax.legend(handles=[
@@ -334,7 +337,7 @@ def build_confidence() -> None:
         Line2D([], [], marker="o", ls="none", color=COLOR["self_critique"], alpha=0.7,
                label="preference episodes: arms that move the choice"),
         Line2D([], [], marker="o", ls="none", color=FINANCE_COLOR, alpha=0.8,
-               label="money-ladder episodes (positive control, never pooled)"),
+               label="personal-finances episodes (control item, never pooled)"),
         Line2D([], [], color=INK, lw=1.8,
                label="per-cluster mean, with bootstrap 95% CI over pairs"),
     ], fontsize=6.8, frameon=False, loc="lower left", handlelength=1.2,
