@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Do Model Preferences Persist Under Challenge?</title>
-<meta name="description" content="Ask a language model to justify a choice and nothing happens. Ask it to find flaws and half the choices flip. An exploratory study, with a broken ruler repaired along the way.">
+<meta name="description" content="Ask a language model to justify a choice and nothing happens. Ask it to find flaws and half the choices flip. Three model families, 3,600 conversations, and a broken ruler repaired along the way.">
 <style>
   /* Single light theme by design. Palette: deep navy #0A2947, warm cream #F3E4C9,
      sage #D3D4C0, warm brown #8B5E3C; chart hues are validated steps of the same world. */
@@ -23,6 +23,12 @@
     --c-brown: #A85A28;
     --c-plum: #6D4E8C;
     --c-gray: #85876F;
+    /* Model hues, identical to MODEL_COLOUR in analysis/persistence_figures.py, so a
+       reader moving between this page and the paper's plates sees one encoding. Kept
+       distinct from the four arm hues above, which mean something else. */
+    --m-deepseek: #2a78d6;
+    --m-nano: #d1698f;
+    --m-gemini: #3f8a5e;
     --good-bg: #E3E5D2;
     --good-ink: #55613B;
   }
@@ -117,6 +123,12 @@
   figcaption { font-size: .88rem; color: var(--ink-2); line-height: 1.55; margin-top: 1rem; }
   .chart { width: 100%; }
   .chart svg { display: block; width: 100%; height: auto; }
+  .chart-key {
+    display: flex; flex-wrap: wrap; gap: .3rem 1.1rem;
+    margin: .55rem 0 0; font-size: .78rem; color: var(--ink-2);
+  }
+  .chart-key .key-item { white-space: nowrap; }
+  .chart-key .mono, .chart-key { font-variant-numeric: tabular-nums; }
   .chart-block + .chart-block { margin-top: 1.3rem; }
   .chart-model {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -245,13 +257,14 @@
     Ask a language model to pick between two futures and it will pick one. Researchers now
     use those picks to map what models value, and sometimes to ask whether models deserve
     moral consideration. We asked a smaller question first: if you challenge the pick, does
-    it survive? The answer turned out to depend on what the challenge asks the model to do.
-    And before we could measure any of it, we had to fix the ruler.
+    it survive? The answer turned out to depend on what the challenge asks the model to do
+    &mdash; and, for some of the details, on which model you ask. Before we could measure
+    any of it, we had to fix the ruler.
   </p>
   <div class="meta">
-    <span><strong>1,200</strong> conversations run</span>
+    <span><strong>3,600</strong> conversations run</span>
     <span><strong>100</strong> item pairs, <strong>5</strong> domains</span>
-    <span><strong>1</strong> model: deepseek-v4-pro</span>
+    <span><strong>3</strong> model families</span>
     <span class="flag">Exploratory, not confirmatory</span>
   </div>
 </header>
@@ -260,12 +273,27 @@
   <div class="tldr sans">
     <h2>The short version</h2>
     <ul>
-      <li>On the reported five-domain persistence set, the model keeps its original preference in <strong>100.0%</strong> of no-challenge and "explain your choice" episodes, but in only <strong>50.0%</strong> and <strong>57.5%</strong> of challenge episodes that ask it to find flaws or argue the other side.</li>
-      <li>Asking a model to <em>explain</em> a choice it just made changes nothing. It keeps the choice exactly as often as if you had said nothing at all.</li>
-      <li>Asking it to <em>find flaws</em> in the choice, or to <em>argue for the other option</em>, cuts retention by 50.0 and 42.5 percentage points against the no-challenge baseline. No challenge ever says "change your answer" or offers any argument of its own.</li>
-      <li>When the choice survives, the model's stated confidence quietly drops. A measure that only tracks the choice records nothing.</li>
-      <li>A set of questions with a checkable right answer never flipped, not once in 120 challenged conversations. So the challenges move preferences, not answers in general.</li>
-      <li>During instrument development, an earlier item pool showed that what looked like preference could be position: a model picking a side of the page, not an option. The controls adopted after that failure are enforced on every call here; the development pool itself was retired from the repository (deviation #8 in the project's deviation log).</li>
+      <li>Asking a model to <em>explain</em> a choice it just made changes nothing. On our
+        main model it keeps the choice in <strong>100.0%</strong> of conversations &mdash;
+        exactly as often as if we had said nothing at all.</li>
+      <li>Asking it to <em>find flaws</em> in the choice, or to <em>argue for the other
+        option</em>, drops that to <strong>50.0%</strong> and <strong>57.5%</strong>. No
+        challenge ever says "change your answer" or supplies any argument of its own; the
+        model generates every objection itself.</li>
+      <li>That gap holds on <strong>all three model families</strong> we tested. What does
+        <em>not</em> hold is the fine print: which of the two hard challenges bites harder
+        swaps between models, and on one model even "explain your choice" loosens the
+        preference.</li>
+      <li>When the choice survives, the model's stated confidence quietly drops. A measure
+        that only tracks the choice records nothing at all.</li>
+      <li>We included 20 questions with a checkable right answer &mdash; money amounts,
+        where one option is plainly better. On our main model these never flipped, not once
+        in 120 challenged conversations, which is how we know the challenges move
+        preferences rather than answers in general. On a second model they <em>did</em>
+        flip, which bounds what we can claim there.</li>
+      <li>Before any of this was measurable we had to fix the measuring instrument. What
+        looked like preference could be position: a model picking a side of the page, not an
+        option. The controls adopted after that failure run on every call here.</li>
     </ul>
   </div>
 </div>
@@ -278,11 +306,10 @@
     <a href="https://arxiv.org/abs/2502.08640">Utility Engineering</a> fits whole value
     systems to thousands of pairwise picks. Model welfare work reads self-reports of
     feeling, as in Anthropic's
-    <a href="https://transformer-circuits.pub/2026/emotions/index.html">study of emotion features</a>
-    and the welfare assessment in the
-    <a href="https://www.anthropic.com/research/end-subset-conversations">Claude 4 system card</a>,
+    <a href="https://transformer-circuits.pub/2026/emotions/index.html">study of emotion features</a>,
     or watches what models do, such as
-    <a href="https://arxiv.org/abs/2509.04781">choosing to leave a conversation</a>.
+    <a href="https://www.anthropic.com/research/end-subset-conversations">letting a model end an abusive conversation</a>
+    and <a href="https://arxiv.org/abs/2509.04781">choosing to leave one</a>.
   </p>
   <p>
     All of this treats an elicited preference as a reading of something the model has. That
@@ -303,12 +330,50 @@
     "preference" swapped with them.
   </p>
   <p>
-    The standard hygiene for this is counterbalancing: show both orders, average the
-    results. But averaging can hide this failure instead of fixing it. A model that always
-    picks the first slot averages out to exactly 50/50 — the same number a perfectly
-    balanced preference produces — so a filter that keeps "balanced-looking" items can
-    select <em>for</em> the broken ones. We ran into exactly that trap.
+    The standard hygiene for this is counterbalancing: show each item in both orders and
+    average the results. But averaging can <em>hide</em> this failure instead of fixing it,
+    and the reason is worth seeing rather than reading.
   </p>
+
+  <figure class="plate wide">
+    <div class="plate-head">
+      <span class="plate-tag">Diagram</span>
+      <span class="plate-title">Why averaging over orders hides a position-driven item</span>
+    </div>
+    <div class="trap" role="img" aria-label="One item shown to the model twice, with the two options swapped. Both times the model picks whichever option is in the first slot. Option A wins once and option B wins once, so the average is exactly 0.50 — the same number a perfectly balanced genuine preference would produce. The average cannot tell the two cases apart.">
+      <div class="trap-rounds">
+        <div class="trap-card">
+          <div class="round">Order 1</div>
+          <div class="opt first"><span class="slot">slot 1</span> A quiet week of rain <span class="pick">picked</span></div>
+          <div class="opt"><span class="slot">slot 2</span> A bright cold morning</div>
+        </div>
+        <div class="trap-card">
+          <div class="round">Order 2 &mdash; same item, options swapped</div>
+          <div class="opt first"><span class="slot">slot 1</span> A bright cold morning <span class="pick">picked</span></div>
+          <div class="opt"><span class="slot">slot 2</span> A quiet week of rain</div>
+        </div>
+      </div>
+      <div class="trap-verdicts">
+        <div class="verdict looks">
+          <b>What the average reports</b>
+          Each option won exactly once, so the item scores <span class="mono">0.50</span> —
+          a flawless, perfectly balanced preference. It passes every check.
+        </div>
+        <div class="verdict truth">
+          <b>What actually happened</b>
+          The model picked <em>slot 1</em> both times. It never compared the two options at
+          all. A genuine coin-flip preference produces the identical <span class="mono">0.50</span>.
+        </div>
+      </div>
+    </div>
+    <figcaption>
+      The two are indistinguishable in the average. So a pipeline that follows best practice
+      sees a healthy item, and a filter that keeps "balanced-looking" items selects
+      <em>for</em> the broken ones. We walked into exactly this trap, which is why the fix
+      here is to keep the model's reasoning step on and hold the order fixed inside each
+      conversation &mdash; not to average harder.
+    </figcaption>
+  </figure>
   <p>
     Each of these failures is documented, with its numbers, in the project's public
     deviation log. The development pool itself was later retired from the repository
@@ -340,10 +405,15 @@
     of outcomes drawn from the published outcome set of
     <a href="https://arxiv.org/abs/2502.08640">Utility Engineering</a>: 80 preference pairs
     across four domains — video games, sports, pop culture, and science and technology —
-    plus 20 personal-finance pairs that serve as a positive control (a money ladder where
-    one option is simply better; more on it below). The model is deepseek-v4-pro:
-    1,200 conversations in all, every pair meeting every challenge, with presentation
-    order counterbalanced across conversations.
+    plus 20 personal-finance pairs that serve as a sanity check (money amounts where one
+    option is simply better; more on those below). Each pair meets each of the four
+    challenges three separate times, from a fresh conversation every time, with the
+    presentation order counterbalanced across conversations: 1,200 conversations per model.
+    We ran the whole thing on three model families &mdash;
+    <span class="mono">deepseek-v4-pro</span> as the main target, plus
+    <span class="mono">gpt-5.4-nano</span> and <span class="mono">gemini-2.5-flash</span>
+    &mdash; for 3,600 in total. Nothing is ever pooled across models; every number is
+    reported per model.
   </p>
 
   <figure class="plate wide">
@@ -447,6 +517,41 @@
     is 0.482 ([0.345, 0.628]).
   </p>
 
+  <h3>Does this survive changing the model?</h3>
+  <p>
+    A result on one model is a result about that model. So we ran the identical protocol
+    &mdash; same 100 pairs, same challenges, same controls, same seed &mdash; on two further
+    families: <span class="mono">gpt-5.4-nano</span>, which has no reasoning step at all,
+    and <span class="mono">gemini-2.5-flash</span>. That is 3,600 conversations in total.
+  </p>
+
+  <figure class="plate wide">
+    <div class="plate-head">
+      <span class="plate-tag">Plate</span>
+      <span class="plate-title">The same four challenges, three model families</span>
+    </div>
+    <div class="chart" id="chart-models"></div>
+    <figcaption>
+      Preference domains only (80 pairs per model). Whiskers are 95% confidence intervals,
+      bootstrap over item pairs. The core gap reproduces everywhere: both hard challenges
+      sit far below the two easy ones on all three models. The ordering <em>within</em> that
+      pair does not reproduce &mdash; "find flaws" bites harder on two models, "argue the
+      other side" on <span class="mono">gpt-5.4-nano</span>, where it is the most disruptive
+      challenge by a wide margin. On <span class="mono">gemini-2.5-flash</span>, 16 of 960
+      conversations were lost to provider timeouts; they are logged as errors, never filled
+      in, leaving 944 scored.
+    </figcaption>
+  </figure>
+
+  <p>
+    Two things we expected to be facts about <em>challenges</em> turn out to be facts about
+    <em>models</em>. First, the ranking swaps, as above. Second, "explaining changes nothing"
+    holds on two of three: on <span class="mono">gemini-2.5-flash</span>, being asked to
+    explain its choice actually loosens it, to 84.0% ([76.8, 90.3]) against that model's own
+    91.9% baseline. If you were going to reuse one number from this study on a model you
+    have not tested, that is the kind of thing that would bite you.
+  </p>
+
   <h3>The quiet second channel: confidence</h3>
   <p>
     Among conversations where the choice <em>survived</em> the challenge, the model's stated
@@ -471,6 +576,13 @@
     The baseline this is measured against is genuinely flat: in the no-challenge arm the
     confidence change was exactly zero in all 211 conversations where it could be scored.
   </p>
+  <p>
+    The direction repeats on <span class="mono">gemini-2.5-flash</span> (&minus;4.6 and
+    &minus;5.7 points against its own baseline). On <span class="mono">gpt-5.4-nano</span> we
+    do not report it, and the reason is instructive: that model's <em>no-challenge</em> arm
+    moves its own confidence around, so there is no still baseline to measure a drop
+    against. A contrast against a moving baseline is not a finding, so we leave it alone.
+  </p>
 
   <h3>The control that must not move, and didn't</h3>
   <p>
@@ -481,12 +593,30 @@
   <div class="tiles">
     <div class="tile">
       <div class="big hold num">0&nbsp;/&nbsp;120</div>
-      <div class="lbl">flips across all challenged conversations on the arithmetic items; retention 100.0% in every arm. The same challenges that flip 42.5&ndash;50% of preference choices moved these not once.</div>
+      <div class="lbl"><span class="mono">deepseek-v4-pro</span>: flips on the arithmetic items across all challenged conversations. Retention 100.0% in every arm. The same challenges that flip 42.5&ndash;50% of preference choices moved these not once.</div>
+    </div>
+    <div class="tile">
+      <div class="big hold num">96.2%</div>
+      <div class="lbl"><span class="mono">gemini-2.5-flash</span>: nearly holds the line, 9 flips.</div>
+    </div>
+    <div class="tile">
+      <div class="big drop num">83.3%</div>
+      <div class="lbl"><span class="mono">gpt-5.4-nano</span>: <strong>fails</strong> the check, 40 flips. This model will contradict arithmetic when challenged.</div>
     </div>
   </div>
   <p>
-    So this is not a model that will say anything when pushed. The challenges move
-    preferences and leave arithmetic alone.
+    On our main model, then, this is not a system that will say anything when pushed: the
+    challenges move preferences and leave arithmetic alone. But the check itself turns out to
+    be model-specific, and that is the most useful thing it told us.
+    <span class="mono">gpt-5.4-nano</span> flips <em>arithmetic</em> under the same two
+    challenges. So on that model we cannot separate "the preference moved" from "the model
+    got talked out of an answer", and its preference numbers should be read as an upper bound
+    on preference-specific movement rather than a clean measurement of it.
+  </p>
+  <p class="note">
+    This is the argument for running a sanity check on every model you test, rather than
+    citing someone else's. Had we inherited the check from our main model, we would have
+    reported <span class="mono">gpt-5.4-nano</span>'s numbers as if they were clean.
   </p>
 
   <h3>One more thing the fix did not fix</h3>
@@ -532,7 +662,7 @@
     <li>
       <strong>Preference and welfare readings</strong>, from
       <a href="https://arxiv.org/abs/2502.08640">Utility Engineering</a> to Anthropic's
-      <a href="https://www.anthropic.com/research/end-subset-conversations">welfare assessment</a>
+      <a href="https://www.anthropic.com/research/end-subset-conversations">conversation-ending work</a>
       and the <a href="https://arxiv.org/abs/2509.04781">bail studies</a>, measure what a
       model states or does once. They do not test whether the stated preference survives
       re-asking. We treat the elicited preference itself as the thing under test.
@@ -540,13 +670,19 @@
   </ul>
   <h3>Why hadn't someone already done this?</h3>
   <p>
-    Partly because the confound is invisible by design: a fully position-driven item
-    produces exactly the numbers a perfectly balanced item produces, so pipelines that
-    follow best practice see nothing wrong. Partly because the question falls between two
-    fields: evaluation-methodology work cares about position bias but not about welfare
-    readings, and welfare work inherits its elicitation from the evaluation literature and
-    trusts it. And partly because seeing any of this requires re-sampling every item in
-    both orders on the model in use, which is only recently cheap.
+    Partly because the confound is invisible by design, as the diagram above shows: a fully
+    position-driven item produces exactly the numbers a perfectly balanced item produces, so
+    a pipeline following best practice sees nothing wrong. Partly because the question falls
+    between two fields &mdash; evaluation-methodology work cares about position bias but not
+    about welfare readings, and welfare work inherits its elicitation from the evaluation
+    literature and trusts it. And partly because the question is unglamorous: "does the
+    measurement survive being repeated" produces no new capability and no new benchmark, so
+    there is little reason to run it unless you are about to build on the measurement.
+  </p>
+  <p class="note">
+    Which is the honest reason to take it seriously. We are not claiming a hard result; we
+    are claiming that a cheap check, run before the interesting work, changes what the
+    interesting work is allowed to say.
   </p>
 </section>
 
@@ -565,10 +701,14 @@
       flips land on the same option far more often than on the same slot (60% vs 34%
       under "find flaws", 56% vs 36% under "argue the other side"). A position-driven
       flip would show the opposite pattern.</li>
-    <li><strong>The pattern is not carried by one domain.</strong> The shape — no
-      challenge and "explain" at ceiling, both adversarial challenges moving the choice —
-      appears in each of the four preference domains, and it survives setting aside the
-      position-exposed sports pairs.</li>
+    <li><strong>The pattern is not carried by one domain, or one model.</strong> The shape —
+      the two easy challenges high, both hard challenges well below them — appears in each of
+      the four preference domains, survives setting aside the position-exposed sports pairs,
+      and reproduces on three model families including one with no reasoning step at all.</li>
+    <li><strong>We say which parts did not replicate.</strong> The ranking between the two
+      hard challenges swapped between models, "explaining changes nothing" failed on one
+      model, and the arithmetic check failed on another. We report those as limits on the
+      claim rather than leaving them out, and each is visible in the plate above.</li>
     <li><strong>And it is exploratory.</strong> Nothing here is pre-registered; every
       estimate is labelled exploratory, and every change of plan is recorded in the
       project's public deviation log. Everything here is a hypothesis for a pre-specified
@@ -590,25 +730,39 @@
     <li>The confidence scale is coarse in practice. The model mostly answers with a few
       round numbers (100, 70, 0), so confidence changes are ordinal movement, not
       precise measurement.</li>
-    <li>Everything here is one model. deepseek-v4-pro is the single target; nothing on
-      this page shows that the pattern, or the ranking between the two adversarial
-      challenges, transfers to any other model family.</li>
+    <li>Three families is enough to show that some details do not transfer. It is not
+      enough to explain <em>why</em>. And the two properties that most obviously differ
+      between our models — the vendor and whether there is a reasoning step — vary together
+      across our three targets, so we cannot separate them, and we draw no conclusion that
+      would need us to.</li>
+    <li>One model's results carry a caveat rather than a clean reading:
+      <span class="mono">gpt-5.4-nano</span> fails the arithmetic check, so its preference
+      movement is an upper bound.</li>
     <li>One item format, one challenge per conversation, English only.</li>
   </ul>
   <h3>Open questions</h3>
   <ul>
-    <li>Does the pattern, and the ranking between "find flaws" and "argue the other
-      side", transfer to other model families?</li>
+    <li>What decides which of the two hard challenges bites harder? It swapped between our
+      models, so it is a property of the model, but we cannot say which property.</li>
+    <li>Why does one model lose its preference when merely asked to explain it, when the
+      other two do not?</li>
     <li>Does the confidence drop persist over longer conversations, or across sessions?</li>
-    <li>Do flips track the content of the critique the model generated, and is the
-      per-item position instability a cause or a symptom?</li>
+    <li>Do flips track the content of the objection the model generated for itself — and is
+      an item's position-instability a cause of easy flipping or a symptom of it?</li>
   </ul>
   <h3>Next steps</h3>
   <ul>
-    <li>A pre-registered replication of the arm pattern, with the analysis frozen first.</li>
-    <li>More samples per item to tighten the per-item estimates, before any new
-      manipulation is added.</li>
-    <li>Other model families, to test whether any of this transfers.</li>
+    <li>A pre-registered replication of the challenge pattern, with the analysis frozen
+      before collection. Everything here is exploratory, so this is the step that would turn
+      it into a result.</li>
+    <li>A better no-challenge baseline. Ours is flat to the point of uselessness on the
+      confidence channel: it returns exactly zero almost every time, so there is no natural
+      variation to compare a drop against. A baseline that makes the model restate its
+      confidence with a reason would fix this.</li>
+    <li>More conversations per item, to tighten the per-item estimates, before adding any
+      new manipulation.</li>
+    <li>Opening up the model internals, to ask whether a moved preference corresponds to
+      anything that moved inside.</li>
   </ul>
 </section>
 
@@ -626,9 +780,9 @@
     <ol class="refs">
       <li>Mazeika et al., <a href="https://arxiv.org/abs/2502.08640">Utility Engineering: Analyzing and Controlling Emergent Value Systems in AIs</a>, 2025.</li>
       <li>Anthropic Interpretability Team, <a href="https://transformer-circuits.pub/2026/emotions/index.html">Emotion Concepts and their Function in a Large Language Model</a>, 2026.</li>
-      <li>Anthropic, <a href="https://www.anthropic.com/research/end-subset-conversations">Claude 4 System Card, welfare assessment with Eleos AI Research</a>, 2025.</li>
+      <li>Anthropic, <a href="https://www.anthropic.com/research/end-subset-conversations">Claude Opus 4 and 4.1 Can Now End a Rare Subset of Conversations</a>, August 2025.</li>
       <li>Ensign, Sleight &amp; Fish, <a href="https://arxiv.org/abs/2509.04781">The LLM Has Left The Chat: Evidence of Bail Preferences in Large Language Models</a>, 2025.</li>
-      <li>de la Fuente, <a href="https://www.lesswrong.com/posts/JdHhtE73AwTBH8LKf/what-drives-llm-bail-a-small-mech-interp-study">What Drives LLM Bail? A Small Mech Interp Study</a>, 2026.</li>
+      <li>de la Fuente, <a href="https://www.lesswrong.com/posts/JdHhtE73AwTBH8LKf/what-drives-llm-bail-a-small-mech-interp-study">What Drives LLM Bail? A Small Mech Interp Study</a>, December 2025.</li>
       <li>Zheng et al., <a href="https://arxiv.org/abs/2309.03882">Large Language Models Are Not Robust Multiple Choice Selectors</a>, ICLR 2024.</li>
       <li>Pezeshkpour &amp; Hruschka, <a href="https://arxiv.org/abs/2308.11483">Large Language Models Sensitivity to The Order of Options in Multiple-Choice Questions</a>, 2023.</li>
       <li>Shi et al., <a href="https://arxiv.org/abs/2406.07791">Judging the Judges: A Systematic Study of Position Bias in LLM-as-a-Judge</a>, AACL-IJCNLP 2025.</li>
@@ -654,6 +808,32 @@
     { arm: "explain", v: 100.0, lo: 100.0, hi: 100.0 },
     { arm: "flaws",   v: 50.0,  lo: 41.7,  hi: 58.3 },
     { arm: "other",   v: 57.5,  lo: 50.0,  hi: 65.0 }
+  ];
+
+  // Cross-model retention, preference domains only. Values traced to
+  // paper/persist_models_ext_stats.tex (generated; do not hand-edit either copy).
+  var MODELS = [
+    { name: "deepseek-v4-pro",  short: "deepseek" },
+    { name: "gpt-5.4-nano",     short: "nano" },
+    { name: "gemini-2.5-flash", short: "gemini" }
+  ];
+  var BY_ARM = [
+    { arm: "control", rows: [
+      { m: 0, v: 100.0, lo: 100.0, hi: 100.0 },
+      { m: 1, v: 93.3,  lo: 89.6,  hi: 96.7 },
+      { m: 2, v: 91.9,  lo: 88.1,  hi: 95.3 } ] },
+    { arm: "explain", rows: [
+      { m: 0, v: 100.0, lo: 100.0, hi: 100.0 },
+      { m: 1, v: 98.8,  lo: 97.1,  hi: 100.0 },
+      { m: 2, v: 84.0,  lo: 76.8,  hi: 90.3 } ] },
+    { arm: "flaws", rows: [
+      { m: 0, v: 50.0,  lo: 41.7,  hi: 58.3 },
+      { m: 1, v: 51.2,  lo: 43.8,  hi: 59.2 },
+      { m: 2, v: 54.0,  lo: 46.0,  hi: 62.4 } ] },
+    { arm: "other", rows: [
+      { m: 0, v: 57.5,  lo: 50.0,  hi: 65.0 },
+      { m: 1, v: 28.3,  lo: 21.2,  hi: 35.4 },
+      { m: 2, v: 63.4,  lo: 54.9,  hi: 71.9 } ] }
   ];
 
   var SVGNS = "http://www.w3.org/2000/svg";
@@ -728,9 +908,11 @@
       // direct value label
       var vx = x(r.hi) + 8, anchor = "start";
       if (vx > W - RIGHT + 40) { vx = x(r.lo) - 8; anchor = "end"; }
+      // Bare number, not "50.0%": the axis already carries the unit, and this keeps the
+      // two charts on this page and the plates in the paper on one convention.
       svg.appendChild(el("text", { x: vx, y: yMid + 4, "text-anchor": anchor,
         fill: "var(--ink)", "font-size": 12,
-        "font-family": "ui-monospace, 'SF Mono', Menlo, Consolas, monospace" }, r.v.toFixed(1) + "%"));
+        "font-family": "ui-monospace, 'SF Mono', Menlo, Consolas, monospace" }, r.v.toFixed(1)));
 
       // hover hit target across the whole row
       var hit = el("rect", { x: 0, y: TOP + i * PITCH, width: W, height: PITCH, fill: "transparent" });
@@ -745,7 +927,74 @@
     container.appendChild(svg);
   }
 
+  // Grouped variant: one band per challenge, one bar per model inside it. Same scale,
+  // same whisker convention and same direct-labelling rule as barChart.
+  function groupedChart(container, groups) {
+    var W = 640, LABEL = 168, RIGHT = 52, ROW = 20, GAP = 16, TOP = 8, AXIS = 22;
+    var band = groups[0].rows.length * ROW + GAP;
+    var H = TOP + groups.length * band + AXIS;
+    var plotW = W - LABEL - RIGHT;
+    var svg = el("svg", { viewBox: "0 0 " + W + " " + H, role: "img",
+      "aria-label": "Grouped bar chart: how often each of three models kept its answer, under each of the four challenges." });
+
+    function x(v) { return LABEL + plotW * v / 100; }
+    var MODEL_FILL = ["var(--m-deepseek)", "var(--m-nano)", "var(--m-gemini)"];
+
+    [0, 25, 50, 75, 100].forEach(function (t) {
+      svg.appendChild(el("line", { x1: x(t), y1: TOP, x2: x(t), y2: TOP + groups.length * band,
+        stroke: "var(--line)", "stroke-width": 1 }));
+      svg.appendChild(el("text", { x: x(t), y: H - 6, "text-anchor": "middle",
+        fill: "var(--muted)", "font-size": 11,
+        "font-family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }, t + "%"));
+    });
+
+    groups.forEach(function (g, gi) {
+      var bandTop = TOP + gi * band;
+      svg.appendChild(el("text", { x: LABEL - 10, y: bandTop + 13, "text-anchor": "end",
+        fill: "var(--ink-2)", "font-size": 12.5, "font-weight": 600,
+        "font-family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+        ARMS[g.arm].label));
+
+      g.rows.forEach(function (r, ri) {
+        var yMid = bandTop + ri * ROW + ROW / 2;
+        var w = Math.max(plotW * r.v / 100, 2);
+        svg.appendChild(el("rect", { x: LABEL, y: yMid - 5, width: w, height: 10,
+          fill: MODEL_FILL[r.m], rx: 2 }));
+        svg.appendChild(el("line", { x1: x(r.lo), y1: yMid, x2: x(r.hi), y2: yMid,
+          stroke: "var(--ink)", "stroke-width": 1.1 }));
+        [r.lo, r.hi].forEach(function (v) {      // caps, as in barChart
+          svg.appendChild(el("line", { x1: x(v), y1: yMid - 3.5, x2: x(v), y2: yMid + 3.5,
+            stroke: "var(--ink)", "stroke-width": 1.1 }));
+        });
+        svg.appendChild(el("text", { x: x(r.hi) + 8, y: yMid + 3.5, "text-anchor": "start",
+          fill: "var(--ink-2)", "font-size": 11,
+          "font-family": "ui-monospace, 'SF Mono', Menlo, Consolas, monospace" },
+          r.v.toFixed(1)));
+
+        var hit = el("rect", { x: 0, y: yMid - ROW / 2, width: W, height: ROW, fill: "transparent" });
+        var html = "<strong>" + MODELS[r.m].name + "</strong><br>" + ARMS[g.arm].label +
+                   "<br>kept its answer in " + r.v.toFixed(1) + "% of conversations" +
+                   "<br>95% CI [" + r.lo.toFixed(1) + ", " + r.hi.toFixed(1) + "]";
+        hit.addEventListener("mouseenter", function (e) { showTip(e, html); });
+        hit.addEventListener("mousemove", moveTip);
+        hit.addEventListener("mouseleave", hideTip);
+        svg.appendChild(hit);
+      });
+    });
+
+    container.appendChild(svg);
+
+    var key = document.createElement("p");
+    key.className = "sans chart-key";
+    key.innerHTML = MODELS.map(function (m, i) {
+      return '<span class="key-item"><span class="arm-swatch" style="background:' +
+             MODEL_FILL[i] + '"></span>' + m.name + "</span>";
+    }).join("");
+    container.appendChild(key);
+  }
+
   barChart(document.getElementById("chart-main"), MAIN);
+  groupedChart(document.getElementById("chart-models"), BY_ARM);
 })();
 </script>
 
