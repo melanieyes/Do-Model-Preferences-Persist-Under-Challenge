@@ -2,17 +2,11 @@
 \label{sec:code}
 
 Code, elicitation records, the sampling seed, the exclusion rules, the upstream file-level
-commit, and the full change log are released at
-\url{https://github.com/melanieyes/Do-Model-Preferences-Persist-Under-Challenge}. All three models'
+commit, and the full change log are released in the
+\href{https://github.com/melanieyes/Do-Model-Preferences-Persist-Under-Challenge}{project
+repository}. All three models'
 five-domain persistence runs (\pqxNEpisodes{} episodes each), their balance pilots, and
 the analysis scripts that generate every number and figure in this paper are committed in
 full. The earlier instrument-development pool and the runs on it were retired from the
 repository under deviation \#8 of the change log; the log entries recording what they
 showed remain, and the files themselves remain reachable in the repository history.
-
-One dataset is \textbf{not} recoverable. \texttt{data/raw/episodes\_deepseek.jsonl}, the
-30 episodes of an earlier pressure pilot, was deleted during a project cleanup before this
-analysis was scoped. It was covered by a \texttt{.gitignore} rule on \texttt{data/raw/} and
-so was never committed; only its metadata survives. No result in this paper depends on it,
-and we report the loss rather than substituting a proxy. Persistence data is written
-outside \texttt{data/raw/} for this reason.
