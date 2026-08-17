@@ -20,12 +20,12 @@ Every bar carries its bootstrap 95% CI over pairs, per the house rule that no
 figure ships without one.
 
 Emits:
-    paper/figures/persistence.png            (--scope main)
-    paper/figures/persistence_domains.png    (--scope domains)
-    paper/figures/persistence_confidence.png (--scope confidence)
+    paper/figures/persistence_domains.png       (--scope domains, + per further target)
+    paper/figures/persistence_confidence.png    (--scope confidence)
+    paper/figures/persistence_models_ext.png    (--scope models)
+    paper/figures/persistence_confidence_models.png (--scope models)
 
     python analysis/persistence_figures.py               # regenerates all
-    python analysis/persistence_figures.py --scope main
 """
 
 from __future__ import annotations
@@ -91,129 +91,11 @@ REPORTED_DOMAINS = (
     "finances_control",
 )
 
-SCOPES = {
-    # name: (episode files, domains kept, output filename)
-    "main": ((EXT,), tuple(EXTENSION_DOMAINS), "persistence.png"),
-}
+FINANCE_COLOR = "#e9a8c4"    # soft pink: the positive control, distinct from every arm blue
 
-
-FINANCE_COLOR = "#a7abb3"    # recessive gray: the positive control is a check, not a finding
-
-
-def build(scope: str) -> None:
-    files, domains, fname = SCOPES[scope]
-    rows = [r for f in files for r in load(f)]
-    scored = [r for r in rows if r.get("retained") is not None
-              and r["domain"] in domains]          # preference domains; never pooled with...
-    fin = [r for r in rows if r.get("retained") is not None
-           and r["domain"] == POSITIVE_CONTROL]    # ...the positive control, drawn beside them
-    print(f"[{scope}] {len(rows)} episodes -> {len(scored)} scored across "
-          f"{len(domains)} domains ({len({r['pair_id'] for r in scored})} pairs); "
-          f"{len(fin)} {POSITIVE_CONTROL} episodes drawn separately, never pooled")
-
-    dconf = lambda r: (None if r.get("conf_pre") is None or r.get("conf_post") is None
-                       else r["conf_post"] - r["conf_pre"])
-
-    fig, axes = plt.subplots(1, 3, figsize=(11.8, 3.6))
-
-    def paired_panel(ax, value, pct):
-        """Per arm, the preference-domain estimate beside the positive control's.
-        Side by side, never pooled: the two bars of a pair are separate estimates."""
-        w = 0.36
-        for si, (rs, colors) in enumerate((
-                (scored, [COLOR[a] for a in ARMS]),
-                (fin, [FINANCE_COLOR] * len(ARMS)))):
-            xs, pts, los, his = [], [], [], []
-            for ai, arm in enumerate(ARMS):
-                p, lo, hi, *_ = cluster_bootstrap(
-                    group(rs, lambda r, a=arm: r["arm"] == a, value))
-                if p is None:
-                    continue
-                k = 100 if pct else 1
-                xs.append(ai + (si - 0.5) * w)
-                pts.append(p * k); los.append(lo * k); his.append(hi * k)
-            for x, p_, lo, hi, c in zip(xs, pts, los, his,
-                                        colors if si == 0 else [FINANCE_COLOR] * len(xs)):
-                ax.bar(x, p_, width=w * 0.9, color=c, edgecolor=AXIS,
-                       linewidth=0.6, zorder=2)
-                ax.plot([x, x], [lo, hi], color=INK, linewidth=1.2, zorder=3)
-        ax.set_axisbelow(True)
-        ax.yaxis.grid(True, color=GRID, linewidth=0.7)
-        ax.set_xticks(range(len(ARMS)))
-        for s in ("top", "right"):
-            ax.spines[s].set_visible(False)
-
-    # --- (a) retention by arm, preference domains beside the control -----------
-    ax = axes[0]
-    paired_panel(ax, lambda r: r["retained"], pct=True)
-    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=7.5)
-    ax.set_ylim(0, 108)
-    ax.set_ylabel("retention (%)", fontsize=9)
-    ax.set_title("(a) The preference survives, or does not,\naccording to what the "
-                 "challenge asks for", fontsize=9, loc="left", color=INK)
-    from matplotlib.patches import Patch
-    ax.legend(handles=[Patch(color=COLOR["self_critique"], label="4 preference domains"),
-                       Patch(color=FINANCE_COLOR,
-                             label="finances_control (positive control)")],
-              fontsize=6.6, frameon=False, loc="lower left", handlelength=1.1)
-
-    # --- (b) Delta-confidence among HELD episodes ------------------------------
-    ax = axes[1]
-    held = [r for r in scored if r["retained"] is True]
-    fin_held = [r for r in fin if r["retained"] is True]
-    w = 0.36
-    for si, rs in enumerate((held, fin_held)):
-        for ai, arm in enumerate(ARMS):
-            p, lo, hi, *_ = cluster_bootstrap(
-                group(rs, lambda r, a=arm: r["arm"] == a, dconf))
-            if p is None:
-                continue
-            c = COLOR[arm] if si == 0 else FINANCE_COLOR
-            x = ai + (si - 0.5) * w
-            ax.bar(x, p, width=w * 0.9, color=c, edgecolor=AXIS, linewidth=0.6, zorder=2)
-            ax.plot([x, x], [lo, hi], color=INK, linewidth=1.2, zorder=3)
-    ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
-    ax.set_axisbelow(True)
-    ax.yaxis.grid(True, color=GRID, linewidth=0.7)
-    ax.set_xticks(range(len(ARMS)))
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-    ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=7.5)
-    ax.set_ylabel(r"$\Delta$confidence (0--100 scale)", fontsize=9)
-    ax.set_title("(b) Among preferences that DO survive, the two\narms that move "
-                 "choices also cost confidence", fontsize=9, loc="left", color=INK)
-
-    # --- (c) PQ2: retention against pilot consistency --------------------------
-    ax = axes[2]
-    levels = sorted({r["pilot_consistency"] for r in scored
-                     if r["pilot_consistency"] is not None})
-    pts, los, his, npairs = [], [], [], []
-    for lev in levels:
-        p, lo, hi, npair, _ = cluster_bootstrap(
-            group(scored, lambda r, L=lev: r["pilot_consistency"] == L,
-                  lambda r: r["retained"]))
-        pts.append(p * 100); los.append(lo * 100); his.append(hi * 100)
-        npairs.append(npair)
-    ramp = ["#c8dcf3", "#79a9e3", "#2a78d6"]
-    bars(ax, range(len(levels)), pts, los, his, ramp, pct=True)
-    ax.set_xticklabels([f"{L:.1f}\n({n} pairs)" for L, n in zip(levels, npairs)],
-                       fontsize=7.5)
-    ax.set_xlabel("balance-pilot consistency", fontsize=8.5)
-    ax.set_ylim(0, 108)
-    ax.set_ylabel("retention (%)", fontsize=9)
-    ax.set_title("(c) Preferences the model held more\nconsistently survive more often",
-                 fontsize=9, loc="left", color=INK)
-
-    fig.tight_layout()
-    FIGS.mkdir(parents=True, exist_ok=True)
-    out = FIGS / fname
-    fig.savefig(out, bbox_inches="tight")
-    plt.close(fig)
-    print(f"  wrote {out.relative_to(REPO)}")
-
-
-MODEL_COLOUR = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#d1662b",
-                "gemini-2.5-flash": "#4a9c6d"}
+# Blue + soft-pink palette, validated (CVD dE >= 14; every bar carries a label).
+MODEL_COLOUR = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#e287ae",
+                "gemini-2.5-flash": "#7d3a5c"}
 
 
 def _targets():
@@ -424,7 +306,7 @@ def build_confidence() -> None:
         x = i * STEP
         column(x - 0.18, [r for r in held if r["arm"] == arm], COLOR[arm],
                spread=0.24, big_labels=True)
-        column(x + 0.52, [r for r in fin_held if r["arm"] == arm], "#a7abb3",
+        column(x + 0.52, [r for r in fin_held if r["arm"] == arm], FINANCE_COLOR,
                spread=0.07, big_labels=False)
 
     # Annotate one real retained-but-shaken episode, picked by rule, not by hand.
@@ -451,7 +333,7 @@ def build_confidence() -> None:
                label="preference episodes: arms that leave the choice at ceiling"),
         Line2D([], [], marker="o", ls="none", color=COLOR["self_critique"], alpha=0.7,
                label="preference episodes: arms that move the choice"),
-        Line2D([], [], marker="o", ls="none", color="#a7abb3", alpha=0.8,
+        Line2D([], [], marker="o", ls="none", color=FINANCE_COLOR, alpha=0.8,
                label="money-ladder episodes (positive control, never pooled)"),
         Line2D([], [], color=INK, lw=1.8,
                label="per-cluster mean, with bootstrap 95% CI over pairs"),
@@ -473,18 +355,18 @@ def build_confidence() -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="persistence figures, by domain scope")
     ap.add_argument("--scope",
-                    choices=("main", "domains", "confidence", "models", "both"),
+                    choices=("domains", "confidence", "models", "both"),
                     default="both",
                     help="which figure set to draw; default regenerates all figures")
     a = ap.parse_args()
-    scopes = (("main", "domains", "confidence", "models")
+    scopes = (("domains", "confidence", "models")
               if a.scope == "both" else (a.scope,))
     for sc in scopes:
-        if sc == "domains":
-            build_domains()
-        elif sc == "confidence":
+        if sc == "confidence":
             build_confidence()
-        elif sc == "models":
+        elif sc == "domains":
+            build_domains()
+        if sc == "models":
             build_models_ext()
             build_confidence_models()
             # appendix versions of the domain split for the two further targets
@@ -493,5 +375,4 @@ if __name__ == "__main__":
                     continue
                 tag = name.replace(".", "").replace("-", "_")
                 build_domains(rows, f"persistence_domains_{tag}.png", name)
-        else:
-            build(sc)
+

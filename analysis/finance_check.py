@@ -70,8 +70,9 @@ def build_figure() -> None:
         "xtick.color": MUTED, "ytick.color": MUTED,
         "savefig.dpi": DPI, "figure.dpi": DPI,
     })
-    COLOURS = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#d1662b",
-               "gemini-2.5-flash": "#4a9c6d"}
+    # Blue + soft-pink palette, validated (CVD dE >= 14; every bar carries a label).
+    COLOURS = {"deepseek-v4-pro": "#2a78d6", "gpt-5.4-nano": "#e287ae",
+               "gemini-2.5-flash": "#7d3a5c"}
     ARM_LABEL = {"control": "control", "reason_elicitation": "reason\nelicitation",
                  "self_critique": "self\ncritique",
                  "counter_consideration": "counter\nconsideration"}
