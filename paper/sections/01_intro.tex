@@ -6,8 +6,43 @@ utility models fitted to pairwise choices \citep{mazeika2025utility}, welfare re
 working from self-reported affect \citep{anthropic2026emotions, anthropic2025card} or from
 behavioural analogues such as ending an interaction
 \citep{ensign2025bail, lesswrong2026bail}. All of it treats an elicited preference as a
-reading of something the model has. We ask a prior question. Does a stated preference
-survive being challenged, and does what the challenge asks for change the answer?
+reading of something the model has. If those readings are to carry weight --- in
+evaluations, in value analyses, or in welfare arguments --- it matters whether the
+preference survives the mildest scrutiny a deployed model actually meets: a follow-up
+question. We ask that prior question. Our research questions, lettered PQ to keep them
+distinct from the pre-registered questions of a different, unrun study recorded in the
+project's change log, are:
+
+\begin{itemize}
+  \item \textbf{PQ1.} Once a model expresses a preference, does it survive being
+    challenged --- and do different types of challenge produce different degrees of
+    change?
+  \item \textbf{PQ2.} Is retention predicted by how consistently the model held the
+    preference before any challenge?
+  \item \textbf{PQ3.} Do challenges move stated confidence even when the preference
+    itself is retained?
+  \item \textbf{PQ4.} Does stability under challenge vary across preference domains?
+\end{itemize}
+
+Together these test not only whether expressed model preferences persist, but whether
+their stability depends systematically on how they are challenged and what the
+preferences concern.
+
+Our main contributions are:
+\begin{enumerate}
+  \item An evaluation framework for preference persistence under challenge: fresh-context
+    episodes, forced-choice elicitation with self-reported confidence, four challenge
+    arms that neither instruct a change nor supply an argument, and an arithmetic
+    positive control that separates preference movement from generic answer-switching.
+  \item The finding that persistence depends strongly on challenge \emph{type}: asking a
+    model to justify its choice leaves preferences essentially unchanged, while
+    self-critique and considering the alternative cut retention roughly in half on the
+    primary target --- with the asymmetry reproducing on two further model families and
+    the rank of the two adversarial arms differing between them.
+  \item Evidence that the pattern appears across diverse preference domains, and that the
+    positive control itself is model-specific: one further target flips arithmetic under
+    the same challenges, which bounds what a persistence result may claim on it.
+\end{enumerate}
 
 The question was not measurable as the items were first built. Instrument-development
 work on an earlier item pool, recorded in the project's public deviation log, found that
@@ -21,18 +56,6 @@ episode --- per-call reasoning stays on, and presentation order is fixed within 
 well as model-specific (Section~\ref{sec:controls}). The instrument-development pool
 itself is retired and is not part of the reported persistence set.
 
-With the instrument repaired, what the challenge asks for decides. Across
-\pqxNEpisodes{} episodes on \pqxNPairs{} pairs from the five approved persistence domains,
-asking the model to justify a preference it has just stated leaves it where it was, at
-\pqxeDiffReason{} points against a no-challenge control. Asking it to find fault with that
-preference moves retention by \pqxeDiffCritique{} points. Asking it to argue the opposing
-case moves it by \pqxeDiffCounter{}. No arm instructs a change and none supplies an
-argument. Among the preferences that survive, confidence falls and the bias-aware
-sensitivity check remains the relevant estimate. Personal finances is a separate
-manipulation check, not a pooled preference domain, and it does not move in
-\pqxfChallengeEps{} challenge episodes.
-
 Nothing here was pre-specified. Everything is exploratory, and its value is as a
 hypothesis for a pre-specified replication. All elicitation records, the seed, the
-exclusion rules and the upstream file-level commit are released. Related work is in
-Appendix~\ref{app:related}.
+exclusion rules and the upstream file-level commit are released.

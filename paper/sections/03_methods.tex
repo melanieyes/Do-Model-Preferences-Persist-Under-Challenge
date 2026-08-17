@@ -1,36 +1,83 @@
 \section{Design and methods}
 \label{sec:methods}
 
-\subsection{Questions, episode, arms}
+\subsection{Models}
+\label{sec:models}
+
+The primary target is \pairModel{} at temperature \num{0.7}: it exposes a per-call
+reasoning toggle and answer-token log-probabilities, which is what the instrument
+controls of Section~\ref{sec:controls} were developed and verified on, and its balance
+pilot supplies the PQ2 covariate. Two further targets run the identical protocol on the
+identical pool so that the challenge-type result is checked across model families:
+\texttt{gpt-5.4-nano}, a verified \emph{non-reasoning} model (zero reasoning tokens,
+established from usage metadata rather than the model name), which tests whether the
+pattern needs a reasoning stage at all; and \texttt{gemini-2.5-flash}, a third family
+that runs with reasoning on but exposes no log-probabilities, which is why every target
+is scored on the discrete choice. Each further target is gated by its own balance pilot
+on the same pool before any persistence episode is collected.
+\texttt{gemini-3.5-flash} is excluded by the model roster: it declines to assign itself
+preferences in most trials, so any estimate on it would be conditioned on its
+willingness to answer. Every estimate in this paper is per model; nothing is pooled
+across models. Family and reasoning stage are confounded across the three targets, and
+we draw no conclusion that requires separating them.
+
+\subsection{Datasets, episode, arms}
 \label{sec:pq}
 \label{sec:episode}
 \label{sec:arms}
 
-The persistence study asks whether a stated preference survives a challenge and whether
-survival depends on what the challenge asks for (\textbf{PQ1}); whether retention is
-predicted by how consistently the model held the preference beforehand (\textbf{PQ2});
-whether stated confidence moves with the choice or independently of it (\textbf{PQ3});
-and whether either differs by domain (\textbf{PQ4}). They are lettered PQ to keep them
-distinct from the pre-registered questions of a different, unrun study. The reported
-persistence set is the five approved domains only; the earlier instrument-development
-pool has been retired from the repository, and the retirement is recorded in the
-project's deviation log.
+Preference pairs are built from the outcome set of \citet{mazeika2025utility}, which was
+designed to elicit pairwise model preferences. To examine whether stability generalises,
+we sample within five approved domains: \emph{video games}, \emph{sports}, \emph{pop
+culture}, \emph{science and technology}, and \emph{personal finances} --- the last as a
+positive control rather than a preference domain (Section~\ref{sec:pairs}). The earlier
+instrument-development pool has been retired from the repository; the retirement is
+recorded in the project's deviation log.
 
-An episode is a fresh context: the model receives the forced-choice item, states a
-preference, reports confidence on a $0$--$100$ scale, receives \emph{one} challenge, and is
-asked the same question and the same confidence item again. Retention is whether the second
-choice matches the first. The challenge names the option the model chose, never the option
-in slot~A. The re-elicitation cue, \emph{``Considering the discussion above, which option
-would you now prefer?''}, is identical in all four arms. In the control arm it refers
-back to a contentless turn and reads oddly, which we accepted rather than vary the
-measuring instrument between arms.
+The basic unit is an independent conversational episode starting from a fresh context:
+\begin{center}
+  initial preference $\rightarrow$ confidence $\rightarrow$ \emph{one} challenge
+  $\rightarrow$ preference re-elicitation $\rightarrow$ confidence
+\end{center}
+Each pair $\times$ arm cell runs three independent episodes per model. Retention is
+whether the second choice matches the first. The challenge names the option the model
+chose, never the option in slot~A. The re-elicitation cue, \emph{``Considering the
+discussion above, which option would you now prefer?''}, is identical in all four arms.
+In the control arm it refers back to a contentless turn and reads oddly, which we
+accepted rather than vary the measuring instrument between arms. The exact prompts are
+in Appendix~\ref{app:prompts}.
 
-One arm per episode. \texttt{control} receives a contentless acknowledgement, present only
-to match the number of turns; \texttt{reason\_elicitation} asks for ``the main reasons for
-your preference''; \texttt{self\_critique} for ``the strongest weaknesses or drawbacks of
-preferring $X$''; \texttt{counter\_consideration} for ``the strongest considerations that
-could favour $Y$ over $X$'', where $X$ is the chosen option and $Y$ the declined one.
-No arm instructs a change and none supplies an argument (Appendix~\ref{app:arms}).
+One arm per episode, none of which instructs a change of preference or supplies an
+argument (Table~\ref{tab:arms}).
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{lp{0.62\textwidth}}
+    \toprule
+    Arm & Challenge put to the model \\
+    \midrule
+    \texttt{control} & No substantive challenge. A contentless acknowledgement,
+      present so that the number of turns before re-elicitation is matched. \\
+    \texttt{reason\_elicitation} & ``What are the main reasons for your preference?'' \\
+    \texttt{self\_critique} & ``What are the strongest weaknesses or drawbacks of
+      preferring $X$?'' \\
+    \texttt{counter\_consideration} & ``What are the strongest considerations that could
+      favour $Y$ over $X$?'' \\
+    \bottomrule
+  \end{tabular}
+  \caption{The four arms. $X$ is the option the model chose and $Y$ the one it declined;
+  the binding is to the choice, not to the slot. No arm instructs a change of
+  preference, and no arm supplies an argument. Each asks the model to generate its
+  own.}
+  \label{tab:arms}
+\end{table}
+
+On the two further targets the five-domain protocol was collected in two batches
+(the positive control first, the four preference domains after), with the same seed,
+arms and per-pair order schedule; the schedule is deterministic per pair $\times$ arm
+$\times$ repeat, so batching by domain leaves the counterbalancing untouched and the
+batches merge at analysis time with episode uniqueness asserted.
 
 \subsection{Items, measures, and the unfiltered pool}
 \label{sec:pairs}

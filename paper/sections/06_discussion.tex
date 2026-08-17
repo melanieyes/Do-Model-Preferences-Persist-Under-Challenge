@@ -1,4 +1,4 @@
-\section{Discussion}
+\section{Discussion and limitations}
 \label{sec:discussion}
 
 \subsection*{Limitations}
@@ -17,10 +17,13 @@ do not report this as a finding. It attenuates to \pqxFlipGainNoZero{} once the
 the high-confidence band (\pqxBandFlip{} flipped against \pqxBandHeld{} held, among episodes
 starting at $85$--$100$). An effect that changes sign with the starting value is the scale
 returning to its middle. Control cannot clean this up. Its $\Delta$Confidence is exactly
-zero in \pqxCtlZero{} of \pqxCtlScored{} scored episodes, which makes it a sound baseline for
-the \emph{choice} channel and a useless one for the confidence channel. Whether that
-degenerate baseline is forced by the design or is a property of this target cannot be
-separated with a single model. A future control should require the model to
+zero in \pqxCtlZero{} of \pqxCtlScored{} scored episodes on the primary target, which
+makes it a sound baseline for
+the \emph{choice} channel and a useless one for the confidence channel. That degenerate
+baseline is not forced by the design: the same control arm's confidence moves on
+\texttt{gpt-5.4-nano} and sits near zero on \texttt{gemini-2.5-flash}
+(Figure~\ref{fig:confidence-models}), so it is a property of the target. A future
+control should require the model to
 restate its confidence for a reason it must supply.
 
 \paragraph{The confidence scale is used as a coarse ordinal.} Of \pqxNConfPre{} initial
@@ -37,11 +40,30 @@ to. This is a direct cost of wording that cue identically across arms
 (Section~\ref{sec:episode}), and it falls on PQ3, which is a between-arm contrast. The
 values are recorded as unparsed and are not imputed.
 
-\paragraph{Scope.} One target, one item type built from a single outcome
-set, one challenge per episode, English only. Nothing here says whether the arm pattern,
-or the rank of the two adversarial arms, transfers to other model families; that is
-untested in the reported set. The pool is weighted
+\paragraph{The positive control is model-specific, which bounds one target's cells.}
+\texttt{gpt-5.4-nano} flips arithmetic under the two adversarial arms
+(\xmNanoFinRet{}\% retention on the money ladder, \xmNanoFinFlips{} flips;
+Appendix~\ref{app:fincheck}), and it wavers on money-ladder pairs in the no-challenge
+pilot. On that target, challenge-induced answer-switching is therefore not
+content-specific, and its preference-domain retention is read as an upper bound on
+preference-specific movement rather than a clean estimate of it. This is the strongest
+available argument for running the positive control per target rather than inheriting
+it: on the primary target the same check passes with force.
+
+\paragraph{Scope.} Three targets with near-full coverage, one item type built from a
+single outcome set, one challenge per episode, English only. Three families are enough
+to show that the rank of the two adversarial arms does not transfer, and that two
+further invariants (a reason-elicitation arm indistinguishable from control; an
+immovable arithmetic control) are properties of particular targets. They are not enough
+to say what governs any of this, and family and reasoning stage are confounded across
+the three. The pool is weighted
 toward settled preferences by construction (Section~\ref{sec:pq2ident}), so the retention
 rates are not estimates of how often these models change their minds in general. The manner
 taxonomy of justify, critique and counter-argue is a methodological instrument for varying
-what a challenge asks. It is not a welfare category.
+what a challenge asks. It is not a welfare category. While we observe changes in
+expressed preference stability, these measures are behavioural proxies and may not
+reflect corresponding changes in any internal state; we take no position on that.
+
+\paragraph{Future work.} More diverse models and preference domains; a control that
+forces a re-stated confidence; and white-box methods to test whether preference changes
+correspond to changes in internal representations.

@@ -4,13 +4,29 @@
 
 The reported persistence set is the five approved domains only: video games, sports, pop
 culture, science and technology, and personal finances as a separate manipulation check.
-The run contributes \pqxNEpisodes{} episodes on
-\pqxNPairs{} pairs, four arms, three episodes per pair $\times$ arm cell, \pairModel{}.
-Every episode reached both elicitations; no refusals, no unparsed choices and no errors in
-the reported run.
+Each model contributes \pqxNEpisodes{} episodes on \pqxNPairs{} pairs, four arms, three
+episodes per pair $\times$ arm cell. Coverage: every episode reached both elicitations on
+\pairModel{} and \texttt{gpt-5.4-nano} (no refusals, no unparsed choices, no errors);
+on \texttt{gemini-2.5-flash}, \xmGtwoErrors{} episodes were lost to provider
+read-timeouts, are logged as errors and are neither imputed nor silently dropped, leaving
+\xmGtwoPrefEps{} of \pqxeEps{} preference episodes scored. Every estimate carries a
+bootstrap 95\% CI over pairs, \num{10000} resamples; everything is exploratory.
 
-\subsection{The choice channel: what the challenge asks for decides}
+\subsection{Preference stability depends on what the challenge asks for}
 \label{sec:pq1}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_models_ext.png}
+  \caption{\textbf{Figure 1: Preference retention by challenge type across models.}
+  Retention on the four preference domains (the positive control is excluded here and
+  reported separately), same \pqxePairs{} pairs, same arms, same instrument controls on
+  all three targets. Bars are means with bootstrap 95\% CIs over pairs; the printed
+  number is the retention point estimate. Control and reason-elicitation sit at or near
+  ceiling on two of three targets while both adversarial arms cut retention deeply on
+  all three; the \emph{rank} of the two adversarial arms differs by model.}
+  \label{fig:models}
+\end{figure}
 
 \begin{table}[h]
   \centering
@@ -25,143 +41,148 @@ the reported run.
     \texttt{counter\_consideration}& \pqxeRetCounter{}\% [\pqxeRetCounterLo{}, \pqxeRetCounterHi{}] & \pqxeDiffCounter{}  [\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}] \\
     \bottomrule
   \end{tabular}
-  \caption{PQ1 on the five approved persistence domains. Retention by arm and the
-difference from control, paired within pair. Percentage points, bootstrap 95\% CIs over
-\pqxNPairs{} pairs, \num{10000} resamples. Personal finances is labelled separately as a
-positive control and not pooled into any PQ estimate.}
+  \caption{PQ1 on the primary target, \pairModel{}: retention by arm on the four
+preference domains and the difference from control, paired within pair. Percentage
+points, bootstrap 95\% CIs over \pqxePairs{} pairs, \num{10000} resamples.}
   \label{tab:pq1}
 \end{table}
 
-Control retains \pqxeRetCtl{}\%. Absent a challenge this procedure returns the same answer
-essentially every time, which is what licenses reading the rest as the challenge rather
-than instrument noise. Against that baseline \texttt{reason\_elicitation} is
-indistinguishable from doing nothing (\pqxeDiffReason{} points,
-\([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\)). \texttt{self\_critique} moves retention by
-\pqxeDiffCritique{} points and \texttt{counter\_consideration} by \pqxeDiffCounter{}. The
-direction of the request matters. Its mere presence does not. Retention also rises with how
-settled the preference already was. The slope of per-pair retention on the extension
-balance-pilot consistency is \pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)); that is
-PQ2 for the reported persistence set. The remaining domain split and the bias-aware
-sensitivity check are in Appendix~\ref{app:persistdetail}.
+On the primary target, control retains \pqxeRetCtl{}\%. Absent a challenge this procedure
+returns the same answer essentially every time, which is what licenses reading the rest as
+the challenge rather than instrument noise. Against that baseline
+\texttt{reason\_elicitation} is indistinguishable from doing nothing (\pqxeDiffReason{}
+points, \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\)). \texttt{self\_critique} moves
+retention by \pqxeDiffCritique{} points and \texttt{counter\_consideration} by
+\pqxeDiffCounter{}. The direction of the request matters; its mere presence does not.
 
-\subsection{The confidence channel: holding costs confidence}
-\label{sec:pq3}
+The asymmetry reproduces on both further targets (Figure~\ref{fig:models}): on
+\texttt{gpt-5.4-nano} the adversarial arms move retention by \xmNanoDiffCritique{} and
+\xmNanoDiffCounter{} points against its own control, and on \texttt{gemini-2.5-flash} by
+\xmGtwoDiffCritique{} and \xmGtwoDiffCounter{}. Two qualifications, stated rather than
+smoothed over. First, the \emph{rank} of the two adversarial arms is not a property of
+the challenges: \texttt{self\_critique} is the stronger arm on \pairModel{} and
+\texttt{gemini-2.5-flash}, \texttt{counter\_consideration} on \texttt{gpt-5.4-nano} ---
+the tally across \xmNTargets{} families is \xmCritiqueWins{}--\xmCounterWins{}. Second,
+``justifying changes nothing'' holds on two of the three: on \texttt{gemini-2.5-flash},
+\texttt{reason\_elicitation} retains \xmGtwoRetReason{}\%
+(\([\xmGtwoRetReasonLo{}, \xmGtwoRetReasonHi{}]\)), \emph{below} its own control
+(\xmGtwoRetCtl{}\%), so that invariant too is a property of the model, not of the design.
 
-Among episodes where the choice did \emph{not} move, confidence still falls relative to
-control: \pqxeHeldCritique{} points under \texttt{self\_critique}
-(\([\pqxeHeldCritiqueLo{}, \pqxeHeldCritiqueHi{}]\), \pqxeHeldCritiquePairs{} pairs) and
-\pqxeHeldCounter{} under \texttt{counter\_consideration}
-(\([\pqxeHeldCounterLo{}, \pqxeHeldCounterHi{}]\), \pqxeHeldCounterPairs{} pairs); dropping
-episodes that began at zero confidence leaves the direction unchanged
-(\pqxeHeldCritiqueNoZero{}, \pqxeHeldCounterNoZero{}). This is retention with reduced
-confidence. The model keeps its
-answer and reports itself less sure of it. That is what the design was built to detect, and
-what a choice-only measure records as nothing happening. Figure~\ref{fig:held-confidence}
-shows the phenomenon episode by episode rather than as means: every held episode is one
-point, the control column is a flat line at exactly zero, and the two adversarial columns
-scatter downward --- including episodes that keep the choice while dropping thirty points
-of confidence. Averaged over \emph{all} episodes
-the contrasts are \pqxeConfReason{}, \pqxeConfCritique{} and \pqxeConfCounter{}
-points vs.\ control, because held and flipped episodes move in opposite directions. We do
-not interpret the flipped half, for the reason given in the Limitations.
-Figure~\ref{fig:persistence} in Appendix~\ref{app:persistdetail} shows all three channels.
+Retention also rises with how settled the preference already was (\textbf{PQ2}): on the
+primary target, the slope of per-pair retention on the balance-pilot consistency
+covariate is \pqxeSlope{} (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)); the level-by-level
+split is in Appendix~\ref{app:persistdetail}.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\textwidth]{persistence_confidence.png}
-  \caption{PQ3, pointed at directly. \textbf{(a)}~$\Delta$Confidence for every
-  \emph{held} episode in the four preference domains, one jittered point per episode, by
-  arm. The dark rule is the per-arm mean and the whisker its bootstrap 95\% CI over
-  pairs, \num{10000} resamples. Retention with reduced confidence --- the choice is kept
-  while the stated confidence falls, e.g.\ the annotated episode --- is what a
-  choice-only measure cannot see. The control column is exactly zero in \pqxCtlZero{} of
-  \pqxCtlScored{} scored episodes (Limitations); the annotated example is selected in
-  code, not by hand. \textbf{(b)}~The positive control, drawn beside the preference
-  domains and never pooled with them: on the money ladder the same two challenge arms
-  move held-episode confidence by about a point --- an order of magnitude less than in
-  the preference domains --- alongside their zero effect on its choices. The contrasts
-  quoted in the text are paired within pair before averaging.}
-  \label{fig:held-confidence}
-\end{figure}
-
-\subsection{The domain split and the manipulation check}
+\subsection{Challenge effects appear across preference domains, and the control does not
+move}
 \label{sec:extension}
-
-The four preference domains carry the PQ estimates; personal finances is a monotonic
-arithmetic ladder and is reported separately as the fifth approved domain: it is the
-manipulation check, not a pooled PQ estimate. All \pqxNPairs{} piloted pairs enter with
-the same four-arm protocol and the same balance-pilot covariate.
+\label{sec:pq4}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_domains.png}
-  \caption{Retention by arm across the four reported preference domains and the separate
-  positive-control row: \texttt{video\_games}, \texttt{sports}, \texttt{pop\_culture},
-  \texttt{sci\_tech}, and \texttt{finances\_control}. The final row is not pooled into the
-  preference-domain estimate; it is shown explicitly as the money-ladder manipulation check,
-  where ceiling retention is expected. Bars show the mean per domain and arm with bootstrap
-  95\% CIs over pairs.}
+  \caption{\textbf{Figure 2: Retention by domain and arm} on the primary target,
+  \pairModel{}: the four preference domains and the positive-control row
+  (\texttt{finances\_control}), which is shown explicitly but never pooled into any
+  preference-domain estimate. Bars are means with bootstrap 95\% CIs over pairs. The
+  same arm ordering appears in every preference domain; the money ladder stays at
+  ceiling in every arm. The same split for the two further targets is in
+  Appendix~\ref{app:othermodels}.}
   \label{fig:persistence-domains-main}
 \end{figure}
 
-\paragraph{PQ4 by domain.}
-The domain split reports the four preference domains plus a final row for
-\texttt{finances\_control}. The control row is labelled as a positive manipulation check,
-never pooled into any PQ estimate. That is the design used in the domain figure: the four
-preference domains are the persistence rows, and the fifth row is the money ladder that is
-expected to stay at ceiling. We read any movement there as a failure of the elicitation,
-not of the preference.
-
-\paragraph{Bias-aware sensitivity check.}
-The sports domain is the item type most exposed to the position effect, so the reported
-result carries the bias-aware sensitivity check rather than dropping the domain. Excluding
-pairs at order gap $\ge \pqxBiasCut{}$ leaves \pqxBiasKeepPairs{} pairs and moves
-\texttt{self\_critique} from \pqxeDiffCritique{} to \pqxlDiffCritique{} points and
-\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}. The
-sensitivity check therefore confirms the extension estimate is not being driven by the slot
-pattern; it is the challenge effect on the content-bearing items.
+The domain split (Figure~\ref{fig:persistence-domains-main}) shows the same arm ordering
+in all four preference domains on the primary target, with magnitude varying by domain;
+the corresponding figures for \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash} are in
+Appendix~\ref{app:othermodels} and show the same broad pattern under each model's
+qualifications above.
 
 \paragraph{Discriminant validity: the control that does not move.}
 Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes. A forced
 choice between two rungs is arithmetic rather than preference, so ceiling retention is the
-\emph{expected} result. Wavering there would indicate an unstable elicitation rather than
-an unstable preference. It is therefore analysed separately and never pooled into a PQ
-estimate. Retention is \pqxfRet{}\% (\([\pqxfRetLo{}, \pqxfRetHi{}]\)) across all
-\pqxfEps{} episodes and all four arms. In the collected run the check passes with force.
-The two arms that flip \numrange{40}{50}\% of preference pairs move the money ladder not
-once: \pqxfFlips{} flips in \pqxfChallengeEps{} challenge episodes. That rules out the
-reading that these challenges induce answer-switching regardless of content. The arms move
-preferences and leave arithmetic alone. This is the discriminant half of the PQ1 claim, and
-the half a preference-only design cannot supply.
+\emph{expected} result; wavering there would indicate an unstable elicitation rather than
+an unstable preference. It is analysed separately and never pooled. On \pairModel{} the
+check passes with force: retention is \pqxfRet{}\% (\([\pqxfRetLo{}, \pqxfRetHi{}]\))
+across all \pqxfEps{} episodes, and the two arms that flip \numrange{40}{50}\% of
+preference pairs move the money ladder not once (\pqxfFlips{} flips in
+\pqxfChallengeEps{} challenge episodes). That rules out the reading that these challenges
+induce answer-switching regardless of content --- on this target. The check itself proves
+model-specific: \texttt{gemini-2.5-flash} nearly holds it (\xmGtwoFinRet{}\%,
+\xmGtwoFinFlips{} flips), while \texttt{gpt-5.4-nano} flips arithmetic under the same
+arms (\xmNanoFinRet{}\%, \xmNanoFinFlips{} flips), so its preference-domain movement is
+read with that caveat attached. The cross-model check is Appendix~\ref{app:fincheck}.
 
-\paragraph{Position dependence is item-specific, not only model-specific.}
-The instrument-development work that forced the reasoning control
-(Section~\ref{sec:controls}) also showed the suppression is not uniform across items.
-In the balance pilot the sports pairs refused nothing, so the
-failure mode flagged for them in advance did not occur. They returned a mean per-pair order
-gap of \pqxSportsBias{} with reasoning \emph{on}, against \pqxOtherBiasLo{}--%
-\pqxOtherBiasHi{} for the other preference domains. Half of them chose the same slot on four
-or five of five counterbalanced resamples. Sports is also the domain with the lowest
-retention under challenge (\pqxSportsRet{}\% pooled over arms, \pqxSportsRetCritique{}\%
-under \texttt{self\_critique}). That is exactly the confound, since an item answered by
-slot looks like an item whose preference is easily moved.
-
-No pair was dropped for this. Selecting on a pilot result after seeing it would make the
-selection outcome-dependent, so the pilot order gap is carried as a per-pair covariate and
-the split is made at analysis time. Excluding the \pqxBiasDropPairs{} pairs at an
-order gap of \pqxBiasCut{} or above and keeping the remaining \pqxBiasKeepPairs{} moves
-\texttt{self\_critique} from \pqxeDiffCritique{} to \pqxlDiffCritique{} points and
-\texttt{counter\_consideration} from \pqxeDiffCounter{} to \pqxlDiffCounter{}. Part of the
-apparent excess movement in the position-exposed items was the layout.
-The restriction works the other way on $\Delta$confidence, which is why both
-are reported. The \texttt{self\_critique} all-episode confidence contrast is
-\pqxeConfCritique{} points
-across all pairs, an interval spanning zero
+\paragraph{Bias-aware sensitivity check.}
+The sports domain is the item type most exposed to the position effect
+(Section~\ref{sec:controls}): mean per-pair pilot order gap \pqxSportsBias{} with
+reasoning \emph{on}, against \pqxOtherBiasLo{}--\pqxOtherBiasHi{} elsewhere, and the
+lowest retention under challenge (\pqxSportsRet{}\% pooled over arms). An item answered
+by slot looks like an item whose preference is easily moved, so no pair is dropped ---
+selecting on a seen pilot would be outcome-dependent --- and the pilot order gap is
+carried as a covariate instead. Excluding the \pqxBiasDropPairs{} pairs at gap
+$\ge \pqxBiasCut{}$ moves \texttt{self\_critique} from \pqxeDiffCritique{} to
+\pqxlDiffCritique{} points and \texttt{counter\_consideration} from \pqxeDiffCounter{}
+to \pqxlDiffCounter{}: part of the apparent excess movement in the position-exposed
+items was the layout. The restriction works the other way on $\Delta$confidence, which
+is why both are reported: the \texttt{self\_critique} all-episode confidence contrast is
+\pqxeConfCritique{} points across all pairs, an interval spanning zero
 (\([\pqxeConfCritiqueLo{}, \pqxeConfCritiqueHi{}]\)) and so no measurable difference in
-this sample. It is \pqxlConfCritique{} (\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once
-the position-driven items are set aside. We read that conservatively and report it as a
-sensitivity check, not a headline. Position-driven items add noise to a between-arm
-contrast, so the pooled estimate understates rather than the restricted one overstating.
+this sample; it is \pqxlConfCritique{}
+(\([\pqxlConfCritiqueLo{}, \pqxlConfCritiqueHi{}]\)) once the position-driven items are
+set aside. We report that as a sensitivity check, not a headline.
+
+\subsection{Confidence falls even when the preference is retained}
+\label{sec:pq3}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_confidence_models.png}
+  \caption{\textbf{Figure 3: Confidence change among retained preferences, by model.}
+  Per-arm mean $\Delta$Confidence among episodes whose choice did \emph{not} move, four
+  preference domains, with bootstrap 95\% CIs over pairs. On \pairModel{} and
+  \texttt{gemini-2.5-flash} the two adversarial arms cost the surviving preferences
+  confidence while control sits at or near zero; on \texttt{gpt-5.4-nano} the control
+  arm itself moves, so its held-episode contrasts are not interpreted
+  (Section~\ref{sec:discussion}).}
+  \label{fig:confidence-models}
+\end{figure}
+
+Among episodes where the choice did \emph{not} move on the primary target, confidence
+still falls relative to control: \pqxeHeldCritique{} points under \texttt{self\_critique}
+(\([\pqxeHeldCritiqueLo{}, \pqxeHeldCritiqueHi{}]\), \pqxeHeldCritiquePairs{} pairs) and
+\pqxeHeldCounter{} under \texttt{counter\_consideration}
+(\([\pqxeHeldCounterLo{}, \pqxeHeldCounterHi{}]\), \pqxeHeldCounterPairs{} pairs);
+dropping episodes that began at zero confidence leaves the direction unchanged
+(\pqxeHeldCritiqueNoZero{}, \pqxeHeldCounterNoZero{}). This is retention with reduced
+confidence: the model keeps its answer and reports itself less sure of it --- what the
+design was built to detect, and what a choice-only measure records as nothing happening.
+The direction replicates on \texttt{gemini-2.5-flash} (\xmGtwoHeldCritique{} and
+\xmGtwoHeldCounter{} points against its control). On \texttt{gpt-5.4-nano} the
+held-episode contrasts are near zero (\xmNanoHeldCritique{}, \xmNanoHeldCounter{})
+against a control arm whose own confidence moves (Figure~\ref{fig:confidence-models});
+we do not interpret contrasts against a moving baseline.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{persistence_confidence.png}
+  \caption{\textbf{Figure 4: the held episodes behind Figure 3's primary-target bars},
+  one jittered point per episode. \textbf{(a)}~Four preference domains: the dark rule is
+  the per-arm mean, the whisker its bootstrap 95\% CI over pairs; the annotated episode
+  is selected in code, not by hand. The control column is exactly zero in \pqxCtlZero{}
+  of \pqxCtlScored{} scored episodes (Section~\ref{sec:discussion}).
+  \textbf{(b)}~The positive control, never pooled: on the money ladder the same two
+  challenge arms move held-episode confidence by about a point --- an order of magnitude
+  less than in the preference domains.}
+  \label{fig:held-confidence}
+\end{figure}
+
+Figure~\ref{fig:held-confidence} shows the same channel episode by episode on the
+primary target: the control column is a flat line at exactly zero, and the two
+adversarial columns scatter downward --- including episodes that keep the choice while
+dropping thirty points of confidence. Averaged over \emph{all} episodes the contrasts
+are \pqxeConfReason{}, \pqxeConfCritique{} and \pqxeConfCounter{} points vs.\ control,
+because held and flipped episodes move in opposite directions; we do not interpret the
+flipped half, for the reason given in the Limitations.
 
 \subsection{Predictions and outcomes}
 \label{sec:predictions}

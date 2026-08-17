@@ -2,12 +2,12 @@
 \label{sec:code}
 
 Code, elicitation records, the sampling seed, the exclusion rules, the upstream file-level
-commit, and the full change log are released at [TK: repository URL]. The persistence
-run (\pqxNEpisodes{} episodes) and its balance pilot are committed in full, as are the
-analysis scripts that generate every number in this paper. The earlier
-instrument-development pool and the runs on it were retired from the repository under
-deviation \#8 of the change log; the log entries recording what they showed remain, and
-the files themselves remain reachable in the repository history.
+commit, and the full change log are released at [TK: repository URL]. All three models'
+five-domain persistence runs (\pqxNEpisodes{} episodes each), their balance pilots, and
+the analysis scripts that generate every number and figure in this paper are committed in
+full. The earlier instrument-development pool and the runs on it were retired from the
+repository under deviation \#8 of the change log; the log entries recording what they
+showed remain, and the files themselves remain reachable in the repository history.
 
 One dataset is \textbf{not} recoverable. \texttt{data/raw/episodes\_deepseek.jsonl}, the
 30 episodes of an earlier pressure pilot, was deleted during a project cleanup before this
@@ -16,29 +16,12 @@ so was never committed; only its metadata survives. No result in this paper depe
 and we report the loss rather than substituting a proxy. Persistence data is written
 outside \texttt{data/raw/} for this reason.
 
-\section*{LLM usage statement}
-\label{sec:llmusage}
+\section*{Author contributions}
+\label{sec:contributions}
 
-\textbf{Models as subjects.} \pairModel{} is the object of study, not a tool used to
-produce it. Every number reported about it is a measurement, and the elicitation records
-are released.
-
-\textbf{Models as assistance.} Claude Code (Claude Opus) wrote the persistence runner, the
-response-scoring module and its unit tests, the analysis and statistics scripts, and
-drafted most of the prose in this paper. The authors specified the design: the research
-questions, the arms, the challenge wording, the controls on reasoning and presentation
-order, the decision to run the unfiltered pool, and the choice of the added categories and
-the positive control. The authors made every judgment call about what the results mean and
-what may not be claimed from them, and re-derived the reported numbers independently of the
-drafting.
-
-\textbf{One consequence worth recording.} A scoring defect found during instrument
-development --- a label search running before the refusal check, recorded in entry \#4a of
-the project's deviation log --- was written by the assistant and was
-\emph{not} caught by the assistant. It was found by manual inspection of raw model output,
-after which the corrected classifier was adopted, a regression test now pins the ordering,
-and every number in this paper was scored under it. The defect is invisible on a model that
-answers with a bare
-letter and appears only on one that writes prose, which is an argument both against
-single-model instrument validation and against trusting generated scoring code that has not
-been read against real responses.
+H.K.\ designed the study: the research questions, the arms and challenge wording, the
+episode structure, the instrument controls, and the validation strategy, and directed the
+domain and cross-model extensions. M.B.\ built and ran the pipeline: pair construction,
+the runners, scoring, metrics and infrastructure, and the statistical analysis. Both
+authors made the judgment calls about what the results mean and what may not be claimed
+from them, and both reviewed the final manuscript.

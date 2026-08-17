@@ -1,0 +1,27 @@
+\section*{LLM usage statement}
+\label{sec:llmusage}
+
+\textbf{Models as subjects.} \pairModel{}, \texttt{gpt-5.4-nano} and
+\texttt{gemini-2.5-flash} are the objects of study, not tools used to produce it. Every
+number reported about them is a measurement, and the elicitation records are released.
+No judge model is used anywhere: both outcomes are code-derived from parsed tokens.
+
+\textbf{Models as assistance.} Claude Code (Claude Opus, and later Claude Fable) wrote
+the persistence runner, the response-scoring module and its unit tests, the analysis and
+statistics scripts, and drafted most of the prose in this paper. The authors specified
+the design: the research questions, the arms, the challenge wording, the controls on
+reasoning and presentation order, the decision to run the unfiltered pool, and the choice
+of the domains, the positive control, and the cross-model targets. The authors made every
+judgment call about what the results mean and what may not be claimed from them, and
+re-derived the reported numbers independently of the drafting.
+
+\textbf{One consequence worth recording.} A scoring defect found during instrument
+development --- a label search running before the refusal check, recorded in entry \#4a of
+the project's deviation log --- was written by the assistant and was
+\emph{not} caught by the assistant. It was found by manual inspection of raw model output,
+after which the corrected classifier was adopted, a regression test now pins the ordering,
+and every number in this paper was scored under it. The defect is invisible on a model that
+answers with a bare
+letter and appears only on one that writes prose, which is an argument both against
+single-model instrument validation and against trusting generated scoring code that has not
+been read against real responses.
