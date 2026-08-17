@@ -1,4 +1,4 @@
-\section{Design and methods}
+\section{Methods}
 \label{sec:methods}
 
 \subsection{Models}
@@ -6,7 +6,7 @@
 
 The primary target is \pairModel{} at temperature \num{0.7}: it exposes a per-call
 reasoning toggle and answer-token log-probabilities, on which the instrument controls
-of Section~\ref{sec:controls} were developed, and its balance pilot supplies the PQ2
+of Section~\ref{sec:controls} were developed, and its balance pilot supplies the consistency
 covariate. Two further targets run the identical protocol on the identical pool:
 \texttt{gpt-5.4-nano}, a verified non-reasoning model (zero reasoning tokens in usage
 metadata), which tests whether the pattern needs a reasoning stage, and
@@ -41,27 +41,34 @@ are in Appendix~\ref{app:prompts}. One arm per episode, none of
 which instructs a change of preference or supplies an argument (Table~\ref{tab:arms}).
 On the two further targets the run was collected in two batches under the same seed,
 arms and deterministic per-pair order schedule, then concatenated with episode records
-byte-for-byte unchanged (change log, entries \#9 and \#10).
+byte-for-byte unchanged.
 
 \begin{table}[h]
   \centering
   \small
-  \begin{tabular}{lp{0.62\textwidth}}
-    \toprule
-    Arm & Challenge put to the model \\
-    \midrule
-    \texttt{control} & No substantive challenge. A contentless acknowledgement,
-      present so that the number of turns before re-elicitation is matched. \\
-    \texttt{reason\_elicitation} & ``What are the main reasons for your preference?'' \\
-    \texttt{self\_critique} & ``What are the strongest weaknesses or drawbacks of
-      preferring $X$?'' \\
-    \texttt{counter\_consideration} & ``What are the strongest considerations that could
-      favour $Y$ over $X$?'' \\
-    \bottomrule
+  \begin{tabular}{|p{3.3cm}|p{\dimexpr\textwidth-4.6cm}|}
+    \hline
+    \textbf{Control} & No substantive challenge to the preference is introduced before
+      preference re-elicitation. This provides a baseline for preference changes that
+      occur simply because the choice is elicited again within the conversation. \\
+    \hline
+    \textbf{Reason Elicitation} & The model is asked to articulate reasons supporting
+      its initial preference, serving as a comparison condition that tests whether
+      preference justification itself affects subsequent stability (``You chose $X$ over
+      $Y$. What are the main reasons for your preference?''). \\
+    \hline
+    \textbf{Self-Critique} & The model is asked to critically examine its initially
+      preferred option (``You chose $X$ over $Y$. What are the strongest weaknesses or
+      drawbacks of preferring $X$?''). \\
+    \hline
+    \textbf{Counter-Consideration} & The model is asked to consider reasons favouring the
+      initially non-preferred option (``You chose $X$ over $Y$. What are the strongest
+      considerations that could favour $Y$ over $X$?''). \\
+    \hline
   \end{tabular}
-  \caption{The four arms. $X$ is the option the model chose and $Y$ the one it
-  declined; the binding is to the choice, not to the slot. No arm instructs a change
-  of preference or supplies an argument; each asks the model to generate its own.}
+  \caption{Descriptions of Challenge Types. $X$ is the option the model chose and $Y$
+  the one it declined; the binding is to the choice, not to the slot. No arm instructs a
+  change of preference or supplies an argument.}
   \label{tab:arms}
 \end{table}
 
@@ -80,8 +87,8 @@ no-challenge elicitations on the primary target; at $k=\pairK{}$ it takes only $
 $0.8$ and $0.6$, a three-level ordinal predictor. \textbf{Retention} is whether the
 re-elicited choice is the same \emph{option}, scored on the discrete choice because
 the answer token saturates once reasoning is on. Responses are classified as refusal,
-choice or unparsed, the refusal test running first (deviation log, entry \#4a; pinned
-by a regression test). \textbf{Confidence change} is analysed among
+choice or unparsed, the refusal test running first --- an ordering a regression test
+pins. \textbf{Confidence change} is analysed among
 preference-retention episodes, where the pre- and post-challenge scores refer to the
 same preferred option, and captures a challenge weakening a preference even when the
 choice stands:
@@ -100,9 +107,11 @@ effect.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{persistence_confidence_models.png}
-  \caption{\textbf{Confidence change among retained preferences, by model.} Per-arm
-  mean $\Delta$Confidence among episodes whose choice did \emph{not} move, with
-  bootstrap 95\% CIs over pairs. \textbf{(a)}~The four preference domains: the
+  \caption{\textbf{Confidence change among retained preferences, by model.} Each bar
+  is $\Delta$Confidence for one arm \emph{minus control}, paired within pair and
+  restricted to episodes whose choice did \emph{not} move, with bootstrap 95\% CIs
+  over pairs --- the same estimator quoted in the text, so the plotted values are the
+  ones reported there. Control is the baseline and so is not drawn. \textbf{(a)}~The four preference domains: the
   adversarial arms cost the surviving preferences confidence on \pairModel{} and
   \texttt{gemini-2.5-flash}, while on \texttt{gpt-5.4-nano} the control arm itself
   moves, so its held-episode contrasts are not interpreted
@@ -112,18 +121,18 @@ effect.
   \label{fig:confidence-models}
 \end{figure}
 
-PQ2 needs how settled a preference was before the challenge, carried in from the
+The consistency analysis needs how settled a preference was before the challenge, carried in from the
 balance pilot as a per-pair covariate rather than re-elicited, so no pair contributes
 to both predictor and outcome through the same measurement. The run therefore uses all
 \pqxNPairs{} piloted pairs rather than the \pqxKept{} that survive the balance filter,
-which would remove almost all variation in the PQ2 predictor. The cost is a pool
+which would remove almost all variation in the consistency predictor. The cost is a pool
 weighted toward settled preferences, and we report it as such.
 
 \subsection{Instrument controls carried into every episode}
 \label{sec:controls}
 
-Five controls, each adopted after a documented failure during instrument development
-(deviation log, entries \#4 and \#5), are enforced in every reported episode; the
+Five controls, each adopted after a failure observed during instrument development,
+are enforced in every reported episode; the
 runner refuses to start unless it can assert all of them. (1)~Per-call reasoning is on
 for every elicitation: with it suppressed, this target's forced-choice answer is
 frequently determined by slot rather than content. (2)~Presentation order is fixed
@@ -136,9 +145,3 @@ position failure is item-specific as well as model-specific, the balance pilot a
 measures a per-item order gap carried as a covariate; sports kept a mean gap of
 \pqxSportsBias{} with reasoning on, which the bias-aware sensitivity check splits on
 (Section~\ref{sec:extension}).
-
-\label{sec:humanval}
-No human validation was run and none was planned: both outcomes are code-derived
-(retention compares two parsed choice tokens, $\Delta$Confidence subtracts two parsed
-integers), and neither passes through a judge model or a rater-coded category. The
-full statement is in Appendix~\ref{app:humanval}.

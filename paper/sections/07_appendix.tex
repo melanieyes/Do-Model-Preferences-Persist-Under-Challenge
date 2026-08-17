@@ -118,33 +118,34 @@ this target a forced choice between two \citet{mazeika2025utility} outcomes most
 elicits a settled preference, and a settled preference is the one thing a retention
 measure cannot use. This is what the unfiltered pool of Section~\ref{sec:pq2ident} is a
 response to: the persistence run uses all \pqxNPairs{} piloted pairs, with the pilot
-consistency carried as the PQ2 covariate and the pilot order gap carried into the
+consistency carried as the per-pair covariate and the pilot order gap carried into the
 bias-aware sensitivity check.
 
 \section{The domain split on the further targets}
 \label{app:othermodels}
 
-Section~\ref{sec:pq4} gives the by-domain breakdown for the primary target; the same
-breakdown for \texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash} is below, in the
-layout of Figure~\ref{fig:persistence-domains-main} and with personal finances kept
-separate as the positive control. The arm ordering reproduces on both. Each also
+Section~\ref{sec:pq4} gives the by-domain breakdown for the primary target;
+Figures~\ref{fig:domains-nano} and~\ref{fig:domains-gemini} give it for
+\texttt{gpt-5.4-nano} and \texttt{gemini-2.5-flash}, in the layout of
+Figure~\ref{fig:persistence-domains-main} and with personal finances kept separate as
+the positive control. The arm ordering reproduces on both. Each also
 carries a qualification of its own --- the control sits below ceiling on
 \texttt{gpt-5.4-nano}, and reason elicitation falls below control in several domains on
 \texttt{gemini-2.5-flash} --- which is why the domain split is reported per target and
 never pooled across them.
 
-\begin{figure}[t]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=\textwidth]{persistence_domains_gpt_54_nano.png}
   \caption{Retention by domain and arm on \texttt{gpt-5.4-nano}, same layout as
   Figure~\ref{fig:persistence-domains-main}. The broad arm ordering reproduces, with
   \texttt{counter\_consideration} the stronger adversarial arm on this target --- and
-  the positive-control row is \emph{below} ceiling, the entry-\#9 caveat that bounds how
-  its preference rows may be read (Appendix~\ref{app:fincheck}).}
+  the positive-control row is \emph{below} ceiling, which bounds how its preference rows
+  may be read (Appendix~\ref{app:fincheck}).}
   \label{fig:domains-nano}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[!ht]
   \centering
   \includegraphics[width=\textwidth]{persistence_domains_gemini_25_flash.png}
   \caption{Retention by domain and arm on \texttt{gemini-2.5-flash}, same layout. The
@@ -154,6 +155,7 @@ never pooled across them.
   \label{fig:domains-gemini}
 \end{figure}
 
+\FloatBarrier
 \section{The personal-finances check across models}
 \label{app:fincheck}
 
@@ -176,35 +178,38 @@ sister model.
 \section{Human validation}
 \label{app:humanval}
 
-Summarised in Section~\ref{sec:humanval}; the full statement follows.
+Validation in this design is structural rather than procedural. Both reported outcomes
+are code-derived: retention compares two parsed choice tokens, $\Delta$Confidence
+subtracts two parsed integers, and neither passes through a judge model or a
+rater-coded category at any point in the measured path. There is therefore no boundary
+judgement of the kind a free-text rubric forces, because there is no free text in the
+measured path --- and nothing for a human annotator, or an automated one, to
+adjudicate.
 
-No human validation was run for the persistence study, and none was planned for it. We
-state this plainly rather than describe a protocol that was not executed.
-
-The pre-registration does specify one, two annotators blind to arm with agreement
-reported as Cohen's $\kappa$. It codes two constructs that do not exist in this design:
+The pre-registration does specify an annotation protocol, two annotators blind to arm
+with agreement reported as Cohen's $\kappa$. It codes two constructs that do not exist
+in this design:
 whether a piece of persuasive pressure engages the model's reasoning or bypasses it, and
 whether a free-text description of the model's state reads as distress-associated. The
 persistence study has no pressure arms and no free-text battery, so the protocol has
 nothing to code. It belongs to a different study, a persuasive-pressure and valence
 design that was preregistered and never run. It does not transfer to this one.
 
-What replaces it is structural rather than procedural. Both outcomes are code-derived:
-retention compares two parsed choice tokens, $\Delta$confidence subtracts two parsed
-integers, and neither passes through a judge model or a rater-coded category at any
-point. That was a deliberate choice in the design (Section~\ref{sec:measures}) and it is
-what removes the annotation burden. There is no boundary judgement of the kind a
-free-text rubric forces, because there is no free text in the measured path.
+This was a deliberate choice in the design (Section~\ref{sec:measures}): keeping every
+measured quantity parseable is what removes the annotation burden in the first place.
 
 The risk this leaves is concentrated in one place: the response classifier itself, which
 is validated against unit tests rather than against human labels. That risk is not
-hypothetical. The mis-scoring recorded in entry \#4a of the deviation log, in which a
-response that disclaimed having preferences and then discussed both options was scored as
-choosing one, is precisely what an unvalidated classifier failure looks like when it
+hypothetical. The mis-scoring found during instrument development, in which a response that
+disclaimed having preferences and then discussed both options was scored as choosing
+one, is precisely what an unvalidated classifier failure looks like when it
 lands, and it was caught by inspection rather than by any validation procedure. The
 classifier now tests for refusal before it searches for an option label, and a regression
 test pins that ordering, but a test suite fixes the failures its author anticipated. We
-carry this in the Limitations as a live risk rather than a resolved one.
+carry this in the Limitations as a live risk rather than a resolved one, and we plan to
+close it in future work: a human-labelled sample of raw responses, coded blind to arm
+as refusal, choice or unparsed, would validate the one component of the measured path
+that unit tests alone currently cover.
 
 \section{Persistence: covariate, domains, and the position check}
 \label{app:persistdetail}
@@ -229,13 +234,13 @@ ladder stays at ceiling as expected under the positive-control check.
   \label{fig:held-confidence}
 \end{figure}
 
-\paragraph{PQ2 in full.} Pooled over arms, retention runs \pqxConsSix{}\%,
+\paragraph{The consistency predictor in full.} Pooled over arms, retention runs \pqxConsSix{}\%,
 \pqxConsEight{}\% and \pqxConsTen{}\% at balance-pilot consistency $0.6$, $0.8$ and $1.0$
 (\pqxConsSixPairs{}, \pqxConsEightPairs{} and \pqxConsTenPairs{} pairs in the reported
 persistence set). At $k=\pairK{}$ the covariate takes only these three values, so it is a
 three-level ordinal predictor with most of its mass at ceiling rather than a continuum.
 
-\paragraph{PQ4 in full.} The domain figure carries the split. The arm ordering ---
+\paragraph{RQ4 in full.} The domain figure carries the split. The arm ordering ---
 control and \texttt{reason\_elicitation} at ceiling, both adversarial arms moving the
 choice --- appears in all four preference domains, and \texttt{self\_critique} is the
 stronger adversarial arm in each. Sports is the domain with the lowest retention under

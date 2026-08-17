@@ -42,15 +42,15 @@ exploratory.
     \texttt{counter\_consideration}& \pqxeRetCounter{}\% [\pqxeRetCounterLo{}, \pqxeRetCounterHi{}] & \pqxeDiffCounter{}  [\pqxeDiffCounterLo{}, \pqxeDiffCounterHi{}] \\
     \bottomrule
   \end{tabular}
-  \caption{PQ1 on the primary target, \pairModel{}: retention by arm on the four
+  \caption{RQ1 and RQ2 on the primary target, \pairModel{}: retention by arm on the four
 preference domains and the difference from control, paired within pair. Percentage
 points, bootstrap 95\% CIs over \pqxePairs{} pairs, \num{10000} resamples.}
   \label{tab:pq1}
 \end{table}
 
-On the primary target, control retains \pqxeRetCtl{}\%: absent a challenge the
-procedure returns the same answer essentially every time, which licenses reading the
-rest as the challenge rather than instrument noise. Against that baseline,
+On the primary target (Table~\ref{tab:pq1}), control retains \pqxeRetCtl{}\%: absent
+a challenge the procedure returns the same answer essentially every time, which
+licenses reading the rest as the challenge rather than instrument noise. Against that baseline,
 \texttt{reason\_elicitation} is indistinguishable from doing nothing
 (\pqxeDiffReason{} points, \([\pqxeDiffReasonLo{}, \pqxeDiffReasonHi{}]\)), while
 \texttt{self\_critique} moves retention by \pqxeDiffCritique{} points and
@@ -67,7 +67,7 @@ First, the rank of the adversarial arms is not a property of the challenges:
 Second, on \texttt{gemini-2.5-flash}, \texttt{reason\_elicitation} retains
 \xmGtwoRetReason{}\% (\([\xmGtwoRetReasonLo{}, \xmGtwoRetReasonHi{}]\)), below its own
 control (\xmGtwoRetCtl{}\%), so that invariant too is a property of the model.
-Retention also rises with how settled the preference already was (PQ2): the slope of
+Retention also rises with how settled the preference already was: the slope of
 per-pair retention on the balance-pilot consistency covariate is \pqxeSlope{}
 (\([\pqxeSlopeLo{}, \pqxeSlopeHi{}]\)); the level-by-level split is in
 Appendix~\ref{app:persistdetail}.
@@ -90,8 +90,7 @@ not move}
 
 The domain split (Figure~\ref{fig:persistence-domains-main}) shows the same arm
 ordering in all four preference domains, with magnitude varying by domain; the further
-targets show the same broad pattern under each model's qualifications above
-(Appendix~\ref{app:othermodels}).
+targets show the same broad pattern under each model's own qualifications.
 
 \paragraph{Discriminant validity: the control that does not move.}
 Personal finances is a monotonic ladder of receive-\$$X$ and owe-\$$X$ outcomes. A

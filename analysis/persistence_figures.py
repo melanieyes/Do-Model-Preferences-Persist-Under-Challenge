@@ -47,7 +47,7 @@ from figure_style import AXIS, DPI, GRID, INK, INK_2, MUTED, SURFACE  # noqa: E4
 from analysis.persistence_analysis import (  # noqa: E402
     EXTENSION_DOMAINS, POSITIVE_CONTROL, cluster_bootstrap, group,
 )
-from analysis.persistence_ext_stats import EXT, load  # noqa: E402
+from analysis.persistence_ext_stats import EXT, load, paired_contrast  # noqa: E402
 
 FIGS = REPO / "paper" / "figures"
 
@@ -141,15 +141,24 @@ def _targets():
 
 
 def _model_arm_panel(ax, targets, domains, value, *, pct, label_fmt, label_gap,
-                     legend=False):
-    """Grouped bars: arms on x, one colour per model, over the given domain set."""
+                     legend=False, contrast=False):
+    """Grouped bars: arms on x, one colour per model, over the given domain set.
+
+    With contrast=True each bar is the arm minus control, paired within pair --
+    the same estimator the reported text quotes -- so the control arm drops out
+    as the baseline and the plotted numbers equal the ones in the prose.
+    """
+    arms = tuple(a for a in ARMS if a != "control") if contrast else ARMS
     width = 0.26
     for mi, (name, rows) in enumerate(targets):
         sel = [r for r in rows if r["domain"] in domains]
         xs, pts, los, his = [], [], [], []
-        for ai, arm in enumerate(ARMS):
-            p, lo, hi, *_ = cluster_bootstrap(
-                group(sel, lambda r, a=arm: r["arm"] == a, value))
+        for ai, arm in enumerate(arms):
+            if contrast:
+                p, lo, hi, *_ = paired_contrast(sel, arm, value)
+            else:
+                p, lo, hi, *_ = cluster_bootstrap(
+                    group(sel, lambda r, a=arm: r["arm"] == a, value))
             if p is None:
                 continue
             k = 100 if pct else 1
@@ -160,7 +169,7 @@ def _model_arm_panel(ax, targets, domains, value, *, pct, label_fmt, label_gap,
         for x, p_, lo, hi in zip(xs, pts, los, his):
             ax.plot([x, x], [lo, hi], color=INK, lw=1.2, zorder=3)
             _value_label(ax, x, p_, lo, hi, label_fmt, pad=label_gap)
-    ax.set_xticks(range(len(ARMS)))
+    ax.set_xticks(range(len(arms)))
     ax.set_axisbelow(True)
     ax.yaxis.grid(True, color=GRID, linewidth=0.7)
     for sp in ("top", "right"):
@@ -220,25 +229,28 @@ def build_confidence_models() -> None:
         2, 1, figsize=(11.2, 5.0), sharex=True,
         gridspec_kw={"height_ratios": [1.9, 1.0], "hspace": 0.42})
     _model_arm_panel(ax, targets, EXTENSION_DOMAINS, dconf, pct=False,
-                     label_fmt="{:+.1f}", label_gap=0.4, legend=True)
+                     label_fmt="{:+.1f}", label_gap=0.4, legend=True, contrast=True)
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
     ax.margins(y=0.18)       # room for labels at both ends; bars run both signs
-    ax.set_title("(a) Four preference domains", fontsize=FS_TITLE, loc="left",
-                 color=INK)
-    ax.legend(fontsize=FS_LEGEND, frameon=False, loc="lower right",
-              bbox_to_anchor=(1.0, 1.01), ncol=3, handlelength=1.1,
-              columnspacing=1.4)
+    ax.set_title("(a) Four preference domains — vs. control", fontsize=FS_TITLE,
+                 loc="left", color=INK)
+    handles, labels = ax.get_legend_handles_labels()
     _model_arm_panel(axf, targets, (POSITIVE_CONTROL,), dconf, pct=False,
-                     label_fmt="{:+.1f}", label_gap=0.4)
+                     label_fmt="{:+.1f}", label_gap=0.4, contrast=True)
     axf.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
     axf.margins(y=0.24)
     axf.set_title("(b) Personal finances — check item, never pooled into (a)",
                   fontsize=FS_TITLE, loc="left", color=INK)
     # One shared y label: two stacked panels this short cannot each carry the full
     # phrase without the two labels colliding in the middle of the plate.
-    fig.supylabel(r"$\Delta$confidence among held episodes", fontsize=FS_AXIS,
+    fig.supylabel(r"$\Delta$confidence vs. control, held episodes", fontsize=FS_AXIS,
                   color=INK_2)
-    axf.set_xticklabels([LABEL[a] for a in ARMS], fontsize=FS_TICK)
+    axf.set_xticklabels([LABEL[a] for a in ARMS if a != "control"], fontsize=FS_TICK)
+    # Legend under the plate, as on the episode-level confidence figure: sitting
+    # above panel (a) it crowded that panel's own title.
+    axf.legend(handles, labels, fontsize=FS_LEGEND, frameon=False,
+               loc="upper center", bbox_to_anchor=(0.5, -0.62), ncol=3,
+               handlelength=1.1, columnspacing=2.2, borderaxespad=0.0)
     fig.tight_layout()
     out = FIGS / "persistence_confidence_models.png"
     fig.savefig(out, bbox_inches="tight")
@@ -328,7 +340,7 @@ def build_confidence() -> None:
     print(f"[confidence] {len(held)} held preference episodes, "
           f"{len(fin_held)} held {POSITIVE_CONTROL} episodes (drawn separately)")
 
-    fig, ax = plt.subplots(figsize=(13.2, 4.4))
+    fig, ax = plt.subplots(figsize=(12.4, 6.4))
     rng = np.random.default_rng(20260815)      # jitter only; fixed for reproducibility
     STEP = 1.7                                 # room per arm for both clusters + labels
 
@@ -343,16 +355,20 @@ def build_confidence() -> None:
         ax.plot([x - w, x + w], [p, p], color=INK, linewidth=1.8, zorder=4)
         ax.plot([x + w + 0.04, x + w + 0.04], [lo, hi], color=INK, linewidth=1.4,
                 zorder=4)
+        halo = dict(facecolor=SURFACE, edgecolor="none", alpha=0.85,
+                    boxstyle="round,pad=0.16")
+        # Labels stack vertically on their own cluster. Placing them sideways put
+        # each cluster's text into its neighbour's; there is ample room above and
+        # below, and none between two clusters 0.7 apart.
         if big_labels:
-            # labels on the LEFT of the cluster; the right side belongs to the
-            # money-ladder cluster drawn beside it
-            ax.text(x - w - 0.08, p, f"{p:+.1f}", fontsize=FS_VALUE, color=INK,
-                    fontweight="bold", ha="right", va="center")
-            ax.text(x - w - 0.08, p, f"\n[{lo:+.1f}, {hi:+.1f}]\nn={nobs}",
-                    fontsize=FS_NOTE, color=INK_2, ha="right", va="top", linespacing=1.25)
+            ax.text(x, p + 2.4, f"{p:+.1f}", fontsize=FS_VALUE, color=INK,
+                    fontweight="bold", ha="center", va="bottom", bbox=halo, zorder=6)
+            ax.text(x, p - 2.4, f"[{lo:+.1f}, {hi:+.1f}]  n={nobs}",
+                    fontsize=FS_NOTE, color=INK_2, ha="center", va="top",
+                    bbox=halo, zorder=6)
         else:
-            ax.text(x, min(0, lo) - 2.0, f"{p:+.1f}", fontsize=FS_VALUE, color=INK_2,
-                    ha="center", va="top")
+            ax.text(x, p + 2.4, f"{p:+.1f}", fontsize=FS_NOTE, color=INK_2,
+                    ha="center", va="bottom", bbox=halo, zorder=6)
 
     # All five domains in one panel, per arm: the four preference domains as the
     # blue cluster, the money ladder as the grey cluster beside it — side by side
@@ -376,11 +392,11 @@ def build_confidence() -> None:
         fontsize=FS_NOTE, color=INK, ha="right",
         arrowprops=dict(arrowstyle="->", color=INK_2, linewidth=0.9))
 
+    ax.set_xlim(-1.0, (len(ARMS) - 1) * STEP + 1.1)   # room for the outer labels
     ax.set_xticks([i * STEP for i in range(len(ARMS))])
     ax.set_xticklabels([LABEL[a] for a in ARMS], fontsize=FS_TICK)
-    ax.set_ylabel(r"$\Delta$confidence among HELD episodes (0--100 scale)", fontsize=FS_AXIS)
-    ax.set_title("All five approved domains: the choice survives; the stated confidence "
-                 "does not always survive with it — except on personal finances",
+    ax.set_ylabel(r"$\Delta$confidence, held episodes", fontsize=FS_AXIS, labelpad=8)
+    ax.set_title("The choice survives; the stated confidence does not always survive with it",
                  fontsize=FS_TITLE, loc="left", color=INK)
     from matplotlib.lines import Line2D
     ax.legend(handles=[
@@ -392,10 +408,12 @@ def build_confidence() -> None:
                label="personal-finances episodes (control item, never pooled)"),
         Line2D([], [], color=INK, lw=1.8,
                label="per-cluster mean, with bootstrap 95% CI over pairs"),
-    ], fontsize=FS_NOTE, frameon=False, loc="lower left", handlelength=1.2,
-       borderaxespad=0.2)
+    ], fontsize=FS_NOTE, frameon=False, loc="upper center",
+       bbox_to_anchor=(0.5, -0.13), ncol=2, handlelength=1.2, columnspacing=1.6,
+       borderaxespad=0.0)
 
     ax.axhline(0, color=AXIS, linewidth=0.9, zorder=1)
+    ax.margins(y=0.10)
     ax.set_axisbelow(True)
     ax.yaxis.grid(True, color=GRID, linewidth=0.7)
     for s in ("top", "right"):

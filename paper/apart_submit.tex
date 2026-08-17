@@ -5,12 +5,13 @@
 \usepackage[margin=1in,bottom=0.88in]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{placeins}   % \FloatBarrier: keep appendix figures in their own section
 \usepackage{amsmath}
 \usepackage[round]{natbib}   % author-year (APA-style); \citet -> Author (Year)
 \usepackage[hidelinks]{hyperref}
 \usepackage{siunitx}
 \usepackage{fancyhdr}
-\usepackage[font=small]{caption}
+\usepackage[font=small,labelsep=period]{caption}
 \usepackage{enumitem}
 \setlist{noitemsep, topsep=2pt}
 
@@ -31,22 +32,54 @@
 \input{persist_ext_stats}
 \input{persist_models_ext_stats}
 
-\title{Do Model Preferences Persist Under Challenge?}
-
-% Affiliations sit under the names. Contributions are stated jointly in the
-% author-contributions section, so the names carry no per-author footnotes.
-% Affiliations match the ones stated on the project page (index.html).
+% Title block follows the sprint report template: title with the sprint
+% footnote, names over affiliations, then the "With Apart Research" line in
+% place of a date. Affiliations match the project page (index.html).
+\title{Do Model Preferences Persist Under Challenge?%
+  \thanks{Research conducted at the Digital Minds Research Sprint, August 2026.}}
 \author{%
   Melanie Bui \\
-  Fulbright University Vietnam
+  Lida Safety Research
   \and
   Haein Kong \\
   Rutgers University%
 }
 
-\date{Apart Research Digital Mind Hackathon, 2026}
+\date{\textbf{With}\\[2pt]
+  Apart Research}
+
+% Title block layout, per the sprint report template: a heavy rule above the
+% title and a light one below it. Mirrors article's \@maketitle, keeping the
+% tabular so \and still splits the author list.
+\makeatletter
+\renewcommand{\@maketitle}{%
+  \newpage\null
+  \vskip 2em%
+  \begin{center}%
+    \let\footnote\thanks
+    \rule{\textwidth}{3pt}\par
+    \vskip 1.4em%
+    {\LARGE\bfseries \@title \par}%
+    \vskip 1.4em%
+    \rule{\textwidth}{0.4pt}\par
+    \vskip 2.2em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}%
+        \@author
+      \end{tabular}\par}%
+    \vskip 1.8em%
+    {\large \@date \par}%
+  \end{center}%
+  \par\vskip 1.5em}
+\makeatother
 
 \begin{document}
+% The template numbers the title footnote rather than starring it; \maketitle
+% otherwise forces \fnsymbol on a \thanks mark.
+\makeatletter
+\def\@fnsymbol#1{\ensuremath{\arabic{footnote}}}
+\makeatother
 \maketitle
 
 \begin{abstract}
