@@ -45,8 +45,28 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from src.clients import REGISTRY  # noqa: E402
 from src.choice_scoring import classify  # noqa: E402
-from freeze_pairs import decide  # noqa: E402  (the keep/drop rule, defined once)
 from pair_scope import POSITIVE_CONTROLS  # noqa: E402
+
+# The keep/drop rule, verbatim from scripts/freeze_pairs.py (retired with the
+# original pool under DEVIATIONS #8; the rule itself is unchanged and lives on
+# here so every piloted pair still carries its decision).
+KEEP_MIN = 0.30
+SLOT_BAND = (0.20, 0.80)
+
+
+def decide(rec: dict) -> tuple[str, str]:
+    valid = rec["n_a"] + rec["n_b"]
+    if not valid:
+        return "drop", "no parseable choice"
+    minority = min(rec["n_a"], rec["n_b"]) / valid
+    slot = rec.get("slot_a_frac")
+    if slot is not None and not (SLOT_BAND[0] <= slot <= SLOT_BAND[1]):
+        return "drop", f"position-driven (chose the same slot, slot_a_frac {slot:.2f})"
+    if minority == 0:
+        return "drop", f"ceiling ({rec['split']}, never wavered)"
+    if minority < KEEP_MIN:
+        return "drop", f"near-ceiling ({rec['split']}, wavered once)"
+    return "keep", f"wavered ({rec['split']})"
 
 PAIRS_DIR = ROOT / "data" / "pairs"
 POOL = PAIRS_DIR / "pilot_pool.jsonl"

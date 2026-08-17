@@ -230,6 +230,11 @@ def main() -> None:
     ap.add_argument("--out", default=None, help="override the output path")
     ap.add_argument("--ext", action="store_true",
                     help="run the five-domain extension pool (deviation #6)")
+    ap.add_argument("--domains", default=None,
+                    help="comma-separated domain filter (e.g. finances_control): run "
+                         "only that subset of the pool. Episode structure, arms and "
+                         "measures are unchanged; the subset is recorded in _meta and "
+                         "the output filename.")
     ap.add_argument("--target", default="deepseek",
                     help="target key from configs/default.yaml (deepseek, gemini35, ...)")
     args = ap.parse_args()
@@ -285,6 +290,16 @@ def main() -> None:
               f"gap is established directly in {own_pilot.name}.\n")
 
     pool = [json.loads(x) for x in pool_path.read_text().splitlines() if '"pair_id"' in x]
+    domains_kept = None
+    if args.domains:
+        domains_kept = sorted(set(args.domains.split(",")))
+        have = {p["domain"] for p in pool}
+        unknown = [d for d in domains_kept if d not in have]
+        if unknown:
+            raise SystemExit(f"--domains names domains not in the pool: {unknown} "
+                             f"(pool has: {sorted(have)})")
+        pool = [p for p in pool if p["domain"] in domains_kept]
+        print(f"  domain filter: {', '.join(domains_kept)} -> {len(pool)} pairs")
     # Prefer the target's OWN balance pilot when one exists: pilot_consistency is a
     # property of the model that was piloted, so a run on a different target needs its
     # own pilot before PQ2 means anything. Falls back to the deepseek pilot with a
@@ -321,11 +336,12 @@ def main() -> None:
         per_arm = args.smoke // len(ARMS)
         grid = [g for a in ARMS for g in rng.sample(by_arm[a], per_arm)]
 
+    dom_tag = f"_{'-'.join(domains_kept)}" if domains_kept else ""
     out_path = Path(args.out) if args.out else (
         OUT_DIR / ((f"smoke_{target['key']}_ext_{args.smoke}.jsonl" if args.smoke
-                    else f"persistence_{target['key']}_ext.jsonl") if args.ext
+                    else f"persistence_{target['key']}_ext{dom_tag}.jsonl") if args.ext
                    else (f"smoke_{target['key']}_{args.smoke}.jsonl" if args.smoke
-                         else f"persistence_{target['key']}_k{args.k}.jsonl"))
+                         else f"persistence_{target['key']}_k{args.k}{dom_tag}.jsonl"))
     )
     if out_path.exists() and not args.smoke:
         raise SystemExit(
@@ -387,8 +403,11 @@ def main() -> None:
         "target": target["key"], "model": target["model"], "temperature": temperature,
         "reasoning": True, "k": args.k, "seed": SEED, "arms": list(ARMS),
         "n_pairs": len(pool), "n_episodes": n_ep,
-        "pool": (f"all {len(pool)} extension pairs, unfiltered (5 domains, "
-                 "finances_control is a POSITIVE CONTROL — report separately, never pool)"
+        "domain_filter": domains_kept,
+        "pool": ((f"{len(pool)} extension pairs, domain filter: {', '.join(domains_kept)}"
+                  if domains_kept else
+                  f"all {len(pool)} extension pairs, unfiltered (5 domains, "
+                  "finances_control is a POSITIVE CONTROL — report separately, never pool)")
                  if args.ext else "all 130 pilot-pool pairs, unfiltered"),
         # Always name the file actually read. This was hardcoded for the non-ext case
         # and reported the deepseek pilot on a run that had correctly used its own.
